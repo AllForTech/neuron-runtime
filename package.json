@@ -1,17 +1,17 @@
 {
-  "name": "neuron",
+  "name": "neuron-runtime",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "pravate": true,
+  "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "scripts": {
+    "build:shared": "npm run build -w @neuron/shared",
+    "build:backend": "npm run build -w backend",
+    "build": "npm run build:shared && npm run build:backend",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend"
+  },
+  "license": "ISC"
 }
