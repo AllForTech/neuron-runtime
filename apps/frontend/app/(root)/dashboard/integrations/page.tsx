@@ -104,7 +104,7 @@ export default function IntegrationPage() {
                                                 <td className="px-6 py-5">
                                                     <div className="flex items-center gap-3">
                                                         <div className="p-2 bg-neutral-900 rounded-lg border border-neutral-800">
-                                                            {platform && <platform.icon className="w-4 h-4" style={{ color: platform.color }} />}
+                                                            {platform && <platform.icon style={{ color: platform.color }} />}
                                                         </div>
                                                         <span className="text-sm font-bold">{platform?.name}</span>
                                                     </div>

@@ -13,5 +13,8 @@
     "dev:backend": "npm run dev -w backend",
     "dev:frontend": "npm run dev -w frontend"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
 }

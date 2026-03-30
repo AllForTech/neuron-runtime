@@ -1,40 +1,34 @@
 {
   "compilerOptions": {
-    /* File Layout */
-    "rootDir": "./src",
-    "outDir": "./dist",
+    /* 1. DELETE "rootDir": "./src" */
+    /* By removing this, TS can look at both folders without complaining. */
 
-    /* Environment Settings */
+    "outDir": "./dist",
+    "target": "ES2020",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "ES2020",
-    "lib": ["esnext"],
-    "types": ["node"], // MUST be uncommented for Node.js APIs
 
-    /* Other Outputs */
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    /* 2. ADD rootDirs (Plural) */
+    /* This tells TS to treat these two paths as if they were in the same root. */
+    "rootDirs": [
+      "./src",
+      "../../packages/shared/src",
+      "../../packages/shared/src/**/"
+    ],
 
-    /* Stricter Typechecking Options */
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    /* Recommended Options */
-    "strict": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-    "esModuleInterop": true, // Add this for Express compatibility,
+    "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../shared/src/*"]
-    }
+      "@neuron/shared": ["../../packages/shared/src/index.ts"],
+      "@neuron/shared/*": ["../../packages/shared/src/*"]
+    },
+
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
-  "references": [
-    {
-      "path": "../shared"
-    }
+  "include": [
+    "src/**/*",
+    "../../packages/shared/src/**/*"
   ],
-  "include": ["src/**/*", "../shared/src/**/*"]
+  "exclude": ["node_modules", "**/dist"]
 }

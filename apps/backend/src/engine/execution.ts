@@ -1,6 +1,5 @@
 'use client';
 
-import type { WorkflowDefinition } from "@neuron/shared";
 import {vaultService} from "./vault";
 import {workflowBroadcast} from "../services/supabase/supabase.services";
 import {WorkflowEditorActionType} from "../constant";

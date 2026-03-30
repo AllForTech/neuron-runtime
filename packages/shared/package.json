@@ -19,5 +19,8 @@
   "description": "neuron shared package",
   "dependencies": {
     "drizzle-orm": "^0.45.1"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
   }
 }
