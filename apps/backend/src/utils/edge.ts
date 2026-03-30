@@ -1,4 +1,4 @@
-import {WorkflowEdge} from "@shared/types/edge.type";
+import {WorkflowEdge} from "@neuron/shared";
 
 export function convertEdgeToDBSchema(edge: WorkflowEdge) {
     return {

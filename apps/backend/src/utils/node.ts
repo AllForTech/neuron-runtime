@@ -1,4 +1,4 @@
-import {WorkflowNode} from "@shared/types/node.types";
+import {WorkflowNode} from "@neuron/shared";
 
 export function convertNodeToDBSchema(node: WorkflowNode) {
     return {

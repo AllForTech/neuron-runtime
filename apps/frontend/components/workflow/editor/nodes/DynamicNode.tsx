@@ -75,6 +75,7 @@ export default function DynamicNode(node: NodeProps) {
                         "group flex flex-col gap-1.5 w-[200px] h-fit transition-all p-3 bg-neutral-800/25 backdrop-blur-sm border-0 rounded-xl relative",
                         statusClass,
                         selected && "ring-2! ring-primary! shadow-primary",
+                        node.type === "contextNode" && "w-[250px]"
                     )}
                 >
 
@@ -163,11 +164,12 @@ export default function DynamicNode(node: NodeProps) {
 
                     </Card>
 
-                    {node.type === "decisionNode" && (
+                    {node.type === "decisionNode" || node.type === "contextNode" && (
                         <Card
                             className={cn(
                                 "flex flex-col rounded-xl border-0 h-full transition p-2",
-                                "bg-neutral-900/50 group-hover:bg-neutral-800"
+                                "bg-neutral-900/50 group-hover:bg-neutral-800",
+                                node.type === "contextNode" && "h-[100px]"
                             )}
                         >
 

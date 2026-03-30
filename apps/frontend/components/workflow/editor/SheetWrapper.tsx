@@ -49,16 +49,16 @@ export function SheetWrapper({
                     <SheetDescription className="text-neutral-400">{description}</SheetDescription>
                 </SheetHeader>
 
-                <ScrollArea className="flex-1">
-                    <div className="p-6 space-y-10">
+                <ScrollArea className="h-[80dvh] flex-1">
+                    <div className="space-y-5 p-3">
                         {/* Primary Node Configuration Section */}
-                        <div className="space-y-6">
+                        <div className="space-y-5">
                             {children}
                         </div>
 
                         {/* Automatic Context Registration Section */}
                         {showContextSettings && nodeId && (
-                            <div className="pt-8 border-t border-neutral-800/50">
+                            <div className="pt-5 p-3 border-t border-neutral-800/50">
                                 <p className="text-[10px] font-bold uppercase text-neutral-600 tracking-[0.2em] mb-4">
                                     Neuron Engine Core
                                 </p>

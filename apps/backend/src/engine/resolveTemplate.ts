@@ -60,7 +60,7 @@ export async function resolveTemplate(
                 : String(resolvedValue);
             console.warn(`[Template Engine] Could not resolve: ${path}. Falling back to raw string.`);
 
-            resolvedString = resolvedString.replaceAll(fullMatch, stringified);
+            resolvedString = resolvedString?.replaceAll(fullMatch, stringified);
         } else {
             console.warn(`[Template Engine] Could not resolve: ${path}`);
         }

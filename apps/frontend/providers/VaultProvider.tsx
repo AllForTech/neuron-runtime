@@ -26,7 +26,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError || !session) {
-            throw new Error("No active session found");
+            // throw new Error("No active session found");
         }
 
         return session.access_token;

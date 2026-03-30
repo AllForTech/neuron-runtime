@@ -1,7 +1,6 @@
 import type {Workflow} from "../types/workflow/workflow.types.js";
 import {WorkflowDTO} from "../models/workflowDTO";
-import {WorkflowEdge} from "@shared/types/edge.type";
-import {BaseNode} from "@shared/types/node.types";
+import {WorkflowEdge, BaseNode} from "@neuron/shared";
 
 export function toWorkflowDTO(workflow: Workflow): WorkflowDTO {
     return {

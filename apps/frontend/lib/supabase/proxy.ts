@@ -45,14 +45,14 @@ export async function updateSession(request: NextRequest) {
         return redirectResponse
     }
 
-    if (user && (url.pathname === '/sign-in' || url.pathname === '/sign-up') || url.pathname === "/") {
+    if (user && (url.pathname === '/sign-in' || url.pathname === '/sign-up')) {
         url.pathname = '/dashboard'
         const redirectResponse = NextResponse.redirect(url)
         cookiesToSetInRedirect(supabaseResponse, redirectResponse)
         return redirectResponse
     }
 
-    return supabaseResponse
+    return supabaseResponse || url.pathname === "/"
 }
 
 // Helper to ensure cookies move from the supabaseResponse to the redirect
