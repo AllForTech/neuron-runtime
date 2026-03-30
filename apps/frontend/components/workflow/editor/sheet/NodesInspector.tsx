@@ -5,7 +5,7 @@ import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor"
 import {cn, getNodeColor, toReactFlowNode} from "@/lib/utils"
 import { Cpu, Zap, Bug, ChevronRight } from "lucide-react"
 import {EditorPanel} from "@/components/workflow/editor/EditorPanel";
-import {WorkflowNode} from "../../../../../shared/src/types/node.types";
+import {WorkflowNode} from "@neuron/shared";
 import {useReactFlow} from "reactflow";
 
 const ICON_MAP: Record<string, React.ReactNode> = {

@@ -108,6 +108,7 @@ export function LLMNodeConfigSheet({ node, open, onOpen }: { node: Node, open: b
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeId={node.id}
             title="AI Brain Configuration"
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >

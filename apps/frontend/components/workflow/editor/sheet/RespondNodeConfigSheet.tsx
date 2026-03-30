@@ -71,6 +71,7 @@ export function RespondNodeConfigSheet({ node, open, onOpen }: { node: Node, ope
             open={open}
             onOpenChange={onOpen}
             title="Terminal Response"
+            showContextSettings={false}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full overflow-hidden">

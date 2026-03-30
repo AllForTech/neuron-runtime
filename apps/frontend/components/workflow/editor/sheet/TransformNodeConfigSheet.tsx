@@ -15,7 +15,7 @@ import {
 import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { WorkflowEditorActionType } from "@/constants";
 import { getAvailableUpstreamNodes } from "@/lib/utils";
-import { TransformNodeConfig } from "../../../../../shared/src/types/node.types";
+import { TransformNodeConfig } from "@neuron/shared";
 
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
 import CodeEditor from "@/components/workflow/editor/CodeEditor";
@@ -62,6 +62,7 @@ export function TransformNodeConfigSheet({
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeId={node.id}
             className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">

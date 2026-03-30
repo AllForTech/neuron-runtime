@@ -27,7 +27,11 @@ export function DebugNodeConfigSheet({ node, open, onOpen }: { node: Node, open:
     }
 
     return (
-        <SheetWrapper open={open} onOpenChange={onOpen} title="Debug Node">
+        <SheetWrapper
+            nodeId={node.id}
+            open={open}
+            onOpenChange={onOpen}
+            title="Debug Node">
 
             <div className="space-y-5 mt-4">
 

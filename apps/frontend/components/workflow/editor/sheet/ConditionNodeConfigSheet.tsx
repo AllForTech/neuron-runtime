@@ -5,9 +5,9 @@ import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { WorkflowEditorActionType } from "@/constants";
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
 import { useEffect, useState } from "react";
-import { ConditionNodeConfig } from "../../../../../shared/src/types/node.types";
+import { ConditionNodeConfig } from "@neuron/shared";
 import FormField from "@/components/FormField";
-import {getAvailableUpstreamNodes, getPreviousNode} from "@/lib/utils";
+import {getAvailableUpstreamNodes} from "@/lib/utils";
 import {TemplateTextarea} from "@/components/workflow/editor/TemplateTextarea";
 
 const OPERATORS = [
@@ -61,6 +61,7 @@ export function ConditionNodeConfigSheet({
             open={open}
             onOpenChange={onOpen}
             title="Condition Logic"
+            nodeId={node.id}
         >
             <div className="space-y-6 mt-6">
                 <div className="p-3 rounded-lg bg-neutral-900/40 border border-neutral-800/50 backdrop-blur-sm">

@@ -69,6 +69,7 @@ export function IntegrationNodeConfigSheet({ node, open, onOpen }: { node: Node;
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeId={node.id}
             title={manifest?.label || 'Integration'}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >

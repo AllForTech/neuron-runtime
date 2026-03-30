@@ -24,7 +24,7 @@ import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { WorkflowEditorActionType } from "@/constants";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import {GlobalVariable} from "../../../../../shared/src/types/workflow.types";
+import {GlobalVariable} from "@neuron/shared";
 
 export function GlobalVariablesSheet() {
     const { editorState, workflowEditorDispatch, isGlobalVariableSheetOpen, setIsGlobalVariableSheetOpen } = useWorkflowEditor();

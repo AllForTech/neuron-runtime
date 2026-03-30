@@ -86,6 +86,7 @@ export function ContextNodeConfigSheet({
             open={open}
             onOpenChange={onOpen}
             title="Context Aggregator"
+            showContextSettings={false}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full overflow-hidden">

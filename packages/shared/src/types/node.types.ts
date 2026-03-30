@@ -72,7 +72,7 @@ export type NodeConfigType =
     | RespondNodeConfig
     | ContextNodeConfig;
 
-export interface TriggerNodeConfig {
+export interface TriggerNodeConfig extends ContextRegistrationSettings {
     triggerType: "manual" | "webhook" | "schedule",
     input?: any,
     output?: any,
@@ -83,7 +83,7 @@ export type TriggerNode = BaseNode<TriggerNodeConfig> & {
     type: NodeType,
 }
 
-export interface HttpRequestNodeConfig {
+export interface HttpRequestNodeConfig extends ContextRegistrationSettings {
     url: string
     method: "GET" | "POST" | "PUT" | "DELETE"
     headers?: Record<string, string>
@@ -97,7 +97,7 @@ export type HttpRequestNode = BaseNode<HttpRequestNodeConfig> & {
     type: NodeType
 }
 
-export interface DebugNodeConfig {
+export interface DebugNodeConfig extends ContextRegistrationSettings {
     message: string,
     input?: any,
     output?: any,
@@ -107,7 +107,7 @@ export type DebugNode = BaseNode<DebugNodeConfig> & {
     type: NodeType
 }
 
-export interface ConditionNodeConfig {
+export interface ConditionNodeConfig extends ContextRegistrationSettings {
     // Example: { "left": "{{httpNode_1.status}}", "op": "==", "right": "200" }
     leftValue: string;
     operator: "==" | "!=" | ">" | "<" | "contains" | "exists";
@@ -122,7 +122,7 @@ export type ConditionNode = BaseNode<ConditionNodeConfig> & {
 };
 
 // --- TRANSFORM NODE ---
-export interface TransformNodeConfig {
+export interface TransformNodeConfig extends ContextRegistrationSettings {
     code: string;
     input?: any;
     output?: any;
@@ -134,7 +134,7 @@ export type TransformNode = BaseNode<TransformNodeConfig> & {
 };
 
 
-export interface LLMNodeConfig {
+export interface LLMNodeConfig extends ContextRegistrationSettings {
     provider: string;
     model: string;            // e.g., "gpt-4o", "claude-3-5-sonnet"
     systemPrompt: string;     // The "persona" (can contain {{vars}})
@@ -158,7 +158,7 @@ export interface DecisionRule {
     label: string;
 }
 
-export interface DecisionNodeConfig {
+export interface DecisionNodeConfig extends ContextRegistrationSettings {
     input: string;            // The {{variable}} being evaluated
     inputTransforms: string[]; // Global transforms (e.g. ["trim", "toLowerCase"])
     rules: DecisionRule[];
@@ -172,7 +172,7 @@ export type DecisionNode = BaseNode<DecisionNodeConfig> & {
 };
 
 // --- INTEGRATION NODE ---
-export interface IntegrationNodeConfig {
+export interface IntegrationNodeConfig extends ContextRegistrationSettings {
     connectionId: string;    // Reference to a saved Connection
     integrationId: string;   // "slack", "whatsapp", "resend"
     resource: string;        // "message", "channel", "user"
@@ -198,7 +198,7 @@ export type OutputFormatType =
     | "html"
     | "csv";
 
-export interface OutputNodeConfig {
+export interface OutputNodeConfig extends ContextRegistrationSettings {
     // The visual title of this specific output (e.g., "Final Summary")
     label: string;
 
@@ -231,7 +231,7 @@ export type OutputNode = BaseNode<OutputNodeConfig> & {
 
 
 // --- RESPOND NODE ---
-export interface RespondNodeConfig {
+export interface RespondNodeConfig extends ContextRegistrationSettings {
     // Allows static numbers (200) or dynamic lookup ("{{logic_1.code}}")
     statusCode: number | string;
 
@@ -260,7 +260,7 @@ export type RespondNode = BaseNode<RespondNodeConfig> & {
 };
 
 // --- CONTEXT NODE ---
-export interface ContextNodeConfig {
+export interface ContextNodeConfig extends ContextRegistrationSettings {
     label: string;
 
     fields: Record<string, any>;
@@ -271,3 +271,9 @@ export interface ContextNodeConfig {
 export type ContextNode = BaseNode<ContextNodeConfig> & {
     type: "contextNode";
 };
+
+export interface ContextRegistrationSettings {
+    persistToContext?: boolean;
+    contextNodeId?: string; // Which context node to target
+    alias?: string;         // How the data appears in the context (e.g., "userData")
+}

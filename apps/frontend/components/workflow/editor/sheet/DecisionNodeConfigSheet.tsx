@@ -96,6 +96,7 @@ export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, op
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeId={node.id}
             className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">

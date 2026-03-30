@@ -15,7 +15,7 @@ import {
 import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { WorkflowEditorActionType, HTTP_METHODS } from "@/constants";
 import { getAvailableUpstreamNodes } from "@/lib/utils";
-import { HttpRequestNodeConfig } from "../../../../../shared/src/types/node.types";
+import { HttpRequestNodeConfig } from "@neuron/shared";
 
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
 import { TemplateTextarea } from "@/components/workflow/editor/TemplateTextarea";
@@ -80,6 +80,7 @@ export function HttpRequestNodeConfigSheet({
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeId={node.id}
             className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">

@@ -26,7 +26,11 @@ export function TriggerNodeConfigSheet({ node, open, onOpen }: { node: Node, ope
     }
 
     return (
-        <SheetWrapper open={open} onOpenChange={onOpen} title="Trigger Node">
+        <SheetWrapper
+            nodeId={node.id}
+            open={open}
+            onOpenChange={onOpen}
+            title="Trigger Node">
             <div className="space-y-5 mt-4">
 
                 {/* TRIGGER TYPE */}
