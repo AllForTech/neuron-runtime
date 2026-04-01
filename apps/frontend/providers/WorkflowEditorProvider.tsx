@@ -156,7 +156,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                             ...state.graph.nodes,
                             [action.id]: {
                                 ...state.graph.nodes[action.id],
-                                config: { ...action.payload }
+                                config: { ...state.graph.nodes[action.id].config, ...action.payload }
                             }
                         },
                     },
@@ -323,6 +323,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 };
             });
 
+            console.log(response.graph.nodes);
+
             const edgesRecord: Record<string, WorkflowEdge> = {};
             response.graph.edges.forEach((e) => {
                 edgesRecord[e.id] = {
@@ -469,8 +471,9 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         saveTimeout.current = setTimeout(() => {
             saveWorkflowGraph();
         }, 2000);
+
         return () => { if (saveTimeout.current) clearTimeout(saveTimeout.current); };
-    }, [editorState.graph, editorState.globalVariables]);
+    }, [editorState.isDirty]);
 
     useEffect(() => {
         if (workflowId) loadWorkflow();

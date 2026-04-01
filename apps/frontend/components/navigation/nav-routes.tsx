@@ -40,14 +40,14 @@ export function NavRoutes({
                                 // text color shifts to purple-400 when active to match your theme
                                 className={cn(
                                     "transition-colors",
-                                    isActive && "bg-neutral-800 text-primary-foreground font-medium"
+                                    isActive && "bg-neutral-700 text-primary! font-medium"
                                 )}
                                 tooltip={item.name}
                             >
                                 {item.icon && (
                                     <item.icon className={cn(
                                         "w-4 h-4",
-                                        isActive ? "text-primary-foreground" : "text-neutral-400"
+                                        isActive ? "text-primary!" : "text-neutral-400"
                                     )} />
                                 )}
 

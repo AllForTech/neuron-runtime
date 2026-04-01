@@ -13,7 +13,6 @@ export function DecisionNodeHandlesRenderer({ node }: DecisionNodeHandlesRendere
     // Defensive check: Ensure config exists before destructuring
     if (!node) return null;
 
-    console.log("Node from decision NOde: ", node);
     const { data: { rules, includeDefault } } = node;
 
     // We only render source handles if there are rules
@@ -50,7 +49,7 @@ export function DecisionNodeHandlesRenderer({ node }: DecisionNodeHandlesRendere
             {includeDefault && (
                 <div className="relative flex items-center justify-end group pointer-events-auto mt-auto pt-4 border-t border-neutral-800/50">
                     <span className="absolute right-8 text-[9px] uppercase font-bold tracking-tighter text-amber-500/50">
-                        Default (Else)
+                        Default
                     </span>
                     <NodeHandle
                         node={node}

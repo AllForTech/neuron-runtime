@@ -9,6 +9,7 @@ import {
     saveDeployWorkflowData
 } from "../services/repository/deployed.workflow.repository";
 import {executeWorkflow} from "../engine/execution";
+import {createExecution, updateExecutionStatus} from "../services/repository/execution.repository";
 
 
 export const deployWorkflowController = async (req: any, res: any) => {
@@ -148,6 +149,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 id: deployedWorkflows.id,
                 nodes: deployedWorkflows.nodes,
                 edges: deployedWorkflows.edges,
+                userId: deployedWorkflows.userId,
                 isPrivate: deployedWorkflows.private,
                 isActive: deployedWorkflows.isActive,
             })
@@ -170,10 +172,24 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
         console.log(`[Neuron] Initializing execution for: ${deployment.id}`);
 
+        // Sync to execution table
+        const execution = await createExecution({
+            workflowId,
+            userId: deployment.userId,
+        })
+
         // await neuronEngine.run(deployment.nodes, deployment.edges);
         await executeWorkflow(workflowId, { nodes: deployment.nodes, edges: deployment.edges } as any)
-            .then((finalContext) => {
+            .then(async (finalContext) => {
                 console.log(`Workflow ${workflowId} finished.`);
+
+                // Update status (Success)
+                await updateExecutionStatus({
+                    executionId: execution.id,
+                    status: "success",
+                    userId: deployment.userId,
+                    result: finalContext.response,
+                })
 
                 const { status, body, headers } = finalContext.response;
 
@@ -182,16 +198,18 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 }
 
                 return res.status(status || 200).json(body);
-
-                // return res.status(200).json({
-                //     success: true,
-                //     message: "Workflow executed successfully.",
-                //     // Optional: return context in dev mode
-                //     // data: finalContext.nodesContext
-                // });
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error(`Workflow ${workflowId} failed:`, err);
+
+                // Update status (Failed)
+                await updateExecutionStatus({
+                    executionId: execution.id,
+                    status: "failed",
+                    userId: deployment.userId,
+                    result: err?.message ?? err,
+                })
+
                 return res.status(500).json({
                     success: false,
                     error: "Internal Workflow Execution Error",

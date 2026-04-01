@@ -65,9 +65,9 @@ const LLM_MODELS: Record<string, { label: string; value: string }[]> = {
 export function LLMNodeConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen: (open: boolean) => void }) {
     const { workflowEditorDispatch, editorState: { graph: { nodes, edges }} } = useWorkflowEditor();
 
-    const [provider, setProvider] = useState<string>(node.data.config?.provider ?? "openai");
+    const [provider, setProvider] = useState<string>(node.data?.provider ?? "openai");
     const [config, setConfig] = useState({
-        provider: node.data.config?.provider ?? "openai",
+        provider: node.data?.provider ?? "openai",
         model: "gpt-4o",
         systemPrompt: "",
         userPrompt: "",
@@ -75,7 +75,7 @@ export function LLMNodeConfigSheet({ node, open, onOpen }: { node: Node, open: b
         maxTokens: 2048,
         jsonMode: false,
         apiKey: "{{Vault.OPENAI_API_KEY}}",
-        ...node.data.config,
+        ...node.data,
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });

@@ -28,8 +28,11 @@ export const executions = pgTable("executions", {
         .notNull()
         .references(() => workflows.id),
 
-    workflowVersionId: uuid("workflow_version_id")
+    userId: uuid('user_id')
         .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+
+    workflowVersionId: uuid("workflow_version_id")
         .references(() => workflowVersions.id),
 
     status: executionStatusEnum("status").notNull().default("pending"),

@@ -149,6 +149,8 @@ export function Editor() {
                 id: crypto.randomUUID(),
             };
 
+            console.log("Incoming connection: ", newEdge)
+
             setGraphEdges((eds) => addEdge(newEdge, eds));
 
             workflowEditorDispatch({

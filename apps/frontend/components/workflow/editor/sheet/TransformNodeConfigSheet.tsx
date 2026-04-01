@@ -36,7 +36,7 @@ export function TransformNodeConfigSheet({
 
     // 1. Initialize local state
     const [config, setConfig] = useState<TransformNodeConfig>({
-        code: node.data.config?.code || "// Access upstream data via the 'inputs' object\nreturn inputs;",
+        code: node.data?.code || "// Access upstream data via the 'inputs' object\nreturn inputs;",
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });

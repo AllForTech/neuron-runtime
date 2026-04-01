@@ -11,6 +11,7 @@ import {toWorkflowDTO} from "../utils/workflow";
 import {executeWorkflow} from "../engine/execution";
 import {getGlobalVariables, saveGlobalVariables} from "../services/repository/global.variables.repository";
 import {WorkflowNode, WorkflowEdge} from "../types/workflow/workflow.types";
+import {createExecution, updateExecutionStatus} from "../services/repository/execution.repository";
 
 // POST /api/workflows
 export const createWorkflowController = async (req: Request, res: Response) => {
@@ -321,9 +322,33 @@ export const executeWorkflowController = async (req: Request, res: Response) => 
         userId,
     });
 
-    executeWorkflow(workflowId, graph)
-        .then(finalContext => console.log(`Workflow ${workflowId} finished`))
-        .catch(err => console.error(`Workflow ${workflowId} failed`, err));
+    // Sync to execution table
+    const execution = await createExecution({
+        workflowId,
+        userId,
+    })
+
+    executeWorkflow(workflowId, graph, userId)
+        .then(async finalContext => {
+            // Update status (Success)
+            await updateExecutionStatus({
+                executionId: execution.id,
+                status: "success",
+                userId,
+                result: finalContext,
+            })
+        })
+        .catch(async err => {
+            console.error(`Workflow ${workflowId} failed`, err)
+
+            // Update status (Failed)
+            await updateExecutionStatus({
+                executionId: execution.id,
+                status: "failed",
+                userId,
+                result: err?.message ?? err,
+            })
+        });
 
     res.status(202).json({ message: "Execution started", workflowId });
 }

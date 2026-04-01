@@ -10,7 +10,7 @@ import {WorkflowEditorActionType} from "@/constants";
 
 export function TriggerNodeConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen: (open: boolean) => void }) {
     const { workflowEditorDispatch } = useWorkflowEditor()
-    const config = node.data.config
+    const config = node.data
 
     const updateConfig = (partial: Partial<typeof config>) => {
         workflowEditorDispatch({

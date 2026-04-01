@@ -68,7 +68,7 @@ export function OutputNodeConfigSheet({ node, open, onOpen }: { node: Node, open
         },
         includeMetadata: false,
         outputSchema: { type: "object", fields: [] }, // Field 2: Added missing field
-        ...node.data.config,
+        ...node.data,
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });

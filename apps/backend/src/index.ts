@@ -2,13 +2,12 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Import your route modules
 import testRoute from "./routes/test/test.route";
 import workflowRoutes from "./routes/workflow.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import secretRoutes from "./routes/vault.route";
 import deploymentRoutes from "./routes/deployment.route";
-// import slackRoutes from "./routes/slack.route";
+import executionRoute from "./routes/execution.route";
 
 dotenv.config();
 
@@ -24,7 +23,8 @@ app.use("/test", testRoute);
 app.use("/api/v1/workflows", workflowRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use('/api/v1/secrets', secretRoutes);
-app.use('/api/v1/execute/workflow', deploymentRoutes)
+app.use('/api/v1/execute/workflow', deploymentRoutes);
+app.use('/api/v1/executions', executionRoute);
 // app.use('/auth/slack', slackRoutes);
 
 // Health check

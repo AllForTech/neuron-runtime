@@ -9,6 +9,7 @@ import {resolveTemplate} from "./resolveTemplate";
 import {WorkflowNode, WorkflowEdge} from "../types/workflow/workflow.types";
 import {NodeConfigType} from "@neuron/shared";
 import {createContextEntry} from "../utils/telemetry";
+import {createExecution, updateExecutionStatus} from "../services/repository/execution.repository";
 
 export type FinalResponseType = {
     status: number;
@@ -39,6 +40,7 @@ export async function executeWorkflow(
         nodes: WorkflowNode[],
         edges: WorkflowEdge[],
     },
+    userId?:  string
 ) {
     const { nodes, edges } = graph;
     const { dispatch } = workflowBroadcast(runId);
@@ -50,7 +52,7 @@ export async function executeWorkflow(
     const running = new Set<string>();
     const validNodeIds = new Set(nodes.map(n => n.id));
     const incoming: Record<string, string[]> = {};
-    const outgoing: Record<string, string[]> = {};
+    const outgoing: Record<string, string[]> = {}
 
     // --- NEW: THE RESPONSE CONTAINER ---
     let finalResponse: Record<string, any> | null = null;

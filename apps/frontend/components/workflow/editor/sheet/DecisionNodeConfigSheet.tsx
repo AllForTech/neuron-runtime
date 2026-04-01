@@ -46,9 +46,9 @@ export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, op
 
     // Internal state for immediate UI feedback
     const [config, setConfig] = useState<DecisionNodeConfig>({
-        input: node.data.config?.input || "",
-        inputTransforms: node.data.config?.inputTransforms || [],
-        rules: node.data.config?.rules || []
+        input: node.data?.input || "",
+        inputTransforms: node.data?.inputTransforms || [],
+        rules: node.data?.rules || []
     });
 
     const [openRules, setOpenRules] = useState<Record<string, boolean>>({});

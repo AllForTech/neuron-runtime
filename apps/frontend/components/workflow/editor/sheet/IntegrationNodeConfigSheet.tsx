@@ -38,7 +38,7 @@ export function IntegrationNodeConfigSheet({ node, open, onOpen }: { node: Node;
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });
 
-    const [config, setConfig] = useState(node.data.config || {
+    const [config, setConfig] = useState(node.data || {
         integrationId: "slack",
         connectionId: "",
         actionId: "postMessage",

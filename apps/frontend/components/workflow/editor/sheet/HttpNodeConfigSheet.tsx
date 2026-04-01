@@ -44,9 +44,9 @@ export function HttpRequestNodeConfigSheet({
 
     // Internal state for snappy UI feedback
     const [config, setConfig] = useState<HttpRequestNodeConfig>({
-        ...node.data.config,
-        headers: node.data.config?.headers || {},
-        body: node.data.config?.body || {}
+        ...node.data,
+        headers: node.data?.headers || {},
+        body: node.data?.body || {}
     });
 
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -59,6 +59,7 @@ export function HttpRequestNodeConfigSheet({
     // Debounced update to the global workflow state
     useEffect(() => {
         const timer = setTimeout(() => {
+            console.log("saving config: ", config);
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.UPDATE_NODE,
                 id: node.id,
@@ -81,7 +82,7 @@ export function HttpRequestNodeConfigSheet({
             open={open}
             onOpenChange={onOpen}
             nodeId={node.id}
-            className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
+            className="w-[550px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">
                 {/* HEADER - Consistent with Decision Node */}
@@ -104,7 +105,7 @@ export function HttpRequestNodeConfigSheet({
                 </div>
 
                 {/* CONTENT */}
-                <div className="flex-1 flex flex-col min-h-0 px-6 py-4 space-y-6">
+                <div className="flex-1 flex flex-col min-h-0 px-4 py-4 space-y-6">
 
                     {/* PINNED PRIMARY CONFIG (METHOD & URL) */}
                     <section className="space-y-4 shrink-0">

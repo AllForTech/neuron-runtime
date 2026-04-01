@@ -58,22 +58,22 @@ export function NodeTemplateSheet({ open, onOpenChange, onSelectTemplate }: Node
             title="Add Node"
             open={open}
             onOpenChange={onOpenChange}
-            className="w-[600px]! p-0! bg-neutral-950/98 backdrop-blur-xl border-l border-neutral-800"
+            className="w-[550px]! p-0! bg-neutral-950/98 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">
                 {/* SEARCH HEADER */}
-                <div className="p-6 pb-2 space-y-4">
+                <div className="p-4 pb-2 space-y-4">
                     <div className="relative group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-blue-500 transition-colors" />
                         <Input
                             placeholder="Search nodes (e.g. 'Slack', 'Filter'...)"
-                            className="pl-10 bg-neutral-900/50 border-neutral-800 focus-visible:ring-1 focus-visible:ring-blue-500/50"
+                            className="pl-10 bg-neutral-900/50 border-neutral-800 focus-visible:ring-1 focus-visible:ring-primary"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-[550px]">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-[500px]">
                         <div id={"hide-scrollbar"} className="w-full overflow-x-scroll pb-2">
                             <TabsList className="inline-flex w-max min-w-full bg-neutral-900/50 border border-neutral-800 p-1 h-auto justify-start items-center gap-1">
                                 {CATEGORIES.map((cat) => (
@@ -97,7 +97,7 @@ export function NodeTemplateSheet({ open, onOpenChange, onSelectTemplate }: Node
                 </div>
 
                 {/* TEMPLATES GRID */}
-                <ScrollArea className="flex-1 px-6">
+                <ScrollArea className="flex-1 px-4">
                     <div className="py-4 space-y-6">
                         {filteredTemplates.length > 0 ? (
                             <div className="grid grid-cols-1 gap-3 pb-10">

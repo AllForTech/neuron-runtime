@@ -32,9 +32,9 @@ export function ConditionNodeConfigSheet({
 
     // 1. Initialize local state from node data
     const [config, setConfig] = useState<ConditionNodeConfig>({
-        leftValue: node.data.config?.leftValue || "",
-        operator: node.data.config?.operator || "==",
-        rightValue: node.data.config?.rightValue || "",
+        leftValue: node.data?.leftValue || "",
+        operator: node.data?.operator || "==",
+        rightValue: node.data?.rightValue || "",
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });

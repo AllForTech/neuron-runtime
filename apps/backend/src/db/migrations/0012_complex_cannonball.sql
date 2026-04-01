@@ -1,0 +1,1 @@
+ALTER TABLE "executions" ALTER COLUMN "workflow_version_id" DROP NOT NULL;

@@ -37,17 +37,17 @@ export function RespondNodeConfigSheet({ node, open, onOpen }: { node: Node, ope
         [nodes]);
 
     const [config, setConfig] = useState({
-        statusCode: node.data.config?.statusCode ?? 200,
-        headers: node.data.config?.headers ?? { "Content-Type": "application/json" },
-        body: node.data.config?.body ?? "",
-        attachContext: node.data.config?.attachContext ?? false,
+        statusCode: node.data?.statusCode ?? 200,
+        headers: node.data?.headers ?? { "Content-Type": "application/json" },
+        body: node.data?.body ?? "",
+        attachContext: node.data?.attachContext ?? false,
         options: {
             minify: false,
             includeTraceId: true,
             errorOnEmpty: false,
-            ...node.data.config?.options
+            ...node.data?.options
         },
-        ...node.data.config,
+        ...node.data,
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });
