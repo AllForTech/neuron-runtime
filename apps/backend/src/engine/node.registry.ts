@@ -9,6 +9,8 @@ import type {
 import {createGoogleGenerativeAI} from "@ai-sdk/google";
 import {generateText} from "ai";
 import {getContentType, validateAgainstSchema} from "../utils/execution";
+import {decisionNodeExecutor} from "./node-registrys/decision.node";
+import {llmNodeExecutor} from "./node-registrys/llm.node";
 
 export const nodeRegistry: any = {
     trigger: async ({ node }: { node: TriggerNode }) => ({
@@ -46,80 +48,13 @@ export const nodeRegistry: any = {
 
     transform: async ({ node, inputs }: { node: TransformNode, inputs: any }) => {
         const transformFn = new Function("inputs", node.config.code);
-        return transformFn(inputs);
+        return transformFn(inputs)
     },
 
-    llmNode: async ({ node }: { node: LLMNode }) => {
-        const {
-            model,
-            systemPrompt,
-            userPrompt,
-            temperature,
-            apiKey,
-            maxTokens
-        } = node.config;
-
-        // 1. Validation
-        console.log("LLM node Config: ", node);
-        if (!apiKey || apiKey.includes("{{")) {
-            throw new Error("Google LLM Error: API Key not resolved.");
-        }
-
-        const google = createGoogleGenerativeAI({
-            apiKey: apiKey
-        });
-
-        // 3. Generate Text
-        const { text, usage, finishReason } = await generateText({
-            model: google('gemini-2.5-flash'),
-            prompt: userPrompt,
-            system: systemPrompt,
-            // maxOutputTokens: maxTokens,
-            temperature: temperature,
-        });
-
-        return {
-            content: text,
-            usage: {
-                promptTokens: usage.inputTokens,
-                completionTokens: usage.outputTokens,
-                totalTokens: usage.totalTokens,
-            },
-            finishReason
-        };
-    },
-
-    decisionNode: async ({ node }: { node: DecisionNode }) => {
-        const { input, rules, inputTransforms = [] } = node.config;
-
-        // 1. Process Input
-        let processedInput = input;
-        if (inputTransforms.includes("toLowerCase")) processedInput = String(processedInput).toLowerCase();
-        if (inputTransforms.includes("trim")) processedInput = String(processedInput).trim();
-
-        // 2. Identify ALL matching rule IDs
-        const matchedRuleIds = rules
-            .filter((rule: any) => {
-                const { operator, value } = rule;
-                switch (operator) {
-                    case "==": return processedInput == value;
-                    case "!=": return processedInput != value;
-                    case ">":  return Number(processedInput) > Number(value);
-                    case "<":  return Number(processedInput) < Number(value);
-                    case "includes": return String(processedInput).includes(String(value));
-                    case "exists": return processedInput !== undefined && processedInput !== null;
-                    default: return false;
-                }
-            })
-            .map((rule: any) => rule.id); // Return an array of IDs
-
-        // 3. Fallback to 'else' if no matches found
-        if (matchedRuleIds.length === 0) {
-            return ["default-else"];
-        }
-
-        return matchedRuleIds;
-    },
+    // --- LLM Node Executor
+    llmNode: llmNodeExecutor,
+    // --- Decision Node Executor
+    decisionNode: decisionNodeExecutor,
 
     // --- INTEGRATION NODE ---
     integrationNode: async ({ node }: { node: IntegrationNode }) => {

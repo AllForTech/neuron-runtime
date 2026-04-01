@@ -45,13 +45,14 @@ import {OutputNodeConfigSheet} from "@/components/workflow/editor/sheet/OutputNo
 import {DeployWorkflowPanel} from "@/components/workflow/editor/dialog/DeployWorkflowDialog";
 import {RespondNodeConfigSheet} from "@/components/workflow/editor/sheet/RespondNodeConfigSheet";
 import {ContextNodeConfigSheet} from "@/components/workflow/editor/sheet/ContextNodeConfigSheet";
+import TriggerNode from "@/components/workflow/editor/nodes/TriggerNode";
 
 // --------------------------------------------
 // Component
 // --------------------------------------------
 
 const nodeTypes = {
-    trigger: DynamicNode,
+    trigger: TriggerNode,
     httpNode: DynamicNode,
     debug: DynamicNode,
     condition: DynamicNode,
@@ -331,11 +332,13 @@ export function Editor() {
             {/* Example 2: Bottom Right Controls */}
             <PanelWrapper position="top-right" width="w-auto">
                 <div className="flex gap-2">
-                    <Button
-                        onClick={() => setOpen(true)}
-                        variant="outline" size="xs" className="h-8 rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
-                        Auto-Layout
-                    </Button>
+                    {editorState.runtime.nodeOutputs && (
+                        <Button
+                            onClick={() => setOpen(true)}
+                            variant="outline" size="xs" className="h-8 rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
+                            Runtime Data
+                        </Button>
+                    )}
 
                     <Button
                         variant="outline"

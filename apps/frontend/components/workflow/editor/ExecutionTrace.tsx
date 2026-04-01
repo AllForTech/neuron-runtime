@@ -32,6 +32,8 @@ export function ExecutionTrace({ open, onOpenChange, className, nodeNames = {} }
     const { editorState: { runtime: { nodeOutputs, nodeErrors } } } = useWorkflowEditor();
     const [openStates, setOpenStates] = useState<Record<string, boolean>>({});
 
+    if (!nodeOutputs && !nodeErrors) return;
+
     const toggleAll = (ids: string[], open: boolean) => {
         const newState = ids.reduce((acc, id) => ({ ...acc, [id]: open }), {});
         setOpenStates(newState);

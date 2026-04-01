@@ -464,3 +464,6 @@ export const DATA: Record<SectionType, FloatingItem[]> = {
         }
     ]
 };
+
+
+export const SINGLETON_NODE_TYPES = ["trigger", "respondNode", "contextNode"];

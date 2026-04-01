@@ -14,10 +14,8 @@ export function ExecutionChart({ data }: { data: any[] }) {
     }));
 
     return (
-        <div className="
-      rounded-2xl border border-white/10
-      bg-white/[0.02] p-4 h-[300px]
-    ">
+        <div
+            className="rounded-2xl border border-white/10 hover:bg-white/[0.05] transition-200 bg-muted/50 p-4 h-[300px]">
             <p className="text-sm text-white/60 mb-4">Execution Activity</p>
 
             <ResponsiveContainer width="100%" height="100%">

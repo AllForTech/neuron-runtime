@@ -310,16 +310,6 @@ export function OutputNodeConfigSheet({ node, open, onOpen }: { node: Node, open
                         </div>
                     </div>
                 </ScrollArea>
-
-                {/* BOTTOM ACTION BUTTONS (Unchanged) */}
-                <div className="p-4 bg-neutral-900/40 border-t border-neutral-800 flex items-center justify-between">
-                    <button className="text-[10px] text-neutral-500 hover:text-neutral-300 font-medium">
-                        Clear Payload
-                    </button>
-                    <button className="h-9 px-4 bg-white text-black text-xs font-bold rounded-lg hover:bg-neutral-200 flex items-center gap-2">
-                        <Zap className="w-3.5 h-3.5 fill-black" /> Deploy Sink
-                    </button>
-                </div>
             </div>
         </SheetWrapper>
     );

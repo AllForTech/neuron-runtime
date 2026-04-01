@@ -67,10 +67,10 @@ export interface IWorkflowEditorState {
     graph: WorkflowDefinition;
     workflow: WorkflowType;
     runtime: {
-        nodeStatus: Record<string, "idle" | "running" | "success" | "error">
-        nodeOutputs: Record<string, any>
-        nodeErrors: Record<string, string>
-        activeEdges: Record<string, boolean>
+        nodeStatus: Record<string, "idle" | "running" | "success" | "error">;
+        nodeOutputs: Record<string, any> | null;
+        nodeErrors: Record<string, string> | null;
+        activeEdges: Record<string, boolean>;
     };
     executions?: any[] | null;
     executionLogs?: any[] | null;
@@ -95,7 +95,7 @@ const initialState: IWorkflowEditorState = {
     runtime: {
         nodeStatus: {},
         nodeErrors: {},
-        nodeOutputs: {},
+        nodeOutputs: null,
         activeEdges: {},
     },
     globalVariables: {},
@@ -231,7 +231,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.RESET_NODE_STATUS:
                 return {
                     ...state,
-                    runtime: { ...state.runtime, nodeStatus: {}, nodeErrors: {}, nodeOutputs: {} }
+                    runtime: { ...state.runtime, nodeStatus: {}, nodeErrors: {}, nodeOutputs: null }
                 }
 
             case WorkflowEditorActionType.NODE_EXECUTION_START:

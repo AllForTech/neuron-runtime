@@ -43,19 +43,19 @@ export function NodePreview({ nodeId, output, config, status, className, nodeTyp
                     <PopoverContent
                         side="top"
                         align="start"
-                        className="p-0 border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden min-w-[300px]"
+                        className="p-0 mb-[20px] hover:scale-105 transition-200 border-neutral-800 rounded-xl bg-neutral-950 shadow-2xl overflow-hidden min-w-[500px]"
                     >
-                        <div className="flex items-center justify-between px-3 py-2 bg-neutral-900 border-b border-neutral-800">
-                            <span className="text-[10px] uppercase font-bold tracking-tighter text-neutral-500 flex items-center gap-2">
+                        <div className="flex items-center m-2 rounded-md justify-between px-3 py-2 bg-neutral-900 border-b border-neutral-800">
+                            <span className="text-[10px] font-bold text-neutral-500 flex items-center gap-2">
                                 <Terminal className="w-3 h-3" /> Quick Preview
                             </span>
                             <p className="text-[9px] font-mono text-neutral-600">ID: {nodeId.split('-')[0]}</p>
                         </div>
-                        <div className="p-2 no-scrollbar">
+                        <div className="p-2 w-full! no-scrollbar">
                             <JsonRenderer
                                 data={output}
                                 maxHeight="max-h-[320px]"
-                                className="border-none w-[500px]! bg-transparent"
+                                className="border-none w-full! bg-transparent"
                             />
                         </div>
                     </PopoverContent>

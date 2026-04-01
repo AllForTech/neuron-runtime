@@ -9,12 +9,8 @@ export function MetricCard({
     subtitle?: string;
 }) {
     return (
-        <div className="
-        min-h-[140px]
-      rounded-2xl border border-white/10
-      bg-white/[0.02] backdrop-blur-xl
-      p-5 hover:bg-white/[0.04] transition
-    ">
+        <div
+            className="min-h-[140px] rounded-2xl border border-white/10 bg-muted/50 backdrop-blur-xl p-5 hover:bg-white/[0.05] transition-200">
             <p className="text-sm text-white/60">{title}</p>
             <h2 className="text-2xl font-semibold mt-2">{value}</h2>
             {subtitle && (

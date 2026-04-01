@@ -118,10 +118,10 @@ export function getNodeStatusStyles(status?: NodeExecutionStatus) {
             return "border-neutral-400!  ring-2 ring-neutral-400 bg-neutral-500/20 shadow-[0_0_12px_rgba(200,200,200,0.25)]";
 
         case "success":
-            return "border-neutral-500!  ring-2 ring-green-500! bg-green-500/0.5 shadow-[0_0_10px_rgba(220,220,220,0.25)]";
+            return "border-neutral-500!  ring-2 ring-green-500! bg-green-500/20 shadow-[0_0_10px_rgba(220,220,220,0.25)]";
 
         case "error":
-            return "border-red-500!  ring-2 ring-red-500! bg-red-500/0.5 shadow-[0_0_12px_rgba(255,0,0,0.25)]";
+            return "border-red-500!  ring-2 ring-red-500! bg-red-500/20 shadow-[0_0_12px_rgba(255,0,0,0.25)]";
 
         case "idle":
             return "border-0  ring-0"

@@ -1,6 +1,6 @@
 # Neuron
 
-Neuron is a programmable workflow platform designed to move beyond static automation into adaptive execution systems. It allows users to design, deploy, and operate workflows that do more than follow predefined steps—they can interpret data, make decisions, and evolve based on context.
+Neuron is a programmable workflow platform designed to move beyond static automation into adaptive execution systems. It allows users to design, deploy, and operate workflows that do more than follow predefined steps, they can interpret data, make decisions, and evolve based on context.
 
 At its core, Neuron is built around the idea that workflows should behave less like rigid pipelines and more like dynamic systems. Instead of simply chaining actions together, it enables the creation of interconnected processes where data flows, transforms, and influences outcomes in real time.
 
@@ -10,9 +10,9 @@ At its core, Neuron is built around the idea that workflows should behave less l
 
 Neuron is a system for building and running intelligent workflows.
 
-It provides a structured environment where logic, integrations, and decision-making mechanisms come together into a single execution model. Workflows are visually composed, but their behavior is not limited to linear execution. They can branch, adapt, and respond to changing inputs, making them suitable for both simple automations and complex, multi-step processes.
+It provides a structured environment where logic, integrations, and decision-making mechanisms come together into a single execution model. Workflows are visually composed, but their behavior is not limited to linear execution. They can branch, adapt, and respond to changing inputs, making them suitable for both simple automations and complex, multistep processes.
 
-Rather than treating automation as a fixed sequence of steps, Neuron treats it as a living system—capable of reacting, reasoning, and coordinating across different services and data sources.
+Rather than treating automation as a fixed sequence of steps, Neuron treats it as a living system capable of reacting, reasoning, and coordinating across different services and data sources.
 
 ---
 
@@ -36,7 +36,7 @@ This enables use cases such as real-time data handling, event-driven systems, an
 
 ### Intelligent Decision Systems
 
-Neuron introduces decision-making directly into workflows. Instead of relying solely on predefined conditions, workflows can evaluate inputs, apply transformations, and determine outcomes dynamically.
+Neuron introduces decision making directly into workflows. Instead of relying solely on predefined conditions, workflows can evaluate inputs, apply transformations, and determine outcomes dynamically.
 
 This includes support for structured logic as well as more advanced reasoning layers, allowing workflows to behave in a way that feels adaptive rather than scripted.
 
@@ -114,7 +114,7 @@ It is not limited to a single domain. Instead, it provides a flexible foundation
 
 Neuron is built on a simple idea:
 
-Workflows should not just execute—they should understand, adapt, and evolve.
+Workflows should not just execute, they should understand, adapt, and evolve.
 
 By combining structured logic, real-time execution, and intelligent components, Neuron moves beyond traditional automation into a model where systems can operate with awareness and flexibility.
 

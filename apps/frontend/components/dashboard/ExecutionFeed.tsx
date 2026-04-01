@@ -8,10 +8,8 @@ export function ExecutionFeed({
     loading: boolean;
 }) {
     return (
-        <div className="
-      rounded-2xl border border-white/10
-      bg-white/[0.02] p-5 h-full
-    ">
+        <div
+            className="rounded-2xl border border-white/10 hover:bg-white/[0.05] transition-200 bg-muted/50 p-5 h-full">
             <p className="text-sm text-white/60 mb-4">
                 Recent Executions
             </p>

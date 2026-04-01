@@ -33,20 +33,16 @@ export default function DynamicNode(node: NodeProps) {
         editorState,
         workflowEditorDispatch,
         setSheetOpen,
+        selectedNode,
         setSelectedNode,
     } = useWorkflowEditor();
 
     const color = getNodeColor(type);
-
     const status = editorState.runtime?.nodeStatus?.[id] ?? "idle"
-    const output = editorState.runtime.nodeOutputs?.[id] || editorState.runtime.nodeErrors?.[id];
-
     const statusClass = getNodeStatusStyles(status);
 
     const handleMenuClick = (action: string) => {
-
         switch (action) {
-
             case "delete":
                 workflowEditorDispatch({
                     type: WorkflowEditorActionType.DELETE_NODE,
@@ -58,9 +54,7 @@ export default function DynamicNode(node: NodeProps) {
                 setSelectedNode(nodePropsToReactflowNode(node));
                 setSheetOpen(true);
                 break;
-
         }
-
     };
 
     return (
@@ -72,7 +66,7 @@ export default function DynamicNode(node: NodeProps) {
                     onContextMenu={(e) => e.stopPropagation()}
                     className={cn(
                         "group flex flex-col gap-1.5 w-[200px] h-fit transition-all p-3 bg-neutral-800/25 backdrop-blur-sm border-0 rounded-xl relative",
-                        statusClass,
+                        !selectedNode && statusClass,
                         selected && "ring-2! ring-primary!",
                         node.type === "contextNode" && "w-[250px]"
                     )}
@@ -93,9 +87,7 @@ export default function DynamicNode(node: NodeProps) {
                     {/* Handles */}
 
                     <NodeHandle
-                        className={cn("-left-[35px]!",
-                            node?.type === "trigger" && "hidden",
-                        )}
+                        className={cn("-left-[35px]!")}
                         node={node}
                         type="target"
                         position={Position.Left}
@@ -104,7 +96,8 @@ export default function DynamicNode(node: NodeProps) {
                     <NodeHandle
                         className={cn("-right-[35px]!",
                             node?.type === "condition" && "hidden",
-                            node?.type === "decisionNode" && "hidden"
+                            node?.type === "decisionNode" && "hidden",
+                            node.type === "debug" && "hidden"
                         )}
                         node={node}
                         type="source"
@@ -114,29 +107,6 @@ export default function DynamicNode(node: NodeProps) {
                     {node?.type === "decisionNode" && (
                         <DecisionNodeHandlesRenderer node={node} />
                     )}
-
-                    {node?.type === "condition" && (
-                        <>
-                            <NodeHandle
-                                className="top-[35%]! -right-[35px]! bg-green-500/30!"
-                                node={node}
-                                type="source"
-                                id={"true"}
-                                position={Position.Right}
-                            />
-
-                            <NodeHandle
-                                className="top-[65%]! -right-[35px]! bg-red-500/30!"
-                                node={node}
-                                id={"false"}
-                                type="source"
-                                position={Position.Right}
-                            />
-                        </>
-                    )}
-
-
-
 
                     {/* Title */}
 
@@ -165,12 +135,13 @@ export default function DynamicNode(node: NodeProps) {
 
                     </Card>
 
-                    {node.type === "decisionNode" || node.type === "contextNode" && (
                         <Card
                             className={cn(
                                 "flex flex-col rounded-xl border-0 h-full transition p-2",
                                 "bg-neutral-900/50 group-hover:bg-neutral-800",
-                                node.type === "contextNode" && "h-[100px]"
+                                node.type === "contextNode" && "h-[100px]",
+                                node.type === "decisionNode" && "h-[50px]",
+                                (node.type === "httpNode" || node.type === "debug") && "hidden"
                             )}
                         >
 
@@ -182,7 +153,6 @@ export default function DynamicNode(node: NodeProps) {
                             </CardContent>
 
                         </Card>
-                    )}
 
                     <Card
                         className={cn(

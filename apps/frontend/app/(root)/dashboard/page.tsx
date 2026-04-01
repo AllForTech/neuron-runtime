@@ -9,7 +9,7 @@ export default function DashboardPage() {
     const { metrics, executions, loading } = useDashboard();
 
     return (
-        <div className="flex flex-col gap-6 p-6 bg-[#0a0a0a] text-white min-h-screen">
+        <div className="flex flex-col gap-6 p-6 bg-black text-white min-h-screen">
 
             {/* TOP GRID */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

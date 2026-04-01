@@ -14,13 +14,16 @@ import {
 } from "lucide-react";
 import { Node } from "reactflow";
 
-import { NODE_TEMPLATES, NodeTemplate } from "@/constants";
+import {NODE_TEMPLATES, NodeTemplate, SINGLETON_NODE_TYPES} from "@/constants";
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {useEditorState} from "@tiptap/react";
+import {useWorkflowEditor} from "@/hooks/workflow/useWorkflowEditor";
+import {NodeType} from "@neuron/shared";
 
 interface NodeTemplateSheetProps {
     open: boolean;
@@ -40,9 +43,25 @@ export function NodeTemplateSheet({ open, onOpenChange, onSelectTemplate }: Node
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("all");
 
-    // Filter Logic
+    const { editorState } = useWorkflowEditor();
+
+    const activeNodeTypes = useMemo(() => {
+        return Object.values(editorState.graph.nodes).map(node => node.type);
+    }, [editorState.graph.nodes]);
+
     const filteredTemplates = useMemo(() => {
         return NODE_TEMPLATES.filter((template) => {
+            // Check if this specific template type is restricted to one instance
+            const isSingleton = SINGLETON_NODE_TYPES.includes(template.type);
+
+            // Check if a node of this type already exists in the workflow
+            const alreadyExists = activeNodeTypes.includes(template.type as NodeType);
+
+            // If it's a singleton and it already exists, HIDE it from the list
+            if (isSingleton && alreadyExists) {
+                return false;
+            }
+
             const matchesSearch =
                 template.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 template.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -51,7 +70,7 @@ export function NodeTemplateSheet({ open, onOpenChange, onSelectTemplate }: Node
 
             return matchesSearch && matchesCategory;
         });
-    }, [searchQuery, activeTab]);
+    }, [searchQuery, activeTab, activeNodeTypes]);
 
     return (
         <SheetWrapper
