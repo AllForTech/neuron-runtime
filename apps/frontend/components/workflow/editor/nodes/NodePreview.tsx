@@ -43,7 +43,7 @@ export function NodePreview({ nodeId, output, config, status, className, nodeTyp
                     <PopoverContent
                         side="top"
                         align="start"
-                        className="p-0 mb-[20px] hover:scale-105 transition-200 border-neutral-800 rounded-xl bg-neutral-950 shadow-2xl overflow-hidden min-w-[500px]"
+                        className="p-0 mb-[20px] no-scrollbar hover:scale-105 transition-200 border-neutral-800 rounded-xl bg-neutral-950 shadow-2xl overflow-hidden min-w-[500px]"
                     >
                         <div className="flex items-center m-2 rounded-md justify-between px-3 py-2 bg-neutral-900 border-b border-neutral-800">
                             <span className="text-[10px] font-bold text-neutral-500 flex items-center gap-2">

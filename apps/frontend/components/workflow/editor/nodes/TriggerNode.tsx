@@ -47,7 +47,7 @@ export default function TriggerNode(node: NodeProps) {
                     className={cn(
                         "group flex flex-col items-center justify-center w-32 h-32 transition-all p-4 rounded-full border-1 border-neutral-800 relative",
                         "bg-gradient-to-b from-neutral-200/10 via-neutral-500/5 to-transparent backdrop-blur-xl",
-                        !selectedNode && statusClass,
+                        statusClass,
                         selected && "ring-2! ring-primary!"
                     )}
                 >

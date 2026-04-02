@@ -21,7 +21,7 @@ export function JsonRenderer({
         <div
             id={"hide-scrollbar"}
             className={cn(
-            "rounded-md border border-neutral-800 bg-neutral-900/30 backdrop-blur-sm overflow-hidden",
+            "rounded-md border border-neutral-800 no-scrollbar bg-neutral-900/30 backdrop-blur-sm overflow-hidden",
             className
         )}>
             <JsonViewer

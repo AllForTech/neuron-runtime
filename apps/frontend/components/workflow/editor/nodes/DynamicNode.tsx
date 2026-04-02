@@ -66,7 +66,7 @@ export default function DynamicNode(node: NodeProps) {
                     onContextMenu={(e) => e.stopPropagation()}
                     className={cn(
                         "group flex flex-col gap-1.5 w-[200px] h-fit transition-all p-3 bg-neutral-800/25 backdrop-blur-sm border-0 rounded-xl relative",
-                        !selectedNode && statusClass,
+                        statusClass,
                         selected && "ring-2! ring-primary!",
                         node.type === "contextNode" && "w-[250px]"
                     )}
@@ -97,7 +97,8 @@ export default function DynamicNode(node: NodeProps) {
                         className={cn("-right-[35px]!",
                             node?.type === "condition" && "hidden",
                             node?.type === "decisionNode" && "hidden",
-                            node.type === "debug" && "hidden"
+                            node.type === "debug" && "hidden",
+                            node.type === "contextNode" && "hidden"
                         )}
                         node={node}
                         type="source"
