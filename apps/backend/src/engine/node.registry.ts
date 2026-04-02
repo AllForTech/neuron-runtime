@@ -11,6 +11,7 @@ import {generateText} from "ai";
 import {getContentType, validateAgainstSchema} from "../utils/execution";
 import {decisionNodeExecutor} from "./node-registrys/decision.node";
 import {llmNodeExecutor} from "./node-registrys/llm.node";
+import {transformNodeExecutor} from "./node-registrys/transform.node";
 
 export const nodeRegistry: any = {
     trigger: async ({ node }: { node: TriggerNode }) => ({
@@ -46,10 +47,7 @@ export const nodeRegistry: any = {
         }
     },
 
-    transform: async ({ node, inputs }: { node: TransformNode, inputs: any }) => {
-        const transformFn = new Function("inputs", node.config.code);
-        return transformFn(inputs)
-    },
+    transform: transformNodeExecutor,
 
     // --- LLM Node Executor
     llmNode: llmNodeExecutor,
