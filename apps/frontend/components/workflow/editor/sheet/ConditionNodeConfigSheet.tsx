@@ -4,7 +4,7 @@ import { Node } from "reactflow";
 import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { WorkflowEditorActionType } from "@/constants";
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
-import { useEffect, useState } from "react";
+import {memo, useEffect, useState} from "react";
 import { ConditionNodeConfig } from "@neuron/shared";
 import FormField from "@/components/FormField";
 import {getAvailableUpstreamNodes} from "@/lib/utils";
@@ -19,7 +19,7 @@ const OPERATORS = [
     { label: "Exists / Not Null", value: "exists" },
 ];
 
-export function ConditionNodeConfigSheet({
+function ConditionConfigSheet({
                                              node,
                                              open,
                                              onOpen
@@ -35,6 +35,7 @@ export function ConditionNodeConfigSheet({
         leftValue: node.data?.leftValue || "",
         operator: node.data?.operator || "==",
         rightValue: node.data?.rightValue || "",
+        ...node.data
     });
 
     const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });
@@ -62,6 +63,8 @@ export function ConditionNodeConfigSheet({
             onOpenChange={onOpen}
             title="Condition Logic"
             nodeId={node.id}
+            nodeMeta={config.meta}
+            onMetaUpdate={handleChange}
         >
             <div className="space-y-6 mt-6">
                 <div className="p-3 rounded-lg bg-neutral-900/40 border border-neutral-800/50 backdrop-blur-sm">
@@ -117,3 +120,5 @@ export function ConditionNodeConfigSheet({
         </SheetWrapper>
     );
 }
+
+export const ConditionNodeConfigSheet =  memo(ConditionConfigSheet)

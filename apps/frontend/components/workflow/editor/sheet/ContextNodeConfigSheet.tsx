@@ -1,27 +1,17 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { Node } from "reactflow";
-import {
-    Database,
-    Trash2,
-    Zap,
-    Info,
-    Layers,
-    Braces,
-    Hash,
-    Link2,
-    ShieldCheck,
-    X
-} from "lucide-react";
+import React, {useMemo} from "react";
+import {Node} from "reactflow";
+import {Braces, Database, Hash, Layers, Link2, ShieldCheck, Trash2, X, Zap} from "lucide-react";
 
-import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
-import { WorkflowEditorActionType } from "@/constants";
-import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import {useWorkflowEditor} from "@/hooks/workflow/useWorkflowEditor";
+import {WorkflowEditorActionType} from "@/constants";
+import {SheetWrapper} from "@/components/workflow/editor/SheetWrapper";
+import {Badge} from "@/components/ui/badge";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {cn} from "@/lib/utils";
 import {ContextNode} from "@neuron/shared";
+import {toast} from "sonner";
 
 export function ContextNodeConfigSheet({
                                            node: initialNode,
@@ -68,12 +58,22 @@ export function ContextNodeConfigSheet({
         });
     };
 
+    const handleChange = (key: string, value: any) => {
+        workflowEditorDispatch({
+            type: WorkflowEditorActionType.UPDATE_NODE,
+            id: initialNode.id,
+            payload: { ...initialNode.data, meta: value }
+        })
+    };
+
     return (
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
             title="Context Aggregator"
             showContextSettings={false}
+            nodeMeta={initialNode.data?.meta}
+            onMetaUpdate={handleChange}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-3xl border-l border-neutral-900"
         >
             <div className="flex flex-col h-full overflow-hidden">

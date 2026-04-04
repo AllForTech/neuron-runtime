@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import { JsonRenderer } from "@/components/JsonRenederer";
 import { OutputFormatType } from "../../../../../shared/src/types/node.types";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface OutputRendererProps {
     content: string;
@@ -33,7 +34,7 @@ export const OutputRenderer = ({ content, format }: OutputRendererProps) => {
                             />
                         </div>
                     ) : isMarkdown ? (
-                        <article className="prose prose-invert prose-sm max-w-none
+                        <article className="prose prose-invert font-sans prose-sm max-w-none
                             prose-p:text-neutral-400 prose-p:leading-relaxed
                             prose-headings:text-neutral-100 prose-headings:font-bold prose-headings:tracking-tight
                             prose-strong:text-blue-400 prose-code:text-emerald-400 prose-code:bg-emerald-500/5
@@ -79,6 +80,17 @@ export const OutputRenderer = ({ content, format }: OutputRendererProps) => {
                                     a: ({ node, ...props }) => (
                                         <a className="text-neutral-300 underline decoration-neutral-600 underline-offset-[3px] hover:text-blue-400 transition-colors" {...props} />
                                     ),
+                                    img: ({ node, ...props }) => (
+                                        <div className="relative w-full aspect-video my-8 rounded-xl overflow-hidden">
+                                            <Image
+                                                fill
+                                                priority
+                                                alt={props.alt || "Image"}
+                                                className="object-cover"
+                                                src={props.src || ""}
+                                            />
+                                        </div>
+                                    )
                                 }}
                             >{content}</ReactMarkdown>
                         </article>

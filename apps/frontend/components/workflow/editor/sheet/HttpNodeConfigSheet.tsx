@@ -65,7 +65,7 @@ export function HttpRequestNodeConfigSheet({
                 id: node.id,
                 payload: config
             });
-        }, 200);
+        }, 300);
         return () => clearTimeout(timer);
     }, [config, node.id, workflowEditorDispatch]);
 
@@ -82,6 +82,9 @@ export function HttpRequestNodeConfigSheet({
             open={open}
             onOpenChange={onOpen}
             nodeId={node.id}
+            nodeMeta={config.meta}
+            onMetaUpdate={handleChange}
+
             className="w-[550px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">

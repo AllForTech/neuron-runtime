@@ -11,6 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils";
 import { ContextRegistrationSheet } from "../editor/sheet/ContextRegistrationSheet";
+import {NodeMeta} from "@/components/workflow/editor/nodes/NodeMeta";
 
 interface ReusableSheetProps {
     children: React.ReactNode;
@@ -22,6 +23,8 @@ interface ReusableSheetProps {
     className?: string;
     nodeId?: string; // Only required if showContextSettings is true
     showContextSettings?: boolean;
+    nodeMeta?: { label: string; description?: string };
+    onMetaUpdate?: (key: string, value: any) => void;
 }
 
 export function SheetWrapper({
@@ -34,6 +37,8 @@ export function SheetWrapper({
                                  className,
                                  nodeId,
                                  showContextSettings = true,
+                                 nodeMeta,
+                                 onMetaUpdate
                              }: ReusableSheetProps) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -50,7 +55,16 @@ export function SheetWrapper({
                 </SheetHeader>
 
                 <ScrollArea className="h-[80dvh] flex-1">
-                    <div className="space-y-5 p-3">
+                    <div className="space-y-5 px-4 p-3">
+                        {/* Meta Layer at the Top */}
+                        {onMetaUpdate && (
+                            <NodeMeta
+                                label={nodeMeta?.label ?? ""}
+                                description={nodeMeta?.description ?? ""}
+                                onUpdate={onMetaUpdate}
+                            />
+                        )}
+
                         {/* Primary Node Configuration Section */}
                         <div className="space-y-5">
                             {children}

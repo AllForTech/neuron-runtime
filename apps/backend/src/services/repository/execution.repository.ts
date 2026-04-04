@@ -2,7 +2,6 @@ import {executions} from "../../schemas";
 import {db} from "../../db/client";
 import {and, eq} from "drizzle-orm";
 import { sql } from "drizzle-orm";
-import type {ExecutionStatus} from "../../types/types";
 
 type CreateExecutionInput = {
     workflowId: string;
@@ -36,15 +35,13 @@ export async function getExecutionsByUser(userId: string) {
 }
 
 
-export async function getExecutionsByWorkflow(userId: string, workflowId: string) {
+export async function getExecutionsByWorkflow(userId: string, workflowId: string, limit = 7) {
     return await db.query.executions.findMany({
         where: and(
             eq(executions.userId, userId),
             eq(executions.workflowId, workflowId)
         ),
-        with: {
-            logs: true,
-        },
+        limit,
         orderBy: (exec, { desc }) => [desc(exec.startedAt)],
     });
 }

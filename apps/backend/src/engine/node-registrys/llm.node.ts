@@ -3,6 +3,8 @@ import {generateText, Output} from "ai";
 import {LLMNode, LLMNodeConfig} from "@neuron/shared";
 import {z} from "zod";
 
+const defaultModel = "gemini-2.5-flash" as const;
+
 export const llmNodeExecutor = async ({ node }: { node: LLMNode }) => {
     const {
         model,
@@ -21,7 +23,7 @@ export const llmNodeExecutor = async ({ node }: { node: LLMNode }) => {
     const google = createGoogleGenerativeAI({ apiKey });
 
     const options: any = {
-        model: google(model || 'gemini-1.5-flash'),
+        model: google(defaultModel),
         prompt: userPrompt,
         system: systemPrompt,
         temperature: temperature,
@@ -29,6 +31,8 @@ export const llmNodeExecutor = async ({ node }: { node: LLMNode }) => {
 
     if (jsonMode && outputSchema) {
         const dynamicZodSchema = parseZodSchema(outputSchema);
+
+        console.log(">>>>>>>>>>> Dynamic Zod Schema:", dynamicZodSchema);
 
         options.output = Output.object({
             schema: dynamicZodSchema

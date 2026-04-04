@@ -64,6 +64,7 @@ export async function getExecutionsByWorkflowController(
     res: Response
 ) {
     try {
+        console.log("fetching executions...");
         const userId = req.user.id;
         const { workflowId } = req.params;
 
@@ -73,6 +74,7 @@ export async function getExecutionsByWorkflowController(
 
         const executions = await getExecutionsByWorkflow(userId, workflowId);
 
+        console.log(executions);
         return res.status(200).json(executions);
     } catch (err) {
         return handleError(res, err, "Failed to fetch workflow executions");

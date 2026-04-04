@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
     addNodeController,
     createWorkflowController, executeWorkflowController, fetchWorkflowGraphController,
-    getWorkflowController, saveWorkflowGraphController,
+    getWorkflowController, getWorkflowFullStateController, saveWorkflowGraphController,
     // executeWorkflowController
 } from "../controllers/workflow.controllers";
 import {authenticate} from "../middleware/supabaseAuth";
@@ -22,7 +22,7 @@ router.get("/", authenticate, getWorkflowController);
 // Create a workflow
 router.post("/", authenticate, createWorkflowController);
 
-router.get("/:workflowId/graph", authenticate, fetchWorkflowGraphController);
+router.get("/:workflowId/graph", authenticate, getWorkflowFullStateController);
 
 router.post("/:workflowId/graph", authenticate, saveWorkflowGraphController);
 

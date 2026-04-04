@@ -30,7 +30,14 @@ export type WorkflowNode =
     | ContextNode;
 
 
-export interface BaseNode<TConfig = unknown> {
+export type NodeMetaType = {
+    meta: {
+        label: string;
+        description?: string;
+    }
+}
+
+export interface BaseNode<TConfig = unknown>{
     id: string
     type: NodeType
     workflowId?: string
@@ -72,7 +79,7 @@ export type NodeConfigType =
     | RespondNodeConfig
     | ContextNodeConfig;
 
-export interface TriggerNodeConfig extends ContextRegistrationSettings {
+export interface TriggerNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     triggerType: "manual" | "webhook" | "schedule",
     input?: any,
     output?: any,
@@ -83,7 +90,7 @@ export type TriggerNode = BaseNode<TriggerNodeConfig> & {
     type: NodeType,
 }
 
-export interface HttpRequestNodeConfig extends ContextRegistrationSettings {
+export interface HttpRequestNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     url: string
     method: "GET" | "POST" | "PUT" | "DELETE"
     headers?: Record<string, string>
@@ -97,7 +104,7 @@ export type HttpRequestNode = BaseNode<HttpRequestNodeConfig> & {
     type: NodeType
 }
 
-export interface DebugNodeConfig extends ContextRegistrationSettings {
+export interface DebugNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     message: string,
     input?: any,
     output?: any,
@@ -107,7 +114,7 @@ export type DebugNode = BaseNode<DebugNodeConfig> & {
     type: NodeType
 }
 
-export interface ConditionNodeConfig extends ContextRegistrationSettings {
+export interface ConditionNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     // Example: { "left": "{{httpNode_1.status}}", "op": "==", "right": "200" }
     leftValue: string;
     operator: "==" | "!=" | ">" | "<" | "contains" | "exists";
@@ -122,7 +129,7 @@ export type ConditionNode = BaseNode<ConditionNodeConfig> & {
 };
 
 // --- TRANSFORM NODE ---
-export interface TransformNodeConfig extends ContextRegistrationSettings {
+export interface TransformNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     code: string;
     input?: any;
     output?: any;
@@ -134,7 +141,7 @@ export type TransformNode = BaseNode<TransformNodeConfig> & {
 };
 
 
-export interface LLMNodeConfig extends ContextRegistrationSettings {
+export interface LLMNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     provider: string;
     model: string;
     systemPrompt: string;
@@ -160,7 +167,7 @@ export interface DecisionRule {
     label: string;
 }
 
-export interface DecisionNodeConfig extends ContextRegistrationSettings {
+export interface DecisionNodeConfig extends ContextRegistrationSettings , NodeMetaType{
     input: string;            // The {{variable}} being evaluated
     inputTransforms: string[]; // Global transforms (e.g. ["trim", "toLowerCase"])
     rules: DecisionRule[];
@@ -174,7 +181,7 @@ export type DecisionNode = BaseNode<DecisionNodeConfig> & {
 };
 
 // --- INTEGRATION NODE ---
-export interface IntegrationNodeConfig extends ContextRegistrationSettings {
+export interface IntegrationNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     connectionId: string;    // Reference to a saved Connection
     integrationId: string;   // "slack", "whatsapp", "resend"
     resource: string;        // "message", "channel", "user"
@@ -200,7 +207,7 @@ export type OutputFormatType =
     | "html"
     | "csv";
 
-export interface OutputNodeConfig extends ContextRegistrationSettings {
+export interface OutputNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     // The visual title of this specific output (e.g., "Final Summary")
     label: string;
 
@@ -233,7 +240,7 @@ export type OutputNode = BaseNode<OutputNodeConfig> & {
 
 
 // --- RESPOND NODE ---
-export interface RespondNodeConfig extends ContextRegistrationSettings {
+export interface RespondNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     // Allows static numbers (200) or dynamic lookup ("{{logic_1.code}}")
     statusCode: number | string;
 
@@ -264,7 +271,7 @@ export type RespondNode = BaseNode<RespondNodeConfig> & {
 };
 
 // --- CONTEXT NODE ---
-export interface ContextNodeConfig extends ContextRegistrationSettings {
+export interface ContextNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     label: string;
 
     fields: Record<string, any>;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, ReactNode } from "react";
+import React, {useState, useMemo, ReactNode, memo} from "react";
 import {
     Plus,
     Trash2,
@@ -25,8 +25,9 @@ import { WorkflowEditorActionType } from "@/constants";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {GlobalVariable} from "@neuron/shared";
+import {debounce} from "lodash";
 
-export function GlobalVariablesSheet() {
+function GlobalVariables() {
     const { editorState, workflowEditorDispatch, isGlobalVariableSheetOpen, setIsGlobalVariableSheetOpen } = useWorkflowEditor();
 
     // variables is now Record<string, GlobalVariable>
@@ -55,10 +56,12 @@ export function GlobalVariablesSheet() {
             updatedAt: new Date()
         };
 
-        workflowEditorDispatch({
-            type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
-            payload: { ...variables, [formattedKey]: newVariable }
-        });
+        debounce(() => {
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
+                payload: { ...variables, [formattedKey]: newVariable }
+            });
+        }, 1000)
 
         setDraft({ key: "", value: "" });
     };
@@ -73,10 +76,12 @@ export function GlobalVariablesSheet() {
             updatedAt: new Date()
         };
 
-        workflowEditorDispatch({
-            type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
-            payload: { ...variables, [key]: updatedVariable }
-        });
+        debounce(() => {
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
+                payload: { ...variables, [key]: updatedVariable }
+            });
+        }, 1000)
         setEditingKey(null);
     };
 
@@ -232,6 +237,8 @@ export function GlobalVariablesSheet() {
         </SheetWrapper>
     );
 }
+
+export const GlobalVariablesSheet = memo(GlobalVariables)
 
 function Badge({ children, className }: { children: ReactNode, className?: string }) {
     return <span className={cn("px-1.5 rounded-md text-[9px] font-bold tracking-tight border", className)}>{children}</span>;

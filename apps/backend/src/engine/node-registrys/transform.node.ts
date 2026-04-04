@@ -55,10 +55,6 @@ export const transformNodeExecutor = async ({
             throw new Error("Transform must return a value.");
         }
 
-        if (typeof result !== "object") {
-            throw new Error("Transform must return an object.");
-        }
-
         return result;
 
     } catch (error: any) {

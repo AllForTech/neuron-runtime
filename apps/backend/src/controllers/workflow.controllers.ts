@@ -2,16 +2,13 @@ import type {Request, Response} from "express";
 import {
     addNodeToWorkflow,
     createWorkflow,
-    getWorkflowById,
     getWorkflowGraph,
     getWorkflowsByUser, saveWorkflowGraph
 } from "../services/repository/workflow.repository";
-import {supabase} from "../middleware/supabaseAuth";
 import {toWorkflowDTO} from "../utils/workflow";
 import {executeWorkflow} from "../engine/execution";
 import {getGlobalVariables, saveGlobalVariables} from "../services/repository/global.variables.repository";
-import {WorkflowNode, WorkflowEdge} from "../types/workflow/workflow.types";
-import {createExecution, updateExecutionStatus} from "../services/repository/execution.repository";
+import {createExecution, getExecutionsByWorkflow, updateExecutionStatus} from "../services/repository/execution.repository";
 import {AuthRequest} from "./execution.controller";
 
 // POST /api/workflows
@@ -32,6 +29,53 @@ export const createWorkflowController = async (req: AuthRequest, res: Response) 
         res.status(500).json({ message: (error as Error).message });
     }
 };
+
+// get full workflow state
+export async function getWorkflowFullStateController(
+    req: AuthRequest,
+    res: Response
+) {
+    try {
+        const userId = req.user.id;
+
+        // 2️⃣ Params
+        const { workflowId } = req.params as { workflowId: string };
+
+        if (!workflowId) {
+            return res.status(400).json({
+                error: "Workflow ID is required",
+            });
+        }
+
+        // 3️⃣ Fetch everything in parallel (IMPORTANT)
+        const [graph, globalVariables, executions] = await Promise.all([
+            getWorkflowGraph({ workflowId, userId }),
+            getGlobalVariables(workflowId),
+            getExecutionsByWorkflow(userId, workflowId),
+        ]);
+
+        // 4️⃣ Response
+        return res.status(200).json({
+            graph,
+            globalVariables: globalVariables ?? [],
+            executions,
+        });
+
+    } catch (error: any) {
+        console.error("Get Workflow Full State Error:", error);
+
+        if (error.message === "Workflow not found or unauthorized") {
+            return res.status(404).json({
+                error: error.message,
+            });
+        }
+
+        return res.status(500).json({
+            error: "Internal server error",
+        });
+    }
+}
+
 
 // GET /api/workflows
 export const getWorkflowController = async (req: AuthRequest, res: Response) => {
@@ -263,7 +307,7 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
         userId,
     })
 
-    executeWorkflow(workflowId, graph, userId)
+    executeWorkflow(execution.id, workflowId, graph, userId)
         .then(async finalContext => {
             // Update status (Success)
             await updateExecutionStatus({

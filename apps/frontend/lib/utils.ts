@@ -12,7 +12,6 @@ import type {FieldInput, NodeExecutionStatus, NodeType, SchemaField, WorkflowNod
 import {Edge, Node, NodeProps} from "reactflow";
 import type {WorkflowEdge} from "@neuron/shared";
 import crypto from "crypto"
-import {VaultPayload} from "@/features/workflows/vaultService";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

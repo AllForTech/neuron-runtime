@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 interface SchemaEditorProps {
     value: string;
-    onChange: (val: string) => void;
+    onChange: (key: string, val: string) => void;
 }
 
 export function SchemaDialog({ value, onChange }: SchemaEditorProps) {

@@ -36,6 +36,7 @@ export function TransformNodeConfigSheet({
 
     // 1. Initialize local state
     const [config, setConfig] = useState<TransformNodeConfig>({
+        ...node.data,
         code: node.data?.code || "// Access upstream data via the 'inputs' object\nreturn inputs;",
     });
 
@@ -49,7 +50,7 @@ export function TransformNodeConfigSheet({
                 id: node.id,
                 payload: config
             });
-        }, 400);
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [config, node.id, workflowEditorDispatch]);
@@ -58,10 +59,16 @@ export function TransformNodeConfigSheet({
         setConfig({ code: value });
     };
 
+    const handleChange = (key: string, value: any) => {
+        setConfig(prev => ({ ...prev, [key]: value }));
+    };
+
     return (
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeMeta={config?.meta}
+            onMetaUpdate={handleChange}
             nodeId={node.id}
             className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >

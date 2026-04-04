@@ -78,6 +78,8 @@ export function RespondNodeConfigSheet({ node, open, onOpen }: { node: Node, ope
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
+            nodeMeta={config?.meta}
+            onMetaUpdate={handleChange}
             title="Terminal Response"
             showContextSettings={false}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-3xl border-l border-neutral-900"

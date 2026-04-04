@@ -1,1 +1,0 @@
-ALTER TABLE "workflow_edges" ALTER COLUMN "target_handle" DROP NOT NULL;

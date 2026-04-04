@@ -1,5 +1,6 @@
 import {WorkflowActionType, WorkflowEditorActionType} from "@/constants";
 import type {WorkflowDefinition, WorkflowType, WorkflowEdge, BaseNode, WorkflowNode} from "@neuron/shared";
+import {Execution} from "@/types/execution";
 
 export type NewWorkflowGeneralType = {
     name: string;
@@ -121,6 +122,12 @@ export type WorkflowEditorAction =
 }  | {
     type: WorkflowEditorActionType.UPDATE_DEPLOYMENT;
     payload: Partial<Record<string, any>>;
+}  | {
+    type: WorkflowEditorActionType.SET_EXECUTIONS;
+    payload: Record<string, Execution>;
+}  | {
+    type: WorkflowEditorActionType.UPDATE_EXECUTIONS;
+    payload: Record<string, Execution>;
 }
 
 export interface WorkflowVariable {

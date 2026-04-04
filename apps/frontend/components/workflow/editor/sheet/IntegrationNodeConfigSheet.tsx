@@ -42,7 +42,7 @@ export function IntegrationNodeConfigSheet({ node, open, onOpen }: { node: Node;
         integrationId: "slack",
         connectionId: "",
         actionId: "postMessage",
-        parameters: {}
+        parameters: {},
     });
 
     const manifest = INTEGRATION_MANIFEST[config.integrationId];
@@ -55,7 +55,7 @@ export function IntegrationNodeConfigSheet({ node, open, onOpen }: { node: Node;
                 id: node.id,
                 payload: config,
             });
-        }, 400);
+        }, 300);
         return () => clearTimeout(timer);
     }, [config, node.id, workflowEditorDispatch]);
 
@@ -66,11 +66,21 @@ export function IntegrationNodeConfigSheet({ node, open, onOpen }: { node: Node;
         }));
     };
 
+    const handleChange = (key: string, value: any) => {
+        workflowEditorDispatch({
+            type: WorkflowEditorActionType.UPDATE_NODE,
+            id: node.id,
+            payload: { ...node.data, meta: { ...node.data?.meta, [key]: value } }
+        })
+    };
+
     return (
         <SheetWrapper
             open={open}
             onOpenChange={onOpen}
             nodeId={node.id}
+            nodeMeta={config?.meta}
+            onMetaUpdate={handleChange}
             title={manifest?.label || 'Integration'}
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >

@@ -112,6 +112,8 @@ export function LLMNodeConfigSheet({ node, open, onOpen }: { node: Node, open: b
             open={open}
             onOpenChange={onOpen}
             nodeId={node.id}
+            nodeMeta={config?.meta}
+            onMetaUpdate={handleChange}
             title="AI Brain Configuration"
             className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
         >
@@ -286,21 +288,21 @@ export function LLMNodeConfigSheet({ node, open, onOpen }: { node: Node, open: b
                     </div>
                 </ScrollArea>
 
-                {/* BOTTOM ACTION BUTTONS */}
-                <div className="p-4 bg-neutral-900/40 border-t border-neutral-800 flex items-center justify-between">
-                    <button className="text-[10px] text-neutral-500 hover:text-neutral-300 font-medium transition-colors">
-                        Restore Model Defaults
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <span className="text-[9px] text-neutral-600 flex items-center gap-1 italic">
-                            Running auto-evaluation
-                        </span>
-                        {/* ACCENT WHITE BUTTONS */}
-                        <button className="h-9 px-4 bg-white text-black text-xs font-bold rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2">
-                            <Zap className="w-3.5 h-3.5 fill-black" /> Evaluate Unit
-                        </button>
-                    </div>
-                </div>
+                {/*/!* BOTTOM ACTION BUTTONS *!/*/}
+                {/*<div className="p-4 bg-neutral-900/40 border-t border-neutral-800 flex items-center justify-between">*/}
+                {/*    <button className="text-[10px] text-neutral-500 hover:text-neutral-300 font-medium transition-colors">*/}
+                {/*        Restore Model Defaults*/}
+                {/*    </button>*/}
+                {/*    <div className="flex items-center gap-3">*/}
+                {/*        <span className="text-[9px] text-neutral-600 flex items-center gap-1 italic">*/}
+                {/*            Running auto-evaluation*/}
+                {/*        </span>*/}
+                {/*        /!* ACCENT WHITE BUTTONS *!/*/}
+                {/*        <button className="h-9 px-4 bg-white text-black text-xs font-bold rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2">*/}
+                {/*            <Zap className="w-3.5 h-3.5 fill-black" /> Evaluate Unit*/}
+                {/*        </button>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
         </SheetWrapper>
     );

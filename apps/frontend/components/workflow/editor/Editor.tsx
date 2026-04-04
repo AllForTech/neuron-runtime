@@ -17,7 +17,8 @@ import {
     useNodesState,
     useOnSelectionChange,
 } from "reactflow";
-import {useCallback, useEffect, useState} from "react";
+import { debounce } from 'lodash';
+import {useCallback, useEffect, useMemo, useState} from "react";
 import "reactflow/dist/style.css";
 import {useWorkflowEditor} from "@/hooks/workflow/useWorkflowEditor";
 import {WorkflowEditorActionType} from "@/constants";
@@ -46,6 +47,7 @@ import {DeployWorkflowPanel} from "@/components/workflow/editor/dialog/DeployWor
 import {RespondNodeConfigSheet} from "@/components/workflow/editor/sheet/RespondNodeConfigSheet";
 import {ContextNodeConfigSheet} from "@/components/workflow/editor/sheet/ContextNodeConfigSheet";
 import TriggerNode from "@/components/workflow/editor/nodes/TriggerNode";
+import {ExecutionHistorySheet} from "@/components/workflow/editor/executions/ExecutionHistorySheet";
 
 // --------------------------------------------
 // Component
@@ -69,6 +71,8 @@ const nodeTypes = {
 //     workflowEdge: WorkflowEdge,
 // }
 
+const snapGrid: [number, number] = [80, 80];
+
 export function Editor() {
 
     const {
@@ -85,6 +89,7 @@ export function Editor() {
         setSheetOpen,
         setIsEditorPanelOpen,
         isWorkflowLoading,
+        setIsExecutionsSheetOpen,
         handleRunWorkflow,
         isRunning,
         setIsGlobalVariableSheetOpen,
@@ -128,44 +133,52 @@ export function Editor() {
     // (ONLY when drag stops — best practice)
     // --------------------------------------------
 
-    const onNodeDragStop = useCallback(
-        (_: any, node: Node) => {
+    const debouncedUpdatePosition = useMemo(
+        () => debounce((id, pos) => {
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.UPDATE_NODE_POSITION,
-                id: node.id,
-                position: node.position,
+                id,
+                position: pos
             });
-        },
+        }, 100),
         [workflowEditorDispatch]
+    );
+
+    const onNodeDragStop = useCallback(
+        (_: any, node: Node) => {
+            debouncedUpdatePosition(node.id, node.position)
+        },
+        [workflowEditorDispatch, debouncedUpdatePosition]
     );
 
     // --------------------------------------------
     // 3️⃣ Handle edge connect → reducer
     // --------------------------------------------
 
-    const onConnect = useCallback(
-        (connection: Connection) => {
-            const newEdge: Edge = {
-                ...connection,
-                id: crypto.randomUUID(),
-            };
-
-            console.log("Incoming connection: ", newEdge)
-
-            setGraphEdges((eds) => addEdge(newEdge, eds));
-
+    const debouncedAddEdge = useMemo(
+        () => debounce((edge) => {
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.ADD_EDGE,
-                payload: {
-                    id: newEdge.id,
-                    source: newEdge.source!,
-                    target: newEdge.target!,
-                    sourceHandle: newEdge.sourceHandle,
-                    targetHandle: newEdge.targetHandle,
-                },
+                payload: edge,
+            });
+        }, 200),
+        [workflowEditorDispatch]
+    );
+
+    const onConnect = useCallback(
+        (connection: Connection) => {
+            const newEdge: Edge = { ...connection, id: crypto.randomUUID() };
+            setGraphEdges((eds) => addEdge(newEdge, eds));
+
+            debouncedAddEdge({
+                id: newEdge.id,
+                source: newEdge.source!,
+                target: newEdge.target!,
+                sourceHandle: newEdge.sourceHandle,
+                targetHandle: newEdge.targetHandle,
             });
         },
-        [workflowEditorDispatch, setGraphEdges]
+        [setGraphEdges, debouncedAddEdge]
     );
 
     // --------------------------------------------
@@ -216,7 +229,6 @@ export function Editor() {
         setIsSheetOpen(true)
     }
 
-    const openDialog = () => setIsDeployWorkflowDialogOpen(true);
 
     // --------------------------------------------
     // Render
@@ -240,6 +252,10 @@ export function Editor() {
             onConnect={onConnect}
             onNodeDoubleClick={handleNodeDoubleClick}
             fitView
+            snapToGrid={true}
+            snapGrid={snapGrid}
+            minZoom={0.12}
+            maxZoom={2}
         >
             <Background color={"#121212"} gap={80} variant={BackgroundVariant.Cross} size={18}/>
 
@@ -280,6 +296,8 @@ export function Editor() {
                 onOpenChange={setIsDeployWorkflowDialogOpen}
                 workflowName={editorState.workflow?.name}
             />
+
+            <ExecutionHistorySheet/>
 
             {selectedNode && sheetOpen && selectedNode.type === "trigger" && (
                 <TriggerNodeConfigSheet node={selectedNode} open={sheetOpen} onOpen={setSheetOpen}/>
@@ -339,6 +357,12 @@ export function Editor() {
                             Runtime Data
                         </Button>
                     )}
+
+                    <Button
+                        onClick={() => setIsExecutionsSheetOpen(true)}
+                        variant="outline" size="xs" className="h-8 rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
+                       Executions
+                    </Button>
 
                     <Button
                         variant="outline"

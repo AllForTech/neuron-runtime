@@ -149,3 +149,23 @@ export async function deleteDeploymentRequest(workflowId: string, token: any){
 
     return await authorizedFetch(url, options, token);
 }
+
+
+export async function getExecutionsRequest(workflowId: string, token: any){
+    const url = `${URL}/executions/workflow/${workflowId}`;
+    const options = {
+        method: "GET",
+    };
+
+    return await authorizedFetch(url, options, token);
+}
+
+
+export async function getExecutionsLogsRequest(executionId: string, token: any){
+    const url = `${URL}/executions/logs/${executionId}`;
+    const options = {
+        method: "GET",
+    };
+
+    return await authorizedFetch(url, options, token);
+}

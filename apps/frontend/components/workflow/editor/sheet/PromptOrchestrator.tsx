@@ -74,7 +74,7 @@ export const PromptOrchestrator = ({
                 </DialogHeader>
 
                 {/* SCROLLABLE EDITOR AREA */}
-                <ScrollArea className="flex-1 max-h-[50dvh]">
+                <ScrollArea className="flex-1 h-[50dvh]">
                     <div className="p-8 py-1!">
                         <Accordion
                             type="multiple"
@@ -84,7 +84,7 @@ export const PromptOrchestrator = ({
                             {/* SYSTEM PERSONA SECTION */}
                             <AccordionItem
                                 value="system"
-                                className="border border-neutral-800 rounded-xl bg-white/[0.01] px-2 overflow-hidden"
+                                className="border border-neutral-800 rounded-xl bg-white/[0.01] px-2"
                             >
                                 <AccordionTrigger className="px-4 py-4 hover:no-underline group">
                                     <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export const PromptOrchestrator = ({
                             {/* USER PROMPT SECTION */}
                             <AccordionItem
                                 value="prompt"
-                                className="border border-neutral-800 rounded-xl bg-white/[0.01] px-2 overflow-hidden"
+                                className="border border-neutral-800 rounded-xl bg-white/[0.01] px-2"
                             >
                                 <AccordionTrigger className="px-4 py-4 hover:no-underline group">
                                     <div className="flex items-center gap-3">

@@ -1,23 +1,27 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useReducer, useRef, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
-import { WorkflowEditorAction } from "@/types/workflow";
-import type {WorkflowDefinition, WorkflowType, NodeType, WorkflowNode, WorkflowEdge} from "@neuron/shared";
-import { NodeTemplate, WorkflowEditorActionType } from "@/constants";
-import { Node, useReactFlow, Edge } from "reactflow";
+import {createContext, useCallback, useEffect, useMemo, useReducer, useRef, useState} from "react";
+import {useParams} from "next/navigation";
+import {WorkflowEditorAction} from "@/types/workflow";
+import type {NodeType, WorkflowDefinition, WorkflowEdge, WorkflowNode, WorkflowType} from "@neuron/shared";
+import {NodeTemplate, WorkflowEditorActionType} from "@/constants";
+import {Edge, Node, useReactFlow} from "reactflow";
 import {
     deleteDeploymentRequest,
     deployWorkflowRequest,
-    getDeployWorkflowRequest,
+    getDeployWorkflowRequest, getExecutionsLogsRequest,
+    getExecutionsRequest,
     getWorkflowGraphRequest,
     runWorkflowRequest,
     saveWorkflowGraphRequest
 } from "@/lib/api-client/client";
-import { createClient } from "@/lib/supabase/client";
-import { arrayToGlobalVariables, globalVariablesToArray, toReactFlowNode } from "@/lib/utils"
-import { toast } from "sonner";
-import { useWorkflowRealtime } from "@/hooks/workflow/useWorkflowRealtime";
+import {createClient} from "@/lib/supabase/client";
+import {arrayToGlobalVariables, globalVariablesToArray, toReactFlowNode} from "@/lib/utils"
+import {toast} from "sonner";
+import {useWorkflowRealtime} from "@/hooks/workflow/useWorkflowRealtime";
+import {db} from "@/lib/db/workflow.db";
+import {useLiveQuery} from "dexie-react-hooks";
+import {Execution} from "@/types/execution";
 
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
@@ -41,6 +45,8 @@ export type WorkflowEditorContextType = {
     isWorkflowSaving: boolean;
     isRunning: boolean;
     isDeploying: boolean;
+    isExecutionsSheetOpen: boolean;
+    setIsExecutionsSheetOpen: (vlue: boolean) => void;
 
     handleSelectTemplate: (template: NodeTemplate, node?: Node) => void;
 
@@ -51,6 +57,7 @@ export type WorkflowEditorContextType = {
         secretKey: string,
     }) => void;
     deleteDeployment: () => void;
+    getExecutionLogs: (id: string) => any;
 
     selectedHandle: string | null;
     setSelectedHandle: (value: string | null) => void;
@@ -71,6 +78,7 @@ export interface IWorkflowEditorState {
         nodeOutputs: Record<string, any> | null;
         nodeErrors: Record<string, string> | null;
         activeEdges: Record<string, boolean>;
+        executions: Record<string, Execution>;
     };
     executions?: any[] | null;
     executionLogs?: any[] | null;
@@ -97,11 +105,13 @@ const initialState: IWorkflowEditorState = {
         nodeErrors: {},
         nodeOutputs: null,
         activeEdges: {},
+        executions: {},
     },
     globalVariables: {},
     deployment: null,
     isDirty: false,
 };
+
 
 export const WorkflowEditorContext = createContext<WorkflowEditorContextType | null>(null);
 
@@ -117,9 +127,10 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     const [sheetOpen, setSheetOpen] = useState(false);
     const [openConfigSheet, setOpenConfigSheet] = useState(false);
     const [isGlobalVariableSheetOpen, setIsGlobalVariableSheetOpen] = useState(false);
-    const [isEditorPanelOpen, setIsEditorPanelOpen] = useState(true);
+    const [isEditorPanelOpen, setIsEditorPanelOpen] = useState(false);
     const [isDeployWorkflowDialogOpen, setIsDeployWorkflowDialogOpen] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
+    const [isExecutionsSheetOpen, setIsExecutionsSheetOpen] = useState(false);
 
     const [editorState, workflowEditorDispatch] = useReducer(workflowEditorReducer, initialState);
     const [selectedNode, setSelectedNode] = useState<Node | null | undefined>();
@@ -127,6 +138,11 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     const isSaving = useRef(false);
     const pendingSave = useRef(false);
+
+    const localDraft = useLiveQuery(
+        () => db.drafts.get(workflowId),
+        [workflowId]
+    );
 
     // --- REFACTORED REDUCER FOR RECORD LOOKUP ---
     function workflowEditorReducer(
@@ -256,6 +272,16 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                     }
                 }
 
+            case WorkflowEditorActionType.NODE_EXECUTION_ERROR:
+                return {
+                    ...state,
+                    runtime: {
+                        ...state.runtime,
+                        nodeStatus: { ...state.runtime.nodeStatus, [action.nodeId]: "error" },
+                        nodeErrors: { ...state.runtime.nodeErrors, [action.nodeId]: action.error}
+                    }
+                }
+
             case WorkflowEditorActionType.UPDATE_GLOBAL_VARS:
                 return { ...state, globalVariables: action.payload, isDirty: true };
 
@@ -265,23 +291,31 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.UPDATE_DIRTY_STATE:
                 return { ...state, isDirty: action.state ?? false };
 
+            case WorkflowEditorActionType.SET_EXECUTIONS:
+                return {
+                    ...state,
+                    runtime: {
+                        ...state.runtime,
+                        executions: action.payload,
+                    }
+                }
+
             default:
                 return state;
         }
     }
 
-    // 1. Memoized Nodes with Selection State
-    const rfNodes = useMemo(() => {
-        return Object.values(editorState.graph.nodes).map((node) => {
-            const rfNode = toReactFlowNode(node);
-            return {
-                ...rfNode,
-                selected: selectedNode?.id === node.id,
-            };
-        });
-    }, [editorState.graph.nodes, selectedNode?.id]);
+    const rfNodesData = useMemo(() => {
+        return Object.values(editorState.graph.nodes).map((node) => toReactFlowNode(node));
+    }, [editorState.graph.nodes]);
 
-// 2. Memoized Edges with Runtime Animation Logic
+    const rfNodes = useMemo(() => {
+        return rfNodesData.map((node) => ({
+            ...node,
+            selected: selectedNode?.id === node.id,
+        }));
+    }, [rfNodesData, selectedNode?.id]);
+
     const rfEdges = useMemo(() => {
         return Object.values(editorState.graph.edges).map((edge) => {
             const isActive = !!editorState.runtime.activeEdges?.[edge.id];
@@ -339,6 +373,11 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 };
             });
 
+            const executionRecord: Record<string, Execution> = {};
+            response.executions.forEach((e: any) => {
+                executionRecord[e.id] = e
+            })
+
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.SET_GRAPH,
                 payload: { nodes: nodesRecord, edges: edgesRecord },
@@ -349,6 +388,13 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 payload: arrayToGlobalVariables(response.globalVariables)
             });
 
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.SET_EXECUTIONS,
+                payload: executionRecord,
+            })
+
+            console.log("Executions", executionRecord)
+
             await loadDeployment();
         } catch (e) {
             console.error(e.message);
@@ -358,7 +404,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     };
 
     const saveWorkflowGraph = async () => {
-        // Prevent parallel execution
+        // 1. Double-check guard for parallel execution
         if (isSaving.current) {
             pendingSave.current = true;
             return;
@@ -368,36 +414,52 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
         try {
             setIsWorkflowSaving(true);
-
             const token = await getSession();
+
+            // 2. Fetch the latest draft from Dexie (The Single Source of Truth)
+            const localDraft = await db.drafts.get(workflowId);
+            if (!localDraft) return;
 
             const payload = {
                 graph: {
-                    nodes: Object.values(editorState.graph.nodes),
-                    edges: Object.values(editorState.graph.edges),
+                    nodes: Object.values(localDraft.graph.nodes) as WorkflowNode[],
+                    edges: Object.values(localDraft.graph.edges) as WorkflowEdge[],
                 },
-                globalVariables: globalVariablesToArray(editorState.globalVariables),
+                globalVariables: globalVariablesToArray(localDraft.globalVariables),
             };
 
+            // 3. Push to Supabase
             await saveWorkflowGraphRequest(workflowId, token, payload);
 
+            // 4. Atomic Update in Dexie: Mark as synced
+            // We do this BEFORE dispatching to React to ensure the 'Disk' state is correct first
+            await db.drafts.update(workflowId, {
+                synced: true,
+                updatedAt: Date.now()
+            });
+
+            // 5. Update React State (UI)
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.UPDATE_DIRTY_STATE,
                 state: false,
             });
 
+            toast.success("Changes synced to cloud", { id: "sync-toast" });
+
         } catch (e: any) {
-            console.error("Save failed:", e.message);
+            console.error("Sync failed:", e.message);
+            // We don't mark as synced here, so the next debounce trigger will try again
+            toast.error("Cloud sync failed. Working offline.");
         } finally {
             setIsWorkflowSaving(false);
             isSaving.current = false;
 
+            // 6. Handle the "Trailing" Save
+            // If the user kept typing while the network request was in flight
             if (pendingSave.current) {
                 pendingSave.current = false;
-
-                setTimeout(() => {
-                    saveWorkflowGraph();
-                }, 300);
+                // Delay slightly to give the database/network a breather
+                setTimeout(() => saveWorkflowGraph(), 1000);
             }
         }
     };
@@ -416,6 +478,14 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
         workflowEditorDispatch({ type: WorkflowEditorActionType.ADD_NODE, payload: newNode });
         addNodes(toReactFlowNode(newNode));
+
+        setTimeout(() => {
+            fitView({
+                nodes: [{ id: newNodeId }],
+                duration: 600,
+                maxZoom: 1
+            });
+        }, 50);
 
         if (selectedNode) {
             const newEdge = {
@@ -485,24 +555,57 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             toast.success("Deployment terminated.");
         } catch (e) { toast.error(e.message); }
     };
+    
+    
+    const getExecutionLogs = async (executionId: string) => {
+        try{
+            const token = await getSession();
+
+            const logs = await getExecutionsLogsRequest(executionId, token)
+            console.log("execution logs", logs);
+            return logs;
+        }catch (e) {
+            console.log(e.message);
+        }
+    }
 
     const fitNode = (node: WorkflowNode) => {
         fitView({ nodes: [{ id: node.id }], duration: 800, padding: 0.05, maxZoom: 1.1 });
     };
 
     useEffect(() => {
-        if (!editorState.isDirty) return;
+        if (!workflowId || !editorState.graph || !editorState.isDirty) return;
 
+        const persistLocally = async () => {
+            await db.drafts.put({
+                id: workflowId,
+                graph: editorState.graph,
+                globalVariables: editorState.globalVariables,
+                updatedAt: Date.now(),
+                synced: false
+            });
+        };
+
+        persistLocally();
+    }, [editorState.graph, editorState.globalVariables, workflowId]);
+
+    useEffect(() => {
+        // 1. Only proceed if we have a local draft that hasn't been synced yet
+        if (!localDraft || localDraft.synced) return;
+
+        // 2. Clear previous timer
         if (saveTimeout.current) clearTimeout(saveTimeout.current);
 
+        // 3. Set the "Cloud Sync" timer
         saveTimeout.current = setTimeout(() => {
+            console.log("Dexie changed! Syncing to Supabase...");
             saveWorkflowGraph();
-        }, 1500);
+        }, 3000);
 
         return () => {
             if (saveTimeout.current) clearTimeout(saveTimeout.current);
         };
-    }, [editorState.graph, editorState.globalVariables]);
+    }, [localDraft]);
 
     useEffect(() => {
         if (workflowId) loadWorkflow();
@@ -532,6 +635,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             openConfigSheet,
             setOpenConfigSheet,
             isRunning,
+            isExecutionsSheetOpen,
+            setIsExecutionsSheetOpen,
             handleSelectTemplate,
             saveWorkflowGraph,
             handleRunWorkflow,
@@ -540,7 +645,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             deployWorkflow,
             deleteDeployment,
             rfNodes,
-            rfEdges
+            rfEdges,
+            getExecutionLogs,
         }}>
             {children}
         </WorkflowEditorContext.Provider>

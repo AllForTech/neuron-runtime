@@ -82,6 +82,10 @@ export enum WorkflowEditorActionType {
 
     SET_DEPLOYMENT = "SET_DEPLOYMENT",
     UPDATE_DEPLOYMENT = "UPDATE_DEPLOYMENT",
+    
+    SET_EXECUTIONS = "SET_EXECUTIONS",
+    UPDATE_EXECUTIONS = "UPDATE_EXECUTIONS",
+    DELETE_EXECUTIONS = "DELETE_EXECUTIONS",
 }
 
 export interface NodeTemplate {

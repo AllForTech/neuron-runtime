@@ -1,1 +1,0 @@
-ALTER TABLE "deployed_workflows" ADD CONSTRAINT "deployed_workflows_workflow_id_unique" UNIQUE("workflow_id");

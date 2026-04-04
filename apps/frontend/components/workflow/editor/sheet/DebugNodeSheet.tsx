@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper"
 import { Textarea } from "@/components/ui/textarea"
 import {WorkflowEditorActionType} from "@/constants";
+import {debounce} from "lodash";
 
 export function DebugNodeConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen: (open: boolean) => void }) {
 
@@ -14,21 +15,33 @@ export function DebugNodeConfigSheet({ node, open, onOpen }: { node: Node, open:
     const config = node.data
 
     const updateConfig = (partial: Partial<typeof config>) => {
+        debounce(() => {
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.UPDATE_NODE,
+                id: node.id,
+                payload: {
+                    ...config,
+                    ...partial
+                }
+            })
+        }, 1000)
+    }
+
+    const handleChange = (key: string, value: any) => {
         workflowEditorDispatch({
             type: WorkflowEditorActionType.UPDATE_NODE,
             id: node.id,
-            payload: {
-                    ...config,
-                    ...partial
-            }
+            payload: { ...node.data, [key]: value }
         })
-    }
+    };
 
     return (
         <SheetWrapper
             nodeId={node.id}
             open={open}
             onOpenChange={onOpen}
+            nodeMeta={node.data?.meta}
+            onMetaUpdate={handleChange}
             title="Debug Node">
 
             <div className="space-y-5 mt-4">

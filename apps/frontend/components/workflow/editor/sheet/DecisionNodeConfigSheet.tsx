@@ -48,7 +48,8 @@ export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, op
     const [config, setConfig] = useState<DecisionNodeConfig>({
         input: node.data?.input || "",
         inputTransforms: node.data?.inputTransforms || [],
-        rules: node.data?.rules || []
+        rules: node.data?.rules || [],
+        ...node.data
     });
 
     const [openRules, setOpenRules] = useState<Record<string, boolean>>({});
@@ -62,7 +63,7 @@ export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, op
                 id: node.id,
                 payload: config
             });
-        }, 200);
+        }, 1000);
         return () => clearTimeout(timer);
     }, [config, node.id, workflowEditorDispatch]);
 
@@ -97,6 +98,8 @@ export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, op
             open={open}
             onOpenChange={onOpen}
             nodeId={node.id}
+            nodeMeta={config?.meta}
+            onMetaUpdate={handleChange}
             className="w-[600px]! h-full! p-0! bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800"
         >
             <div className="flex flex-col h-full">

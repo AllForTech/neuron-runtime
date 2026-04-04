@@ -38,8 +38,8 @@ export default function DynamicNode(node: NodeProps) {
     } = useWorkflowEditor();
 
     const color = getNodeColor(type);
-    const status = editorState.runtime?.nodeStatus?.[id] ?? "idle"
-    const statusClass = getNodeStatusStyles(status);
+    const status = editorState.runtime?.nodeStatus?.[id] ?? editorState.runtime?.nodeErrors?.[id] ?? "idle"
+    const statusClass = getNodeStatusStyles(status as any);
 
     const handleMenuClick = (action: string) => {
         switch (action) {
@@ -130,7 +130,7 @@ export default function DynamicNode(node: NodeProps) {
 
                             <div className={'w-full h-fit gap-2.5 center justify-end!'}>
                                 <span className={'text-xs text-secondary-foreground'}>{status}</span>
-                                <NodeStatusIndicator status={status}/>
+                                <NodeStatusIndicator status={status as any}/>
                             </div>
                         </CardContent>
 

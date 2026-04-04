@@ -7,28 +7,41 @@ import { Input } from "@/components/ui/input"
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import {WorkflowEditorActionType} from "@/constants";
+import {debounce} from "lodash";
 
 export function TriggerNodeConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen: (open: boolean) => void }) {
     const { workflowEditorDispatch } = useWorkflowEditor()
     const config = node.data
 
     const updateConfig = (partial: Partial<typeof config>) => {
+        debounce(() => {
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.UPDATE_NODE,
+                id: node.id,
+                payload: {
+                    config: {
+                        ...config,
+                        ...partial
+                    }
+                }
+            })
+        }, 300);
+    }
+
+    const handleChange = (key: string, value: any) => {
         workflowEditorDispatch({
             type: WorkflowEditorActionType.UPDATE_NODE,
             id: node.id,
-            payload: {
-                config: {
-                    ...config,
-                    ...partial
-                }
-            }
+            payload: { ...node.data, meta: value }
         })
-    }
+    };
 
     return (
         <SheetWrapper
             nodeId={node.id}
             open={open}
+            nodeMeta={config.meta}
+            onMetaUpdate={handleChange}
             onOpenChange={onOpen}
             title="Trigger Node">
             <div className="space-y-5 mt-4">

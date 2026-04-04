@@ -12,8 +12,11 @@ import {
     getExecutionMetricsController,
     getRecentExecutionsController,
 } from "../controllers/execution.controller";
+import executionsLogsRoute from "./executions.logs.route";
 
 const router = Router();
+
+router.use("/logs/", executionsLogsRoute);
 
 /**
  * Core execution operations
