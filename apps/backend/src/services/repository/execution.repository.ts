@@ -2,6 +2,8 @@ import {executions} from "../../schemas";
 import {db} from "../../db/client";
 import {and, eq} from "drizzle-orm";
 import { sql } from "drizzle-orm";
+import {workflowRuntimeBroadcast} from "../supabase/supabase.services";
+import {RuntimeActionType} from "../../types/types";
 
 type CreateExecutionInput = {
     workflowId: string;
@@ -10,6 +12,8 @@ type CreateExecutionInput = {
 };
 
 export async function createExecution(input: CreateExecutionInput) {
+    const { dispatch } = workflowRuntimeBroadcast(input.workflowId);
+
     const [execution] = await db
         .insert(executions)
         .values({
@@ -20,6 +24,9 @@ export async function createExecution(input: CreateExecutionInput) {
         })
         .returning();
 
+    await dispatch(RuntimeActionType.ADD_EXECUTION, {
+        payload: execution
+    })
     return execution;
 }
 
@@ -67,7 +74,10 @@ export async function updateExecutionStatus(params: {
     status: "pending" | "running" | "success" | "failed";
     finishedAt?: Date;
     result?: any;
-}) {
+}, workflowId?: string) {
+
+    const { dispatch } = workflowRuntimeBroadcast(workflowId);
+
     const [updated] = await db
         .update(executions)
         .set({
@@ -82,6 +92,14 @@ export async function updateExecutionStatus(params: {
             )
         )
         .returning();
+
+    await dispatch(RuntimeActionType.UPDATE_EXECUTION, {
+        payload: {
+            status: params.status,
+            finishedAt: params.finishedAt,
+            result: params.result,
+        }
+    })
 
     return updated;
 }

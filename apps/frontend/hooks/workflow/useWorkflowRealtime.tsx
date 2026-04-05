@@ -3,7 +3,7 @@
 import {useEffect} from "react";
 import {createClient} from "@/lib/supabase/client";
 
-export function useWorkflowRealtime(runId: string, workflowEditorDispatch: any) {
+export function useWorkflowRealtime(runId: string, workflowEditorDispatch: any, runtimeDispatch: any) {
 
     useEffect(() => {
         if (!runId) return;
@@ -18,8 +18,15 @@ export function useWorkflowRealtime(runId: string, workflowEditorDispatch: any) 
                     ...payload // Contains nodeId, edgeId, output, etc.
                 });
             })
+            .on('broadcast', { event: 'workflow_runtime_action' }, ({ payload }) => {
+
+                runtimeDispatch({
+                    type: payload.type,
+                    ...payload
+                });
+            })
             .subscribe();
 
         return () => { supabase.removeChannel(channel).then(r => console.log(r)); };
-    }, [runId, workflowEditorDispatch]);
+    }, [runId, workflowEditorDispatch, runtimeDispatch]);
 }

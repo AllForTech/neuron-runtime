@@ -9,8 +9,8 @@ import {Edge, Node, useReactFlow} from "reactflow";
 import {
     deleteDeploymentRequest,
     deployWorkflowRequest,
-    getDeployWorkflowRequest, getExecutionsLogsRequest,
-    getExecutionsRequest,
+    getDeployWorkflowRequest,
+    getExecutionsLogsRequest,
     getWorkflowGraphRequest,
     runWorkflowRequest,
     saveWorkflowGraphRequest
@@ -21,11 +21,14 @@ import {toast} from "sonner";
 import {useWorkflowRealtime} from "@/hooks/workflow/useWorkflowRealtime";
 import {db} from "@/lib/db/workflow.db";
 import {useLiveQuery} from "dexie-react-hooks";
-import {Execution, ExecutionLog} from "@/types/execution";
+import {Execution, ExecutionLog, RuntimeAction, RuntimeActionType, RuntimeState} from "@/types/index";
 
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
     workflowEditorDispatch: (WorkflowEditorAction: WorkflowEditorAction) => void;
+    runtimeState: RuntimeState;
+    runtimeDispatch: (RuntimeAction: RuntimeAction) => void;
+
     selectedNode: Node | null | undefined;
     setSelectedNode: (selectedNode: Node | null | undefined) => void;
     isSheetOpen: boolean;
@@ -117,6 +120,14 @@ const initialState: IWorkflowEditorState = {
     isDirty: false,
 };
 
+export const initialRuntimeState: RuntimeState = {
+    nodeStatus: {},
+    activeEdges: {},
+    executions: {},
+    logs: {},
+};
+
+
 
 export const WorkflowEditorContext = createContext<WorkflowEditorContextType | null>(null);
 
@@ -138,6 +149,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     const [isExecutionsSheetOpen, setIsExecutionsSheetOpen] = useState(false);
 
     const [editorState, workflowEditorDispatch] = useReducer(workflowEditorReducer, initialState);
+    const [runtimeState, runtimeDispatch] = useReducer(runtimeReducer, initialRuntimeState);
+    
     const [selectedNode, setSelectedNode] = useState<Node | null | undefined>();
     const [selectedHandle, setSelectedHandle] = useState<string | null>(null);
 
@@ -313,6 +326,102 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     }
 
+    // --- EXECUTION REDUCER ---
+    function runtimeReducer(state: RuntimeState, action: RuntimeAction): RuntimeState {
+        switch (action.type) {
+            case RuntimeActionType.SET_NODE_STATUS:
+                return {
+                    ...state,
+                    nodeStatus: {
+                        ...state.nodeStatus,
+                        [action.nodeId]: action.status,
+                    },
+                };
+
+            case RuntimeActionType.SET_EDGE_ACTIVE:
+                return {
+                    ...state,
+                    activeEdges: {
+                        ...state.activeEdges,
+                        [action.edgeId]: action.isActive,
+                    },
+                };
+
+            case RuntimeActionType.SET_EXECUTIONS:
+                return {
+                    ...state,
+                   executions: action.payload
+                }
+
+            case RuntimeActionType.ADD_EXECUTION:
+                return {
+                    ...state,
+                    executions: {
+                        [action.execution.id]: action.execution,
+                        ...state.executions,
+                    },
+                };
+
+            case RuntimeActionType.UPDATE_EXECUTION:
+                // Ensure the execution exists before spreading to avoid runtime crashes
+                if (!state.executions[action.executionId]) return state;
+                return {
+                    ...state,
+                    executions: {
+                        ...state.executions,
+                        [action.executionId]: {
+                            ...state.executions[action.executionId],
+                            ...action.payload
+                        },
+                    },
+                };
+
+            case RuntimeActionType.SET_LOGS:
+                return {
+                    ...state,
+                    logs: action.payload
+                };
+
+            case RuntimeActionType.ADD_LOG:
+                return {
+                    ...state,
+                    logs: {
+                        ...state.logs,
+                        [action.payload.id]: action.payload,
+                    },
+                };
+
+            case RuntimeActionType.UPDATE_LOGS:
+                const existingLog = state.logs[action.id];
+
+                if (!existingLog) return state;
+
+                return {
+                    ...state,
+                    logs: {
+                        [action.id]: {
+                            ...existingLog,
+                            ...action.payload
+                        },
+                        ...state.logs,
+                    }
+                };
+
+            case RuntimeActionType.RESET_FLOW_VISUALS:
+                return {
+                    ...state,
+                    nodeStatus: {},
+                    activeEdges: {},
+                };
+
+            case RuntimeActionType.CLEAR_RUNTIME:
+                return initialRuntimeState;
+
+            default:
+                return state;
+        }
+    }
+
     const rfNodesData = useMemo(() => {
         return Object.values(editorState.graph.nodes).map((node) => toReactFlowNode(node));
     }, [editorState.graph.nodes]);
@@ -343,7 +452,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         });
     }, [editorState.graph.edges, editorState.runtime.activeEdges]);
 
-    useWorkflowRealtime(workflowId, workflowEditorDispatch);
+    useWorkflowRealtime(workflowId, workflowEditorDispatch, runtimeDispatch);
 
     const getSession = useCallback(async () => {
         const supabase = createClient();
@@ -396,10 +505,19 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 payload: arrayToGlobalVariables(response.globalVariables)
             });
 
-            workflowEditorDispatch({
-                type: WorkflowEditorActionType.SET_EXECUTIONS,
-                payload: executionRecord,
+            runtimeDispatch({
+                type: RuntimeActionType.SET_EXECUTIONS,
+                payload: executionRecord
             })
+
+            // const lastExecutionLogs = response.execution ?
+            //     await getExecutionLogs(response.execution[0]?.id) :
+            //     null
+            //
+            // if (lastExecutionLogs) {
+            //     const logsRecord: Record<string, ExecutionLog> = {}
+            //     lastExecutionLogs
+            // }
 
             console.log("Executions", executionRecord)
 
@@ -627,6 +745,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         <WorkflowEditorContext.Provider value={{
             editorState,
             workflowEditorDispatch,
+            runtimeState,
+            runtimeDispatch,
             selectedNode,
             setSelectedNode,
             selectedHandle,

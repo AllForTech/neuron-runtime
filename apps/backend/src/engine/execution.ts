@@ -70,7 +70,7 @@ export async function executeWorkflow(
     async function runNode(nodeId: string) {
         if (completed.has(nodeId) || running.has(nodeId)) return;
 
-        const node: WorkflowNode = nodeMap[nodeId];
+        const node = nodeMap[nodeId] as any;
         if (!node) throw new Error(`No node found with ID: ${nodeId}`);
 
         running.add(nodeId);

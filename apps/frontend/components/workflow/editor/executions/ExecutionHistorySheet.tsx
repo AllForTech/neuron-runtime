@@ -9,7 +9,7 @@ import ExecutionCard from "@/components/workflow/editor/executions/ExecutionCard
 
 export function ExecutionHistorySheet() {
     const {
-        editorState,
+        runtimeState,
         isExecutionsSheetOpen,
         setIsExecutionsSheetOpen,
     } = useWorkflowEditor();
@@ -18,11 +18,11 @@ export function ExecutionHistorySheet() {
 
     // Transform Record<string, Execution> into sorted Array
     const sortedExecutions = useMemo(() => {
-        const record = editorState.runtime.executions || {};
+        const record = runtimeState.executions || {};
         return Object.values(record).sort(
             (a: any, b: any) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
         );
-    }, [editorState.runtime.executions]);
+    }, [runtimeState.executions]);
 
     return (
         <SheetWrapper

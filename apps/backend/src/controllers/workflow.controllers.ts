@@ -315,7 +315,7 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
                 status: "success",
                 userId,
                 result: finalContext,
-            })
+            }, workflowId)
         })
         .catch(async err => {
             console.error(`Workflow ${workflowId} failed`, err)
@@ -326,7 +326,7 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
                 status: "failed",
                 userId,
                 result: err?.message ?? err,
-            })
+            }, workflowId)
         });
 
     res.status(202).json({ message: "Execution started", workflowId });

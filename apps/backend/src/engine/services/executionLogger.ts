@@ -1,4 +1,6 @@
 import { createExecutionLog, updateExecutionLog } from "../../services/repository/execution.logs.repository";
+import {workflowRuntimeBroadcast} from "../../services/supabase/supabase.services";
+import {RuntimeActionType} from "../../types/types";
 
 const executionOrderMap = new Map<string, number>();
 
@@ -24,6 +26,8 @@ export async function logNodeExecutionStart({
     executionOrderMap.set(runId, currentOrder + 1);
 
     try {
+        const { dispatch } = workflowRuntimeBroadcast(workflowId);
+
         const log = await createExecutionLog({
             executionId: runId,
             userId,
@@ -41,13 +45,22 @@ export async function logNodeExecutionStart({
             nodeLabel
         });
 
+
+        await dispatch(RuntimeActionType.ADD_LOG, {
+            payload: log
+        });
+
+        await dispatch(RuntimeActionType.SET_NODE_STATUS, {
+            nodeId: nodeId,
+            status: "running"
+        });
+
         return log.id;
     }catch (e) {
         console.log("[Neuron]: ", e);
         throw e;
     }
 }
-
 
 export async function logNodeExecutionEnd({
                                               logId,
@@ -62,6 +75,7 @@ export async function logNodeExecutionEnd({
 }) {
 
     try {
+
         return await updateExecutionLog(logId, {
             status: error ? "error" : "success",
             output: output ?? null,
