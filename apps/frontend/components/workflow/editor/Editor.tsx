@@ -19,6 +19,7 @@ import {
 } from "reactflow";
 import { debounce } from 'lodash';
 import {useCallback, useEffect, useMemo, useState} from "react";
+// @ts-ignore
 import "reactflow/dist/style.css";
 import {useWorkflowEditor} from "@/hooks/workflow/useWorkflowEditor";
 import {WorkflowEditorActionType} from "@/constants";
@@ -28,11 +29,6 @@ import DynamicNode from "@/components/workflow/editor/nodes/DynamicNode";
 import {HttpRequestNodeConfigSheet} from "@/components/workflow/editor/sheet/HttpNodeConfigSheet";
 import {DebugNodeConfigSheet} from "@/components/workflow/editor/sheet/DebugNodeSheet";
 import {TriggerNodeConfigSheet} from "@/components/workflow/editor/sheet/TriggerNodeSheet";
-import { Badge } from "@/components/ui/badge"
-import { Spinner } from "@/components/ui/spinner"
-import {PanelWrapper} from "@/components/workflow/editor/Panel/PanelWrapper";
-import {Button} from "@/components/ui/button";
-import {Play, Rocket, Variable} from "lucide-react";
 import {ConditionNodeConfigSheet} from "@/components/workflow/editor/sheet/ConditionNodeConfigSheet";
 import {TransformNodeConfigSheet} from "@/components/workflow/editor/sheet/TransformNodeConfigSheet";
 import {NodesInspector} from "@/components/workflow/editor/sheet/NodesInspector";
@@ -48,6 +44,10 @@ import {RespondNodeConfigSheet} from "@/components/workflow/editor/sheet/Respond
 import {ContextNodeConfigSheet} from "@/components/workflow/editor/sheet/ContextNodeConfigSheet";
 import TriggerNode from "@/components/workflow/editor/nodes/TriggerNode";
 import {ExecutionHistorySheet} from "@/components/workflow/editor/executions/ExecutionHistorySheet";
+import {EditorTopMenu} from "@/components/workflow/editor/menu/EditorTopMenu";
+import {EditorLeftMenu} from "@/components/workflow/editor/menu/EditorLeftMenu";
+import {EditorRightMenu} from "@/components/workflow/editor/menu/EditorRightMenu";
+import {EditorBottomMenu} from "@/components/workflow/editor/menu/EditorBottomMenu";
 
 // --------------------------------------------
 // Component
@@ -178,6 +178,7 @@ export function Editor() {
                 targetHandle: newEdge.targetHandle,
             });
         },
+
         [setGraphEdges, debouncedAddEdge]
     );
 
@@ -259,22 +260,10 @@ export function Editor() {
         >
             <Background color={"#121212"} gap={80} variant={BackgroundVariant.Cross} size={18}/>
 
-            {/* Top Left Controls */}
-            <PanelWrapper position="top-left" width="w-[40px]" className={"h-fit mt-[5%]!"}>
-                <div className="flex flex-col gap-2">
-                    <Button
-                        onClick={() => setIsEditorPanelOpen(true)}
-                        variant="outline" size="xs" className="h-8 w-full rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
-                        A
-                    </Button>
-                    <Button
-                        onClick={handleRunWorkflow}
-                        disabled={isRunning}
-                        variant={"outline"} size="xs" className="h-8 w-full bg-neutral-800/50 border-neutral-700 rounded-sm px-4 text-xs p-2 between gap-1.5 text-black">
-                        <Play size={'11'} className={'text-black font-semibold'}/>
-                    </Button>
-                </div>
-            </PanelWrapper>
+            <EditorTopMenu />
+            <EditorLeftMenu />
+            <EditorRightMenu />
+            <EditorBottomMenu />
 
             <NodesInspector/>
 
@@ -283,6 +272,7 @@ export function Editor() {
                     <EmptyGraphMenu onAddNode={handleAddNode} />
                 </Panel>
             )}
+
             <NodeTemplateSheet
                 open={isSheetOpen}
                 onOpenChange={setIsSheetOpen}
@@ -337,71 +327,6 @@ export function Editor() {
                 className={"w-[700px]! h-full! p-2.5!"}
                 open={open} onOpenChange={setOpen}/>
 
-
-            <PanelWrapper position="top-left"  width="w-48">
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-xs text-neutral-500">Nodes:</span>
-                        <span className="text-xs text-primary">{graphNodes.length}</span>
-                    </div>
-                </div>
-            </PanelWrapper>
-
-            {/* Example 2: Bottom Right Controls */}
-            <PanelWrapper position="top-right" width="w-auto">
-                <div className="flex gap-2">
-                    {editorState.runtime.nodeOutputs && (
-                        <Button
-                            onClick={() => setOpen(true)}
-                            variant="outline" size="xs" className="h-8 rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
-                            Runtime Data
-                        </Button>
-                    )}
-
-                    <Button
-                        onClick={() => setIsExecutionsSheetOpen(true)}
-                        variant="outline" size="xs" className="h-8 rounded-sm p-2 bg-neutral-800/50 border-neutral-700">
-                       Executions
-                    </Button>
-
-                    <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={() => setIsGlobalVariableSheetOpen(true)}
-                        className="bg-neutral-900/50 border-neutral-800 hover:bg-neutral-800 text-[10px] font-bold uppercase tracking-widest h-9 px-3 gap-2 backdrop-blur-md"
-                    >
-                        <Variable size={"12"} className="text-xs text-primary" />
-                        Variables
-                    </Button>
-
-                    <Button
-                        onClick={handleRunWorkflow}
-                        disabled={isRunning}
-                        variant={"default"} size="xs" className="h-8 w-fit rounded-sm px-4 text-xs p-2 between gap-1.5 text-black">
-                        <Play size={'12'} className={'text-black font-semibold'}/>
-                        Run
-                    </Button>
-
-                    <Button
-                        onClick={() => setIsDeployWorkflowDialogOpen(true)}
-                        // disabled={isRunning}
-                        variant={"default"} size="xs" className="h-8 w-fit rounded-sm px-4 text-xs p-2 between gap-1.5 text-black">
-                        <Rocket size={'12'} className={'text-black font-semibold'}/>
-                        Deploy
-                    </Button>
-                </div>
-            </PanelWrapper>
-
-
-            {/* Updating indicator */}
-            <PanelWrapper position="bottom-left" className={"bg-transparent! border-none!"} width="w-auto">
-                {isRunning && (
-                    <Badge variant="outline">
-                        <Spinner data-icon="inline-start" />
-                        Updating
-                    </Badge>
-                )}
-            </PanelWrapper>
         </ReactFlow>
     );
 }

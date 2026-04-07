@@ -167,7 +167,7 @@ export interface DecisionRule {
     label: string;
 }
 
-export interface DecisionNodeConfig extends ContextRegistrationSettings , NodeMetaType{
+export interface DecisionNodeConfig extends ContextRegistrationSettings, NodeMetaType {
     input: string;            // The {{variable}} being evaluated
     inputTransforms: string[]; // Global transforms (e.g. ["trim", "toLowerCase"])
     rules: DecisionRule[];

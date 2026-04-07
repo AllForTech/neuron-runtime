@@ -25,7 +25,7 @@ export async function createExecution(input: CreateExecutionInput) {
         .returning();
 
     await dispatch(RuntimeActionType.ADD_EXECUTION, {
-        payload: execution
+        execution
     })
     return execution;
 }
@@ -94,6 +94,7 @@ export async function updateExecutionStatus(params: {
         .returning();
 
     await dispatch(RuntimeActionType.UPDATE_EXECUTION, {
+        executionId: updated.id,
         payload: {
             status: params.status,
             finishedAt: params.finishedAt,

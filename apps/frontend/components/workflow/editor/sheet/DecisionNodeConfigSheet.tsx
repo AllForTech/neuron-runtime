@@ -29,17 +29,11 @@ import {
 import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
 import { TemplateTextarea } from "@/components/workflow/editor/TemplateTextarea";
 import { cn } from "@/lib/utils";
-import FormField from "@/components/FormField";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { DecisionNodeConfig } from "@neuron/shared";
 
 const TRANSFORMS = ["toLowerCase", "toUpperCase", "trim", "toString", "toNumber"];
 const OPERATORS = ["==", "!=", ">", "<", "includes", "exists"];
-
-interface DecisionNodeConfig {
-    input: string;
-    inputTransforms: string[];
-    rules: any[];
-}
 
 export function DecisionNodeConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen?: (open: boolean) => void }) {
     const { workflowEditorDispatch, editorState: { graph: { nodes, edges }} } = useWorkflowEditor();

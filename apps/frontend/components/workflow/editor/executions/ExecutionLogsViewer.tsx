@@ -9,15 +9,10 @@ import { LogTimeline } from "@/components/workflow/editor/executions/LogsTimelin
 import {ExecutionLoadingSkeleton} from "@/components/workflow/editor/executions/ExecutionLoadingSkeleton";
 
 function ExecutionLogs({ executionId, onBack }: { executionId: string, onBack: () => void }) {
-    const { getExecutionLogs, workflowEditorDispatch, editorState, logs, isLogsLoading } = useWorkflowEditor();
+    const { workflowEditorDispatch, runtimeState, isLogsLoading } = useWorkflowEditor();
 
     // Get the execution metadata from your record state
-    const execution = useMemo(() => editorState.runtime.executions[executionId], [editorState, workflowEditorDispatch])
-
-    useEffect(() => {
-        getExecutionLogs(executionId);
-    }, [executionId]);
-
+    const execution = useMemo(() => runtimeState.executions[executionId], [runtimeState.executions, workflowEditorDispatch])
 
     return isLogsLoading ?  (<ExecutionLoadingSkeleton />) :(
         <div className="h-full flex flex-col overflow-hidden">
@@ -36,7 +31,7 @@ function ExecutionLogs({ executionId, onBack }: { executionId: string, onBack: (
                             </span>
                         </div>
                         <LogTimeline
-                            logs={logs}
+                            logs={runtimeState.logs}
                         />
                     </div>
                 </div>

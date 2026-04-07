@@ -510,14 +510,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 payload: executionRecord
             })
 
-            // const lastExecutionLogs = response.execution ?
-            //     await getExecutionLogs(response.execution[0]?.id) :
-            //     null
-            //
-            // if (lastExecutionLogs) {
-            //     const logsRecord: Record<string, ExecutionLog> = {}
-            //     lastExecutionLogs
-            // }
+            await getExecutionLogs(response.executions[0]?.id)
 
             console.log("Executions", executionRecord)
 
@@ -691,13 +684,25 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
             const data = await getExecutionsLogsRequest(executionId, token)
 
-            setLogs(data);
+            if (data) {
+                const logsRecord: Record<string, ExecutionLog> = {}
+                data.map(e => logsRecord[e.id] = e);
+
+                runtimeDispatch({
+                    type: RuntimeActionType.SET_LOGS,
+                    payload: data
+                })
+
+                return logsRecord;
+            }
+
+            return {}
         }catch (e) {
             console.log(e.message);
         }finally {
             setIsLogsLoading(false);
         }
-    }, [logs, setLogs])
+    }, [runtimeState.logs, runtimeDispatch])
 
     const fitNode = (node: WorkflowNode) => {
         fitView({ nodes: [{ id: node.id }], duration: 800, padding: 0.05, maxZoom: 1.1 });

@@ -41,57 +41,48 @@ function GlobalVariables() {
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
 
+    const debouncedDispatch = useMemo(
+        () => debounce((newVars: any) => {
+            workflowEditorDispatch({
+                type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
+                payload: newVars
+            });
+        }, 500),
+        [workflowEditorDispatch]
+    );
+
     const handleSaveNew = () => {
         if (!draft.key.trim()) return;
-
         const formattedKey = draft.key.toUpperCase().replace(/\s+/g, '_');
 
-        // Create the full GlobalVariable object
-        const newVariable: GlobalVariable = {
-            id: crypto.randomUUID(), // Temporary ID for frontend state
+        const newVariable = {
+            id: crypto.randomUUID(),
             key: formattedKey,
             value: draft.value,
-            type: "string", // You can add logic later to detect 'json' or 'number'
+            type: "string",
             createdAt: new Date(),
             updatedAt: new Date()
         };
 
-        debounce(() => {
-            workflowEditorDispatch({
-                type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
-                payload: { ...variables, [formattedKey]: newVariable }
-            });
-        }, 1000)
-
+        const nextVars = { ...variables, [formattedKey]: newVariable };
+        workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS, payload: nextVars });
         setDraft({ key: "", value: "" });
     };
 
     const handleCommitEdit = (key: string) => {
-        const existingVar = variables[key];
-        if (!existingVar) return;
+        if (!variables[key]) return;
+        const updatedVariable = { ...variables[key], value: editValue, updatedAt: new Date() };
+        const nextVars = { ...variables, [key]: updatedVariable };
 
-        const updatedVariable: GlobalVariable = {
-            ...existingVar,
-            value: editValue,
-            updatedAt: new Date()
-        };
-
-        debounce(() => {
-            workflowEditorDispatch({
-                type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
-                payload: { ...variables, [key]: updatedVariable }
-            });
-        }, 1000)
+        // Use immediate dispatch for explicit "Save" actions
+        workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS, payload: nextVars });
         setEditingKey(null);
     };
 
     const handleDelete = (key: string) => {
-        const newVars = { ...variables };
-        delete newVars[key];
-        workflowEditorDispatch({
-            type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
-            payload: newVars
-        });
+        const nextVars = { ...variables };
+        delete nextVars[key];
+        workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS, payload: nextVars });
     };
 
     const copyToClipboard = (key: string) => {

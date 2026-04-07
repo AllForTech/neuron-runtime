@@ -2,7 +2,7 @@ import {deployedWorkflows} from "../schemas";
 import {db} from "../db/client";
 import {and, eq} from "drizzle-orm";
 import {supabase} from "../middleware/supabaseAuth";
-import {NewDeployedWorkflow} from "../types/workflow/workflow.types";
+import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "../types/workflow/workflow.types";
 import {
     deleteDeploymentByWorkflowId,
     getDeploymentByWorkflowId,
@@ -179,7 +179,15 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
         })
 
         // await neuronEngine.run(deployment.nodes, deployment.edges);
-        await executeWorkflow(workflowId, { nodes: deployment.nodes, edges: deployment.edges } as any)
+        executeWorkflow({
+            runId: execution.id,
+            workflowId,
+            graph: {
+                nodes: deployment.nodes as WorkflowNode[],
+                edges: deployment.edges as WorkflowEdge[],
+            },
+            userId: deployment.userId,
+        })
             .then(async (finalContext) => {
                 console.log(`Workflow ${workflowId} finished.`);
 

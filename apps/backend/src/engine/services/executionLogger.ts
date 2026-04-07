@@ -72,17 +72,31 @@ export async function logNodeExecutionEnd({
     output?: any;
     error?: string;
     duration: number;
-}) {
+}, workflowId?: string, nodeId?: string) {
 
     try {
-
-        return await updateExecutionLog(logId, {
+        const payload = {
             status: error ? "error" : "success",
             output: output ?? null,
             error: error ?? null,
             durationMs: Math.round(duration) ?? null,
             finishedAt: new Date()
+        } as any;
+
+        const { dispatch } = workflowRuntimeBroadcast(workflowId)
+
+        await dispatch(RuntimeActionType.ADD_LOG, {
+            id: logId,
+            payload
         });
+
+        await dispatch(RuntimeActionType.SET_NODE_STATUS, {
+            nodeId: nodeId,
+            status: error ? "error" : "success"
+        });
+
+        return await updateExecutionLog(logId, payload);
+
     }catch (e) {
         console.log("[Neuron]: ", e);
         throw e;

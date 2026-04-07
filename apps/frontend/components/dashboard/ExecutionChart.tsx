@@ -6,8 +6,9 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
+import {Execution} from "@/types";
 
-export function ExecutionChart({ data }: { data: any[] }) {
+export function ExecutionChart({ data }: { data: Execution[] }) {
     const chartData = data.map((d) => ({
         name: new Date(d.startedAt).toLocaleDateString(),
         value: 1,

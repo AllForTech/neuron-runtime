@@ -19,7 +19,8 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ExecutionDataInspector } from "./ExecutionDataInspector";
-import {memo} from "react";
+import {memo, useMemo} from "react";
+import {ExecutionLog} from "@/types";
 
 const nodeIconMap: Record<string, any> = {
     webhook: Zap,
@@ -29,18 +30,23 @@ const nodeIconMap: Record<string, any> = {
     send_email: Mail,
 };
 
-function Logs({ logs }: { logs: any[] }) {
+function Logs({ logs, title }: { logs: Record<string, ExecutionLog>, title?: string }) {
+
+    const formatedLogs = useMemo(() => {
+        return Object.values(logs);
+    }, [logs])
+
     return (
-        <div className="space-y-4 bg-black rounded-xl p-4 border border-neutral-800/80">
-            <header className="flex items-center gap-2 px-1 mb-2">
+        <div className="space-y-4 w-full bg-black rounded-xl p-4 border border-neutral-800/80">
+            <header className="flex items-center gap-2 px-1 mb-6">
                 <Activity className="w-3.5 h-3.5 text-neutral-500" />
                 <span className="text-[10px] font-bold uppercase text-neutral-500 tracking-[0.2em]">
-                    Sequence Telemetry
+                    {title ?? "Sequence Telemetry"}
                 </span>
             </header>
 
             <Accordion type="single" collapsible className="space-y-3">
-                {logs.map((log) => {
+                {formatedLogs.map((log) => {
                     const NodeIcon = nodeIconMap[log.nodeType] || Workflow;
                     const isError = log.status === "error";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, {useState, useMemo, useCallback} from "react";
 import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { ExecutionLogsViewer } from "./ExecutionLogsViewer";
 import { SheetWrapper } from "../SheetWrapper";
@@ -12,6 +12,7 @@ export function ExecutionHistorySheet() {
         runtimeState,
         isExecutionsSheetOpen,
         setIsExecutionsSheetOpen,
+        getExecutionLogs,
     } = useWorkflowEditor();
 
     const [selectedExecutionId, setSelectedExecutionId] = useState<string | null>(null);
@@ -23,6 +24,12 @@ export function ExecutionHistorySheet() {
             (a: any, b: any) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
         );
     }, [runtimeState.executions]);
+
+
+    const handleExecutionClick = useCallback(async (id: string) => {
+        setSelectedExecutionId(id);
+        await getExecutionLogs(id)
+    }, [runtimeState.logs, getExecutionLogs])
 
     return (
         <SheetWrapper
@@ -61,7 +68,7 @@ export function ExecutionHistorySheet() {
                                     <ExecutionCard
                                         key={execution.id}
                                         execution={execution}
-                                        onClick={() => setSelectedExecutionId(execution.id)}
+                                        onClick={() => handleExecutionClick(execution.id)}
                                     />
                                 ))}
                             </div>

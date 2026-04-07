@@ -24,11 +24,11 @@ export function PanelWrapper({
     return (
         <Panel
             position={position}
-            className={cn("m-2", className)}
+            className={cn("m-2 p-0!", className)}
         >
             <div
                 className={cn(
-                    "flex flex-col rounded-md border border-neutral-800/50",
+                    "flex flex-col rounded-xl border border-neutral-800/50",
                     "bg-neutral-900/50 backdrop-blur-md shadow-2xl",
                     "transition-all duration-200",
                     width
@@ -45,7 +45,7 @@ export function PanelWrapper({
                 )}
 
                 {/* Content Area */}
-                <div className="p-2 text-neutral-200 text-xs">
+                <div className="p-1 text-neutral-200 text-xs">
                     {children}
                 </div>
             </div>

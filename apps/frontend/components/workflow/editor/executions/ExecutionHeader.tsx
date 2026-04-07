@@ -1,10 +1,23 @@
 import { ArrowLeft, Calendar, Timer, Hash, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import {cn} from "@/lib/utils";
+import {useMemo} from "react";
 
 export function ExecutionHeader({ execution, onBack }: { execution: any; onBack: () => void }) {
     const isSuccess = execution?.status === "success";
     const StatusIcon = execution?.status === "running" ? Loader2 : isSuccess ? CheckCircle2 : XCircle;
+
+    const timestamp = useMemo(() => {
+        try {
+            if (!execution?.startedAt) return "---";
+            const date = new Date(execution.startedAt);
+            // Check if the date is actually valid (NaN check)
+            if (isNaN(date.getTime())) return "Invalid Date";
+            return format(date, "MMM d, HH:mm:ss");
+        } catch (e) {
+            return "Error";
+        }
+    }, [execution]);
 
     return (
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 mb-8">
@@ -29,7 +42,7 @@ export function ExecutionHeader({ execution, onBack }: { execution: any; onBack:
             </div>
 
             <div className="grid grid-cols-3 gap-8">
-                <Stat icon={Calendar} label="Timestamp" value={format(new Date(execution?.startedAt), "MMM d, HH:mm:ss")} />
+                <Stat icon={Calendar} label="Timestamp" value={timestamp}/>
                 <Stat icon={Timer} label="Duration" value={`${execution?.durationMs || 0}ms`} />
                 <Stat icon={Hash} label="Version" value={execution?.workflowVersionId?.slice(0, 8) || "Direct Run"} />
             </div>

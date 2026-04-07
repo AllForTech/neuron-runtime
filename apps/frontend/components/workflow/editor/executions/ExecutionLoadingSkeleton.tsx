@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ExecutionLoadingSkeleton() {
     return (
-        <div className="h-full flex flex-col space-y-8 p-4 animate-in fade-in duration-500">
+        <div className="h-full w-full! flex flex-col space-y-8 p-4 animate-in fade-in duration-500">
             {/* Header Skeleton */}
             <div className="bg-neutral-900/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl">
                 <div className="flex items-center justify-between mb-6">

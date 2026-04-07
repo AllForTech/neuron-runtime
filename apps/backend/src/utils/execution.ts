@@ -1,4 +1,4 @@
-import type {ExecutionStatus} from "../types/types.js";
+import type {ExecutionStatus} from "../types/types";
 
 export function isFinalStatus(status: ExecutionStatus): boolean {
     return status === "success" || status === "failed"

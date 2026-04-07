@@ -1,9 +1,7 @@
 import {workflowBroadcast} from "../services/supabase/supabase.services";
 import {WorkflowEditorActionType} from "../constant";
-import {nodeRegistry} from "./node.registry";
 import {getGlobalVariables} from "../services/repository/global.variables.repository";
-import {resolveTemplate} from "./resolveTemplate";
-import {WorkflowNode, WorkflowEdge} from "../types/workflow/workflow.types";
+import {WorkflowNode, WorkflowEdge, ExecuteWorkflowType} from "../types/workflow/workflow.types";
 import {createContextEntry} from "../utils/telemetry";
 import {executeNodeRuntime, resolveConfig} from "./runtime/node.runtime";
 import {logNodeExecutionEnd, logNodeExecutionStart} from "./services/executionLogger";
@@ -16,15 +14,14 @@ export type FinalResponseType = {
 } | null;
 
 
-export async function executeWorkflow(
-    runId: string,
-    workflowId: string,
-    graph: {
-        nodes: WorkflowNode[],
-        edges: WorkflowEdge[],
-    },
-    userId?:  string
-) {
+
+
+export async function executeWorkflow({
+    runId,
+    workflowId,
+    graph,
+    userId
+                                      }: ExecuteWorkflowType) {
     const { nodes, edges } = graph;
     const { dispatch } = workflowBroadcast(workflowId);
 
@@ -138,7 +135,7 @@ export async function executeWorkflow(
                 logId,
                 output,
                 duration
-            });
+            }, workflowId, nodeId);
 
             // NEXT NODES
             const nextNodeIds = resolveNextNodes({
@@ -165,7 +162,7 @@ export async function executeWorkflow(
                    logId,
                    error: e.message,
                    duration: 0
-               });
+               }, workflowId, nodeId);
            }
 
         } finally {

@@ -35,3 +35,14 @@ export type NewWorkflowEdge = InferInsertModel<typeof workflowEdges>;
 export type DeployedWorkflow = InferSelectModel<typeof deployedWorkflows>;
 export type NewDeployedWorkflow = InferInsertModel<typeof deployedWorkflows>;
 
+export type ExecuteWorkflowType = {
+    runId: string;
+    workflowId: string;
+    graph: {
+        nodes: WorkflowNode[];
+        edges: WorkflowEdge[];
+    },
+    userId: string;
+    params?: any
+}
+
