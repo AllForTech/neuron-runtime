@@ -1,37 +1,36 @@
 import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-} from "recharts";
-import {Execution} from "@/types";
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import { Execution } from '@/types';
 
 export function ExecutionChart({ data }: { data: Execution[] }) {
-    const chartData = data.map((d) => ({
-        name: new Date(d.startedAt).toLocaleDateString(),
-        value: 1,
-    }));
+  const chartData = data.map((d) => ({
+    name: new Date(d.startedAt).toLocaleDateString(),
+    value: 1,
+  }));
 
-    return (
-        <div
-            className="rounded-2xl border border-white/10 hover:bg-white/[0.05] transition-200 bg-muted/50 p-4 h-[300px]">
-            <p className="text-sm text-white/60 mb-4">Execution Activity</p>
+  return (
+    <div className="transition-200 bg-muted/50 h-[300px] rounded-2xl border border-white/10 p-4 hover:bg-white/[0.05]">
+      <p className="mb-4 text-sm text-white/60">Execution Activity</p>
 
-            <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                    <XAxis dataKey="name" stroke="#888" />
-                    <YAxis stroke="#888" />
-                    <Tooltip />
-                    <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#ffffff"
-                        strokeWidth={2}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
-    );
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <XAxis dataKey="name" stroke="#888" />
+          <YAxis stroke="#888" />
+          <Tooltip />
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#ffffff"
+            strokeWidth={2}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 }

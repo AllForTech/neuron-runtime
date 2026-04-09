@@ -17,7 +17,7 @@ export const deployedWorkflows = pgTable("deployed_workflows", {
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
 
-    secretKey: text("secret_key").notNull().unique(),
+    secretKey: text("secret_key"),
 
     name: text("name").notNull(),
     private: boolean("private").default(true).notNull(),

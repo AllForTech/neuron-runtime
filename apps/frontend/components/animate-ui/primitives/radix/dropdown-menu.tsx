@@ -43,7 +43,7 @@ function DropdownMenu(props: DropdownMenuProps) {
     onChange: props?.onOpenChange,
   });
   const [highlightedValue, setHighlightedValue] = React.useState<string | null>(
-    null,
+    null
   );
 
   return (
@@ -148,7 +148,7 @@ function DropdownMenuSubTrigger({
         const v = el?.dataset.value || el?.id || null;
         if (v) setHighlightedValue(v);
       }
-    },
+    }
   );
 
   return (
@@ -363,7 +363,7 @@ function DropdownMenuItem({
         const v = el?.dataset.value || el?.id || null;
         if (v) setHighlightedValue(v);
       }
-    },
+    }
   );
 
   return (
@@ -407,7 +407,7 @@ function DropdownMenuCheckboxItem({
         const v = el?.dataset.value || el?.id || null;
         if (v) setHighlightedValue(v);
       }
-    },
+    }
   );
 
   return (
@@ -452,7 +452,7 @@ function DropdownMenuRadioItem({
         const v = el?.dataset.value || el?.id || null;
         if (v) setHighlightedValue(v);
       }
-    },
+    }
   );
 
   return (

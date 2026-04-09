@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { memo, useEffect, useState } from "react";
-import { Node } from "reactflow";
+import React, { memo, useEffect, useState } from 'react';
+import { Node } from 'reactflow';
 import {
     Brain,
     ShieldCheck,
@@ -10,71 +10,86 @@ import {
     Scale,
     Info,
     Braces,
-    ExternalLink
-} from "lucide-react";
+    ExternalLink,
+} from 'lucide-react';
 
-import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
-import { WorkflowEditorActionType } from "@/constants";
-import { SheetWrapper } from "@/components/workflow/editor/SheetWrapper";
-import { getAvailableUpstreamNodes } from "@/lib/utils";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
+import { WorkflowEditorActionType } from '@/constants';
+import { SheetWrapper } from '@/components/workflow/editor/SheetWrapper';
+import { getAvailableUpstreamNodes } from '@/lib/utils';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
-import { PromptOrchestrator } from "@/components/workflow/editor/sheet/PromptOrchestrator";
-import { LLMNodeConfig } from "@neuron/shared";
-import { SchemaDialog } from "@/components/workflow/editor/dialog/SchemaDialog";
+    SelectValue,
+} from '@/components/ui/select';
+import { PromptOrchestrator } from '@/components/workflow/editor/sheet/PromptOrchestrator';
+import { LLMNodeConfig } from '@neuron/shared';
+import { SchemaDialog } from '@/components/workflow/editor/dialog/SchemaDialog';
+import { TemplateTextarea } from "../TemplateTextarea";
 
 const LLM_PROVIDERS = [
-    { label: "OpenAI", value: "openai", icon: "🟢" },
-    { label: "Anthropic", value: "anthropic", icon: "🟠" },
-    { label: "Google Gemini", value: "gemini", icon: "🔵" },
-    { label: "Ollama (Local)", value: "ollama", icon: "🦙" },
+    { label: 'OpenAI', value: 'openai', icon: '🟢' },
+    { label: 'Anthropic', value: 'anthropic', icon: '🟠' },
+    { label: 'Google Gemini', value: 'gemini', icon: '🔵' },
+    { label: 'Ollama (Local)', value: 'ollama', icon: '🦙' },
 ];
 
 const LLM_MODELS: Record<string, { label: string; value: string }[]> = {
     openai: [
-        { label: "GPT-4o", value: "gpt-4o" },
-        { label: "GPT-4o Mini", value: "gpt-4o-mini" },
+        { label: 'GPT-4o', value: 'gpt-4o' },
+        { label: 'GPT-4o Mini', value: 'gpt-4o-mini' },
     ],
     anthropic: [
-        { label: "Claude 3.5 Sonnet", value: "claude-3-5-sonnet-20240620" },
+        { label: 'Claude 3.5 Sonnet', value: 'claude-3-5-sonnet-20240620' },
     ],
-    gemini: [
-        { label: "Gemini 1.5 Pro", value: "gemini-1.5-pro" },
-    ],
+    gemini: [{ label: 'Gemini 1.5 Pro', value: 'gemini-1.5-pro' }],
     ollama: [
-        { label: "Llama 3 (8B)", value: "llama3" },
-        { label: "Mistral", value: "mistral" },
-    ]
+        { label: 'Llama 3 (8B)', value: 'llama3' },
+        { label: 'Mistral', value: 'mistral' },
+    ],
 };
 
-function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onOpen: (open: boolean) => void }) {
-    const { workflowEditorDispatch, editorState: { graph: { nodes, edges } } } = useWorkflowEditor();
+function LLMConfigSheet({
+                            node,
+                            open,
+                            onOpen,
+                        }: {
+    node: Node;
+    open: boolean;
+    onOpen: (open: boolean) => void;
+}) {
+    const {
+        workflowEditorDispatch,
+        editorState: {
+            graph: { nodes, edges },
+        },
+    } = useWorkflowEditor();
 
     // 1. Initialize local state from node config
     const [config, setConfig] = useState<LLMNodeConfig>({
-        provider: "openai",
-        model: "gpt-4o",
-        systemPrompt: "",
-        userPrompt: "",
+        provider: 'openai',
+        model: 'gpt-4o',
+        systemPrompt: '',
+        userPrompt: '',
         temperature: 0.7,
-        outputSchema: "",
+        outputSchema: '',
         maxTokens: 2048,
         jsonMode: false,
-        apiKey: "{{Vault.OPENAI_API_KEY}}",
+        apiKey: '{{Vault.OPENAI_API_KEY}}',
         ...node.data,
     });
 
-    const availableVariables = getAvailableUpstreamNodes(node.id, { nodes, edges });
+    const availableVariables = getAvailableUpstreamNodes(node.id, {
+        nodes,
+        edges,
+    });
 
     // 2. Debounced sync to global workflow state
     useEffect(() => {
@@ -85,21 +100,21 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
             workflowEditorDispatch({
                 type: WorkflowEditorActionType.UPDATE_NODE,
                 id: node.id,
-                payload: config
+                payload: config,
             });
         }, 300);
         return () => clearTimeout(timer);
     }, [config, node.id, workflowEditorDispatch]);
 
     const handleChange = (key: string, value: any) => {
-        setConfig(prev => ({ ...prev, [key]: value }));
+        setConfig((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleProviderChange = (val: string) => {
-        setConfig(prev => ({
+        setConfig((prev) => ({
             ...prev,
             provider: val,
-            model: LLM_MODELS[val]?.[0]?.value || ""
+            model: LLM_MODELS[val]?.[0]?.value || '',
         }));
     };
 
@@ -111,45 +126,63 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
             nodeMeta={config?.meta}
             onMetaUpdate={handleChange}
             executionConfig={config.executionConfig}
-            onExecutionConfigUpdate={(newExec) => handleChange('executionConfig', newExec)}
+            onExecutionConfigUpdate={(newExec) =>
+                handleChange('executionConfig', newExec)
+            }
             title="AI Brain Configuration"
-            className="w-[550px]! p-0! bg-neutral-950/95 backdrop-blur-2xl border-l border-neutral-800"
+            className="w-[550px]! border-l border-neutral-800 bg-neutral-950/95 p-0! backdrop-blur-2xl"
         >
-            <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex h-full flex-col overflow-hidden">
                 {/* STATUS SUB-HEADER */}
-                <div className="flex items-center justify-between px-6 py-3 bg-neutral-900/40 border-b border-neutral-800/50">
+                <div className="flex items-center justify-between border-b border-neutral-800/50 bg-neutral-900/40 px-6 py-3">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <Brain className="w-3.5 h-3.5 text-purple-400" />
-                            <span className="text-[10px] font-mono text-neutral-400">Node Type: Inference</span>
+                            <Brain className="h-3.5 w-3.5 text-purple-400" />
+                            <span className="font-mono text-[10px] text-neutral-400">
+                Node Type: Inference
+              </span>
                         </div>
                     </div>
-                    <Badge variant="outline" className="text-[9px] border-neutral-800 text-neutral-500 uppercase tracking-tight">
+                    <Badge
+                        variant="outline"
+                        className="border-neutral-800 text-[9px] tracking-tight text-neutral-500 uppercase"
+                    >
                         Aggregator Node
                     </Badge>
                 </div>
 
                 <ScrollArea className="flex-1">
-                    <div className="p-6 space-y-8">
+                    <div className="space-y-8 p-6 px-4!">
                         {/* SECTION 1: SYSTEM TOPOLOGY */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="p-1.5 bg-blue-500/10 rounded-md">
-                                    <Settings2 className="w-3.5 h-3.5 text-blue-500" />
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="rounded-md bg-blue-500/10 p-1.5">
+                                    <Settings2 className="h-3.5 w-3.5 text-blue-500" />
                                 </div>
-                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-200">System Topology</h4>
+                                <h4 className="text-[11px] font-bold tracking-widest text-neutral-200 uppercase">
+                                    System Topology
+                                </h4>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 bg-neutral-900/20 p-4 rounded-xl border border-neutral-800/50">
+                            <div className="grid grid-cols-2 gap-4 rounded-xl border border-neutral-800/50 bg-neutral-900/20 p-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-semibold text-neutral-500 ml-1">AI Provider</label>
-                                    <Select value={config.provider} onValueChange={handleProviderChange}>
-                                        <SelectTrigger className="bg-neutral-900/50 border-neutral-800 text-xs h-9 focus:ring-blue-500/50">
+                                    <label className="ml-1 text-[10px] font-semibold text-neutral-500">
+                                        AI Provider
+                                    </label>
+                                    <Select
+                                        value={config.provider}
+                                        onValueChange={handleProviderChange}
+                                    >
+                                        <SelectTrigger className="h-9 border-neutral-800 bg-neutral-900/50 text-xs focus:ring-blue-500/50">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-neutral-950 border-neutral-800">
+                                        <SelectContent className="border-neutral-800 bg-neutral-950">
                                             {LLM_PROVIDERS.map((p) => (
-                                                <SelectItem key={p.value} value={p.value} className="text-xs">
+                                                <SelectItem
+                                                    key={p.value}
+                                                    value={p.value}
+                                                    className="text-xs"
+                                                >
                                                     <span className="mr-2">{p.icon}</span> {p.label}
                                                 </SelectItem>
                                             ))}
@@ -158,27 +191,40 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-semibold text-neutral-500 ml-1">Model Profile</label>
-                                    <Select value={config.model} onValueChange={(val) => handleChange("model", val)}>
-                                        <SelectTrigger className="bg-neutral-900/50 border-neutral-800 text-xs h-9 focus:ring-blue-500/50">
+                                    <label className="ml-1 text-[10px] font-semibold text-neutral-500">
+                                        Model Profile
+                                    </label>
+                                    <Select
+                                        value={config.model}
+                                        onValueChange={(val) => handleChange('model', val)}
+                                    >
+                                        <SelectTrigger className="h-9 border-neutral-800 bg-neutral-900/50 text-xs focus:ring-blue-500/50">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-neutral-950 border-neutral-800">
+                                        <SelectContent className="border-neutral-800 bg-neutral-950">
                                             {LLM_MODELS[config.provider]?.map((m) => (
-                                                <SelectItem key={m.value} value={m.value} className="text-xs">{m.label}</SelectItem>
+                                                <SelectItem
+                                                    key={m.value}
+                                                    value={m.value}
+                                                    className="text-xs"
+                                                >
+                                                    {m.label}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="col-span-2 space-y-2">
-                                    <label className="text-[10px] font-semibold text-neutral-500 ml-1 flex items-center gap-1.5">
-                                        <ShieldCheck className="w-3 h-3 text-emerald-500" /> API Gateway Credentials
+                                    <label className="ml-1 flex items-center gap-1.5 text-[10px] font-semibold text-neutral-500">
+                                        <ShieldCheck className="h-3 w-3 text-emerald-500" /> API
+                                        Gateway Credentials
                                     </label>
-                                    <Input
+                                    <TemplateTextarea
+                                        variables={availableVariables}
                                         value={config.apiKey}
-                                        onChange={(e) => handleChange("apiKey", e.target.value)}
-                                        className="bg-black/60 border-neutral-800 text-xs h-9 focus:border-neutral-500/50"
+                                        onChange={(value) => handleChange('apiKey', value)}
+                                        className="h-9 border-neutral-800 bg-black/60 text-xs focus:border-neutral-500/50"
                                         placeholder="{{Vault.OPENAI_API_KEY}}"
                                     />
                                 </div>
@@ -186,30 +232,34 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
                         </div>
 
                         {/* SECTION 2: HYPERPARAMETERS */}
-                        <div className="space-y-4 pt-4 border-t border-neutral-900">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="p-1.5 bg-amber-500/10 rounded-md">
-                                    <Scale className="w-3.5 h-3.5 text-amber-500" />
+                        <div className="space-y-4 border-t border-neutral-900 pt-4">
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="rounded-md bg-amber-500/10 p-1.5">
+                                    <Scale className="h-3.5 w-3.5 text-amber-500" />
                                 </div>
-                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-200">Hyperparameters</h4>
+                                <h4 className="text-[11px] font-bold tracking-widest text-neutral-200 uppercase">
+                                    Hyperparameters
+                                </h4>
                             </div>
 
-                            <div className="space-y-6 bg-neutral-900/20 p-4 rounded-xl border border-neutral-800/50">
+                            <div className="space-y-6 rounded-xl border border-neutral-800/50 bg-neutral-900/20 p-4">
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center px-1">
-                                        <label className="text-[10px] font-bold text-neutral-400">Temperature</label>
-                                        <span className="text-xs font-mono text-white bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-700">
-                                            {config.temperature.toFixed(1)}
-                                        </span>
+                                    <div className="flex items-center justify-between px-1">
+                                        <label className="text-[10px] font-bold text-neutral-400">
+                                            Temperature
+                                        </label>
+                                        <span className="rounded border border-neutral-700 bg-neutral-800 px-1.5 py-0.5 font-mono text-xs text-white">
+                      {config.temperature.toFixed(1)}
+                    </span>
                                     </div>
                                     <Slider
                                         value={[config.temperature]}
                                         max={1}
                                         step={0.1}
-                                        onValueChange={([val]) => handleChange("temperature", val)}
+                                        onValueChange={([val]) => handleChange('temperature', val)}
                                         className="py-2"
                                     />
-                                    <div className="flex justify-between text-[9px] text-neutral-600 font-mono tracking-wider">
+                                    <div className="flex justify-between font-mono text-[9px] tracking-wider text-neutral-600">
                                         <span>Precise (0.0)</span>
                                         <span>Creative (1.0)</span>
                                     </div>
@@ -217,24 +267,32 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
 
                                 <div className="grid grid-cols-2 gap-4 pt-2">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-neutral-400 ml-1">Max Tokens</label>
+                                        <label className="ml-1 text-[10px] font-bold text-neutral-400">
+                                            Max Tokens
+                                        </label>
                                         <Input
                                             type="number"
                                             value={config.maxTokens}
-                                            onChange={(e) => handleChange("maxTokens", Number(e.target.value))}
-                                            className="bg-black/60 border-neutral-800 text-xs h-9"
+                                            onChange={(e) =>
+                                                handleChange('maxTokens', Number(e.target.value))
+                                            }
+                                            className="h-9 border-neutral-800 bg-black/60 text-xs"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-neutral-400 ml-1">Structured Output</label>
-                                        <div className="flex items-center justify-between h-9 bg-black/60 border border-neutral-800 rounded-lg px-3">
-                                            <span className="text-xs text-neutral-400 flex items-center gap-1.5">
-                                                <Braces className="w-3 h-3" /> JSON Mode
-                                            </span>
+                                        <label className="ml-1 text-[10px] font-bold text-neutral-400">
+                                            Structured Output
+                                        </label>
+                                        <div className="flex h-9 items-center justify-between rounded-lg border border-neutral-800 bg-black/60 px-3">
+                      <span className="flex items-center gap-1.5 text-xs text-neutral-400">
+                        <Braces className="h-3 w-3" /> JSON Mode
+                      </span>
                                             <Switch
                                                 checked={config.jsonMode}
-                                                onCheckedChange={(checked) => handleChange("jsonMode", checked)}
+                                                onCheckedChange={(checked) =>
+                                                    handleChange('jsonMode', checked)
+                                                }
                                                 className="data-[state=checked]:bg-emerald-500"
                                             />
                                         </div>
@@ -242,16 +300,21 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
                                 </div>
 
                                 {config.jsonMode && (
-                                    <SchemaDialog value={config.outputSchema ?? ""} onChange={(val) => handleChange("outputSchema", val)}/>
+                                    <SchemaDialog
+                                        value={config.outputSchema ?? ''}
+                                        onChange={(val) => handleChange('outputSchema', val)}
+                                    />
                                 )}
                             </div>
                         </div>
 
                         {/* SECTION 3: PROMPT ORCHESTRATOR */}
-                        <div className="space-y-4 pt-4 border-t border-neutral-900">
-                            <div className="flex items-center gap-2 mb-2 px-1">
-                                <Sparkles className="w-3.5 h-3.5 text-white" />
-                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-neutral-200">Execution Logic</h4>
+                        <div className="space-y-4 border-t border-neutral-900 pt-4">
+                            <div className="mb-2 flex items-center gap-2 px-1">
+                                <Sparkles className="h-3.5 w-3.5 text-white" />
+                                <h4 className="text-[11px] font-bold tracking-widest text-neutral-200 uppercase">
+                                    Execution Logic
+                                </h4>
                             </div>
 
                             <PromptOrchestrator
@@ -264,17 +327,25 @@ function LLMConfigSheet({ node, open, onOpen }: { node: Node, open: boolean, onO
                         </div>
 
                         {/* HELPER FOOTER BOX */}
-                        <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 flex gap-4">
-                            <div className="p-2 bg-blue-500/10 rounded-lg h-fit">
-                                <Info className="w-4 h-4 text-blue-400" />
+                        <div className="flex gap-4 rounded-xl border border-blue-500/10 bg-blue-500/5 p-4">
+                            <div className="h-fit rounded-lg bg-blue-500/10 p-2">
+                                <Info className="h-4 w-4 text-blue-400" />
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[11px] font-semibold text-neutral-300">Context Window Compression Enabled</p>
-                                <p className="text-[10px] text-neutral-500 leading-normal">
-                                    The active node automatically shrinks prompt lengths to save on cost. Access upstream objects using the <code className="text-purple-400 bg-purple-400/5 px-1 rounded">{"{{node_id}}"}</code> token.
+                                <p className="text-[11px] font-semibold text-neutral-300">
+                                    Context Window Compression Enabled
                                 </p>
-                                <button className="flex items-center gap-1 text-[10px] text-blue-500 font-medium pt-1 hover:underline">
-                                    View latency benchmarks <ExternalLink className="w-2.5 h-2.5" />
+                                <p className="text-[10px] leading-normal text-neutral-500">
+                                    The active node automatically shrinks prompt lengths to save
+                                    on cost. Access upstream objects using the{' '}
+                                    <code className="rounded bg-purple-400/5 px-1 text-purple-400">
+                                        {'{{node_id}}'}
+                                    </code>{' '}
+                                    token.
+                                </p>
+                                <button className="flex items-center gap-1 pt-1 text-[10px] font-medium text-blue-500 hover:underline">
+                                    View latency benchmarks{' '}
+                                    <ExternalLink className="h-2.5 w-2.5" />
                                 </button>
                             </div>
                         </div>

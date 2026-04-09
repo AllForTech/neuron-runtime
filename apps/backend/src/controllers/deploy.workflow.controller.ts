@@ -142,6 +142,8 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
     const workflowId = req.params.workflowId;
     // const apiKey = req.workflowKey;
 
+    // TODO: WorkflowId is the deployment id, fix for feature improvement and readability
+
     try {
 
         const [deployment] = await db
@@ -152,6 +154,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 userId: deployedWorkflows.userId,
                 isPrivate: deployedWorkflows.private,
                 isActive: deployedWorkflows.isActive,
+                workflowId: deployedWorkflows.workflowId,
             })
             .from(deployedWorkflows)
             .where(
@@ -174,14 +177,14 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
         // Sync to execution table
         const execution = await createExecution({
-            workflowId,
+            workflowId: deployment.workflowId,
             userId: deployment.userId,
         })
 
         // await neuronEngine.run(deployment.nodes, deployment.edges);
         executeWorkflow({
             runId: execution.id,
-            workflowId,
+            workflowId: deployment.workflowId,
             graph: {
                 nodes: deployment.nodes as WorkflowNode[],
                 edges: deployment.edges as WorkflowEdge[],
@@ -189,7 +192,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
             userId: deployment.userId,
         })
             .then(async (finalContext) => {
-                console.log(`Workflow ${workflowId} finished.`);
+                console.log(`Workflow ${deployment.workflowId} finished.`);
 
                 // Update status (Success)
                 await updateExecutionStatus({
@@ -197,18 +200,26 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                     status: "success",
                     userId: deployment.userId,
                     result: finalContext.response,
-                })
+                }, deployment.workflowId)
 
-                const { status, body, headers } = finalContext.response;
+                if (finalContext.response){
+                    const { status, body, headers } = finalContext.response;
 
-                if (headers) {
-                    res.set(headers);
+                    if (headers) {
+                        res.set(headers);
+                    }
+
+                    return res.status(status || 200).json(body);
+                }else {
+                    return res.status(200).json({
+                        success: true,
+                        message: "workflow executed successfully.",
+                        context: finalContext,
+                    });
                 }
-
-                return res.status(status || 200).json(body);
             })
             .catch(async err => {
-                console.error(`Workflow ${workflowId} failed:`, err);
+                console.error(`Workflow ${deployment.workflowId} failed:`, err);
 
                 // Update status (Failed)
                 await updateExecutionStatus({
@@ -216,7 +227,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                     status: "failed",
                     userId: deployment.userId,
                     result: err?.message ?? err,
-                })
+                }, deployment.workflowId)
 
                 return res.status(500).json({
                     success: false,

@@ -26,7 +26,7 @@ type DialogProps<TTag extends React.ElementType = 'div'> =
   DialogPrimitiveProps<TTag>;
 
 function Dialog<TTag extends React.ElementType = 'div'>(
-  props: DialogProps<TTag>,
+  props: DialogProps<TTag>
 ) {
   return <DialogPrimitive {...props} />;
 }
@@ -35,7 +35,7 @@ type DialogCloseProps<TTag extends React.ElementType = 'button'> =
   DialogClosePrimitiveProps<TTag>;
 
 function DialogClose<TTag extends React.ElementType = 'button'>(
-  props: DialogCloseProps<TTag>,
+  props: DialogCloseProps<TTag>
 ) {
   return <DialogClosePrimitive {...props} />;
 }
@@ -72,7 +72,7 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>({
       <DialogPanelPrimitive
         className={cn(
           'bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg sm:max-w-lg',
-          className,
+          className
         )}
         {...props}
       >
@@ -96,7 +96,7 @@ type DialogHeaderProps<TTag extends React.ElementType = 'div'> =
   DialogHeaderPrimitiveProps<TTag>;
 
 function DialogHeader<TTag extends React.ElementType = 'div'>(
-  props: DialogHeaderProps<TTag>,
+  props: DialogHeaderProps<TTag>
 ) {
   const { as = 'div', className, ...rest } = props;
 
@@ -120,7 +120,7 @@ function DialogFooter<TTag extends React.ElementType = 'div'>({
     <DialogFooterPrimitive
       className={cn(
         'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
-        className,
+        className
       )}
       {...props}
     />

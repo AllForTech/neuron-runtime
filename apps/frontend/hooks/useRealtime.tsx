@@ -1,28 +1,28 @@
-"use client"
+'use client';
 
-import { useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 export function useRealtime(userId: string, onChange: (payload?: any) => void) {
-  const supabase = createClient()
+  const supabase = createClient();
 
   useEffect(() => {
     const channel = supabase
-      .channel("tasks-channel")
+      .channel('tasks-channel')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "tasks",
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
           filter: `user_id=eq.${userId}`,
         },
         onChange
       )
-      .subscribe()
+      .subscribe();
 
     return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [userId])
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
 }

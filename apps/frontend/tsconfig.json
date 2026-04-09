@@ -22,10 +22,7 @@
       "@/*": ["./*"]
     }
   },
-  "references": [
-    { "path": "./shared" },
-    { "path": "./backend" }
-  ],
+  "references": [{ "path": "./shared" }, { "path": "./backend" }],
   "include": [
     "next-env.d.ts",
     "**/*.ts",

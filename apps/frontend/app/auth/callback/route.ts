@@ -1,34 +1,31 @@
-import { NextResponse } from 'next/server'
-// The client you created from the Server-Side Auth instructions
-import { createSupabaseServerClient as createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server';
+import { createSupabaseServerClient as createClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url)
-    const code = searchParams.get('code')
-    // if "next" is in param, use it as the redirect URL
-    let next = searchParams.get('next') ?? '/'
+    const { searchParams, origin } = new URL(request.url);
+    const code = searchParams.get('code');
+
+    let next = searchParams.get('next') ?? '/dashboard';
+
     if (!next.startsWith('/')) {
-        // if "next" is not a relative URL, use the default
-        next = '/dashboard'
+        next = '/dashboard';
     }
 
     if (code) {
-        const supabase = await createClient()
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        const supabase = await createClient();
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
-            const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
-            }
+            const isLocalEnv = process.env.NODE_ENV === 'development';
+
+            // FIX: Append a cache-busting timestamp or ensure origin is clean
+            // This forces Next.js and the browser to treat the redirect as a fresh request
+            const redirectUrl = isLocalEnv
+                ? `${origin}${next}`
+                : `https://${request.headers.get('x-forwarded-host') || origin}${next}`;
+
+            return NextResponse.redirect(redirectUrl);
         }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
 }

@@ -54,7 +54,7 @@ type DialogBackdropProps<TTag extends React.ElementType = typeof motion.div> =
     };
 
 function DialogBackdrop<TTag extends React.ElementType = typeof motion.div>(
-  props: DialogBackdropProps<TTag>,
+  props: DialogBackdropProps<TTag>
 ) {
   const {
     as = motion.div,
@@ -86,7 +86,7 @@ type DialogPanelProps<TTag extends React.ElementType = typeof motion.div> =
     };
 
 function DialogPanel<TTag extends React.ElementType = typeof motion.div>(
-  props: DialogPanelProps<TTag>,
+  props: DialogPanelProps<TTag>
 ) {
   const {
     children,
@@ -139,7 +139,7 @@ type DialogCloseProps<TTag extends React.ElementType = 'div'> =
   };
 
 function DialogClose<TTag extends React.ElementType = 'button'>(
-  props: DialogCloseProps<TTag>,
+  props: DialogCloseProps<TTag>
 ) {
   const { as = 'button', ...rest } = props;
 
@@ -180,7 +180,7 @@ type DialogTitleProps<TTag extends React.ElementType = 'h2'> =
   };
 
 function DialogTitle<TTag extends React.ElementType = 'h2'>(
-  props: DialogTitleProps<TTag>,
+  props: DialogTitleProps<TTag>
 ) {
   return <DialogTitlePrimitive data-slot="dialog-title" {...props} />;
 }
@@ -192,7 +192,7 @@ type DialogDescriptionProps<TTag extends React.ElementType = 'div'> =
   };
 
 function DialogDescription<TTag extends React.ElementType = 'div'>(
-  props: DialogDescriptionProps<TTag>,
+  props: DialogDescriptionProps<TTag>
 ) {
   return (
     <DialogDescriptionPrimitive data-slot="dialog-description" {...props} />

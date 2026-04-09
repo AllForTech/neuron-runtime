@@ -1,66 +1,66 @@
-"use client";
+'use client';
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from 'lucide-react';
 import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar
-} from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { usePathname, useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export function NavRoutes({
-                              routes,
-                          }: {
-    routes: {
-        name: string
-        href: string
-        icon: LucideIcon
-    }[]
+  routes,
+}: {
+  routes: {
+    name: string;
+    href: string;
+    icon: LucideIcon;
+  }[];
 }) {
-    const path = usePathname();
-    const router = useRouter();
-    const { state } = useSidebar();
+  const path = usePathname();
+  const router = useRouter();
+  const { state } = useSidebar();
 
-    return (
-        <SidebarGroup>
-            <SidebarGroupLabel>Routes</SidebarGroupLabel>
-            <SidebarMenu>
-                {routes.map((item) => {
-                    const isActive = path === item.href;
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Routes</SidebarGroupLabel>
+      <SidebarMenu>
+        {routes.map((item) => {
+          const isActive = path === item.href;
 
-                    return (
-                        <SidebarMenuItem key={item.href}>
-                            <SidebarMenuButton
-                                onClick={() => router.push(item.href)}
-                                // logic: active state uses your neutral-800,
-                                // text color shifts to purple-400 when active to match your theme
-                                className={cn(
-                                    "transition-colors",
-                                    isActive && "bg-neutral-700 text-primary! font-medium"
-                                )}
-                                tooltip={item.name}
-                            >
-                                {item.icon && (
-                                    <item.icon className={cn(
-                                        "w-4 h-4",
-                                        isActive ? "text-primary!" : "text-neutral-400"
-                                    )} />
-                                )}
+          return (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                onClick={() => router.push(item.href)}
+                // logic: active state uses your neutral-800,
+                // text color shifts to purple-400 when active to match your theme
+                className={cn(
+                  'transition-colors',
+                  isActive && 'text-primary! bg-neutral-700 font-medium'
+                )}
+                tooltip={item.name}
+              >
+                {item.icon && (
+                  <item.icon
+                    className={cn(
+                      'h-4 w-4',
+                      isActive ? 'text-primary!' : 'text-neutral-400'
+                    )}
+                  />
+                )}
 
-                                {state === "expanded" && (
-                                    <span className="text-xs tracking-tight">
-                                        {item.name}
-                                    </span>
-                                )}
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    );
-                })}
-            </SidebarMenu>
-        </SidebarGroup>
-    )
+                {state === 'expanded' && (
+                  <span className="text-xs tracking-tight">{item.name}</span>
+                )}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
+      </SidebarMenu>
+    </SidebarGroup>
+  );
 }

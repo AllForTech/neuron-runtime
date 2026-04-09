@@ -1,11 +1,11 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
 * {
-    box-sizing: border-box !important ;
+  box-sizing: border-box !important ;
 }
 
 @theme inline {
@@ -116,7 +116,7 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.164 0 89.876 / 0.0);
+  --sidebar-border: oklch(0.164 0 89.876 / 0);
   --sidebar-ring: oklch(0.556 0 0);
 }
 
@@ -128,220 +128,219 @@
   body {
     @apply bg-background text-foreground;
     @apply bg-background text-foreground;
-      @apply subpixel-antialiased;
-      text-rendering: optimizeLegibility;
+    @apply subpixel-antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
 
 @layer utilities {
-    .screen {
-        @apply h-[100dvh] w-[100dvw];
-    }
-    .container-full {
-        @apply h-full w-full;
-    }
-    .center {
-        @apply flex items-center justify-center;
-    }
-    .between {
-        @apply flex items-center justify-between;
-    }
-    .container-fit {
-        @apply h-fit w-fit;
-    }
-    .transition-200 {
-        @apply transition-all duration-200 ease-in-out;
-    }
-    .transition-300 {
-        @apply transition-all duration-300 ease-in-out;
-    }
-    .transition-400 {
-        @apply transition-all duration-400 ease-in-out;
-    }
-    .workflow-card {
-        @apply border border-neutral-900 hover:border hover:border-primary transition-all duration-200 ease-in-out;
-    }
-    .card-surface {
-        @apply border-0 bg-card/70 hover:bg-card transition-all duration-200 ease-in-out;
-    }
+  .screen {
+    @apply h-[100dvh] w-[100dvw];
+  }
+  .container-full {
+    @apply h-full w-full;
+  }
+  .center {
+    @apply flex items-center justify-center;
+  }
+  .between {
+    @apply flex items-center justify-between;
+  }
+  .container-fit {
+    @apply h-fit w-fit;
+  }
+  .transition-200 {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .transition-300 {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .transition-400 {
+    @apply transition-all duration-400 ease-in-out;
+  }
+  .workflow-card {
+    @apply hover:border-primary border border-neutral-900 transition-all duration-200 ease-in-out hover:border;
+  }
+  .card-surface {
+    @apply bg-card/70 hover:bg-card border-0 transition-all duration-200 ease-in-out;
+  }
 
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
-    .mask-fade-bottom {
-        mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-    }
+  .mask-fade-bottom {
+    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+  }
 }
 
 @keyframes neuralFlow {
-    from {
-        offset-distance: 0%;
-    }
-    to {
-        offset-distance: 100%;
-    }
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
 }
 
 .animate-neural-flow {
-    /* This ensures the browser knows to treat the path as a motion coordinate */
-    offset-path: path("M 60 40 C 60 120, 290 120, 290 200 S 60 280, 60 360 S 290 440, 290 520 S 60 600, 60 640");
-    offset-rotate: auto;
-    animation: neuralFlow 25s linear infinite;
+  /* This ensures the browser knows to treat the path as a motion coordinate */
+  offset-path: path(
+    'M 60 40 C 60 120, 290 120, 290 200 S 60 280, 60 360 S 290 440, 290 520 S 60 600, 60 640'
+  );
+  offset-rotate: auto;
+  animation: neuralFlow 25s linear infinite;
 }
 
 #hide-scrollbar {
-    /* For Internet Explorer and Edge */
-    -ms-overflow-style: none !important;
-    /* For Firefox */
-    scrollbar-width: none !important;
+  /* For Internet Explorer and Edge */
+  -ms-overflow-style: none !important;
+  /* For Firefox */
+  scrollbar-width: none !important;
 }
 
 /* For Chrome, Safari, and Opera */
 #hide-scrollbar::-webkit-scrollbar {
-    display: none !important;
+  display: none !important;
 }
 
 #custom-scrollbar::-webkit-scrollbar {
-    width: 8px !important;
-    height: 8px !important;
+  width: 8px !important;
+  height: 8px !important;
 }
 #custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #4b5563; /* gray-600 */
-    border-radius: 4px;
+  background-color: #4b5563; /* gray-600 */
+  border-radius: 4px;
 }
 #custom-scrollbar::-webkit-scrollbar-track {
-    background-color: #1f2937; /* gray-800 */
+  background-color: #1f2937; /* gray-800 */
 }
-
 
 /* Ensure the suggestion list is actually clickable */
 .tippy-box[data-theme='variable-menu'] {
-    background: transparent;
-    border: none;
+  background: transparent;
+  border: none;
 }
 
 .tippy-content {
-    padding: 0 !important;
-    pointer-events: auto !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
 }
 
 @keyframes dash {
-    to {
-        stroke-dashoffset: -20;
-    }
+  to {
+    stroke-dashoffset: -20;
+  }
 }
 
-
-
-.quick-input-widget{
-    background: #222222 !important;
-    backdrop-filter: blur(20px) !important;
+.quick-input-widget {
+  background: #222222 !important;
+  backdrop-filter: blur(20px) !important;
 }
 
-.overflow-guard .monaco-scrollable-area{
-    border-radius: 30px !important;
-    margin-left: 5px !important;
-    padding: 10px !important;
+.overflow-guard .monaco-scrollable-area {
+  border-radius: 30px !important;
+  margin-left: 5px !important;
+  padding: 10px !important;
 }
 
 .overflow-guard {
-    gap: 7px !important;
+  gap: 7px !important;
 }
 
-.monaco-menu{
-    background-color: rgba(44, 44, 44, 0.61) !important;
+.monaco-menu {
+  background-color: rgba(44, 44, 44, 0.61) !important;
 }
 
-.cm-scroller{
-    border: none !important;
-    height: 100%;
-    width: 100%;
-    background-color: black !important;
+.cm-scroller {
+  border: none !important;
+  height: 100%;
+  width: 100%;
+  background-color: black !important;
 }
 
-input[type='range']{
-    -webkit-appearance: none;
-    width: 100%;
-    height: 6px;
-    background: #393939;
-    outline: none;
-    opacity: .8;
-    transition: opacity .3s;
-    border-radius: 5px;
+input[type='range'] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #393939;
+  outline: none;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+  border-radius: 5px;
 }
 
 input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #00BBC2;
-    cursor: pointer;
-    border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: #00bbc2;
+  cursor: pointer;
+  border-radius: 50%;
 }
 
 #cm-editor-simplify::-webkit-scrollbar-thumb {
-    background: #00BBC2 !important;
-    border-radius: 7px !important;
+  background: #00bbc2 !important;
+  border-radius: 7px !important;
 }
 
 #cm-editor-simplify::-webkit-scrollbar {
-    width: 7px !important;
-    height: 7px !important;
-    scrollbar-width: thin !important;
+  width: 7px !important;
+  height: 7px !important;
+  scrollbar-width: thin !important;
 }
 
 .cm-scroller::-webkit-scrollbar {
-    width: 7px !important;
-    height: 7px !important;
-    scrollbar-width: thin !important;
+  width: 7px !important;
+  height: 7px !important;
+  scrollbar-width: thin !important;
 }
 
 .cm-scroller::-webkit-scrollbar-thumb {
-    background: #00BBC2 !important;
-    border-radius: 7px !important;
+  background: #00bbc2 !important;
+  border-radius: 7px !important;
 }
 
-.cm-gutter{
-    background: black !important;
-    border: none !important;
+.cm-gutter {
+  background: black !important;
+  border: none !important;
 }
 
-.cm-gutterElement{
-    color: #3ef2fa !important;
+.cm-gutterElement {
+  color: #3ef2fa !important;
 }
 
-.cm-tooltip{
-    background-color: rgba(87, 87, 87, 0.24) !important;
-    backdrop-filter: blur(12px) !important;
-    border-radius: 5px !important;
-    border: 2px solid rgba(87, 87, 87, 1) !important;
-    outline: none !important;
-    box-shadow: 20px 20px 20px black !important;
-    padding: 3px !important;
+.cm-tooltip {
+  background-color: rgba(87, 87, 87, 0.24) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 5px !important;
+  border: 2px solid rgba(87, 87, 87, 1) !important;
+  outline: none !important;
+  box-shadow: 20px 20px 20px black !important;
+  padding: 3px !important;
 }
 
 .cm-tooltip .cm-tooltip-autocomplete li {
-    background: rgb(80, 80, 80) !important;
-    color: white !important;
-    overflow: hidden !important;
+  background: rgb(80, 80, 80) !important;
+  color: white !important;
+  overflow: hidden !important;
 }
 
-.cm-autocompletion-item{
-    background: rgb(80, 80, 80) !important;
-    color: white !important;
-    overflow: hidden !important;
+.cm-autocompletion-item {
+  background: rgb(80, 80, 80) !important;
+  color: white !important;
+  overflow: hidden !important;
 }
 
-.cm-autocompletion-item .cm-active{
-    background-color: rgba(59, 198, 248, 0.17) !important;
-    backdrop-filter: blur(12px) !important;
-    border-radius: 3px !important;
-    border: 2px solid rgba(87, 87, 87, 1) !important;
-    outline: none !important;
+.cm-autocompletion-item .cm-active {
+  background-color: rgba(59, 198, 248, 0.17) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 3px !important;
+  border: 2px solid rgba(87, 87, 87, 1) !important;
+  outline: none !important;
 }

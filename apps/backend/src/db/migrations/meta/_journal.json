@@ -8,6 +8,13 @@
       "when": 1775218715757,
       "tag": "0000_last_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775681019726,
+      "tag": "0001_cuddly_the_order",
+      "breakpoints": true
     }
   ]
 }

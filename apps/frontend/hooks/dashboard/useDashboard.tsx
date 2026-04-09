@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useContext } from "react";
-import {DashboardContext} from "@/providers/DashboardContext";
+import { useContext } from 'react';
+import { DashboardContext } from '@/providers/DashboardContext';
 
 export function useDashboard() {
-    const context = useContext(DashboardContext);
-    if (context === undefined) {
-        throw new Error("useDashboard must be used within a DashboardProvider");
-    }
-    return context;
+  const context = useContext(DashboardContext);
+  if (context === undefined) {
+    throw new Error('useDashboard must be used within a DashboardProvider');
+  }
+  return context;
 }

@@ -1,27 +1,27 @@
 'use server';
 
 export async function authorizedFetch(
-    url: string,
-    options: RequestInit = {},
-    token: any
+  url: string,
+  options: RequestInit = {},
+  token: any
 ) {
-    if (!token){
-        throw new Error("Missing token");
-    }
+  if (!token) {
+    throw new Error('Missing token');
+  }
 
-    const response = await fetch(url, {
-        ...options,
-        headers: {
-            ...options?.headers,
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
 
-    if (!response.ok) {
-        throw new Error(response ?? "Request failed");
-    }
+  if (!response.ok) {
+    throw new Error(response ?? 'Request failed');
+  }
 
-    console.log("Request response", response);
-    return response.json();
+  console.log('Request response', response);
+  return response.json();
 }
