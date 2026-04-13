@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import {
     getWorkspacesRequest,
     createWorkspaceRequest,
@@ -14,22 +14,25 @@ interface Workspace {
     id: string;
     name: string;
     description?: string;
-    workflows: any[];
+    workflows: Record<string, any>; // Nested Record for O(1) workflow access
 }
 
+type WorkspaceRecord = Record<string, Workspace>;
+
 interface WorkspaceContextType {
-    workspaces: Workspace[];
+    workspaces: WorkspaceRecord; // Single source of truth
     isLoading: boolean;
     refreshWorkspaces: () => Promise<void>;
     createWorkspace: (name: string, description?: string) => Promise<void>;
     deleteWorkspace: (id: string) => Promise<void>;
-    assignWorkflow: (workflowId: string, workspaceId: string | null, workflow: any) => Promise<void>;
+    assignWorkflow: (workflowId: string, workspaceId: string | null, workflow?: any) => Promise<void>;
+    setWorkflowInWorkspace: (workflowId: string, workspaceId: string | null, workflow?: any) => void;
 }
 
 export const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
 export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) => {
-    const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+    const [workspaces, setWorkspaces] = useState<WorkspaceRecord>({});
     const [isLoading, setIsLoading] = useState(true);
     const { user, session } = useAuth();
 
@@ -41,99 +44,146 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
         setIsLoading(true);
         try {
             const response = await getWorkspacesRequest(token);
-            if (response) {
-                console.log(response);
-                setWorkspaces(response.data);
-            } else {
-                toast.error('Failed to load workspaces');
+            if (response?.data) {
+                const record = response.data.reduce((acc: WorkspaceRecord, ws: any) => {
+                    // Transform nested workflows array to record
+                    const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
+                        wAcc[wf.id] = wf;
+                        return wAcc;
+                    }, {});
+
+                    acc[ws.id] = { ...ws, workflows: workflowRecord };
+                    return acc;
+                }, {});
+
+                setWorkspaces(record);
             }
         } catch (error) {
             console.error('Error fetching workspaces:', error);
+            toast.error('Failed to load workspaces');
         } finally {
             setIsLoading(false);
         }
     }, [token]);
 
-    // Handle creating a new workspace group
-    const createWorkspace = async (name: string, description?: string) => {
+    const createWorkspace = useCallback(async (name: string, description?: string) => {
         if (!token) return;
 
-        const existingName = workspaces.find(ws => ws.name === name);
+        const nameExists = Object.values(workspaces).some(
+            ws => ws.name.toLowerCase() === name.toLowerCase()
+        );
 
-        if (existingName){
-            toast.error(`name ${name} already exist`,{
-                description: "multiple workspaces cannot have the same name.",
-            });
+        if (nameExists) {
+            toast.error(`Workspace "${name}" already exists`);
             return;
         }
 
         const response = await createWorkspaceRequest({ name, description }, token);
-
         if (response) {
             toast.success('Workspace created');
-            setWorkspaces(prev => ([response, ...prev]));
-        } else {
-            toast.error('Could not create workspace');
+            setWorkspaces(prev => ({
+                ...prev,
+                [response.id]: { ...response, workflows: {} }
+            }));
         }
-    };
+    }, [token, workspaces]);
 
-    // Handle workspace deletion
-    const removeWorkspace = async (id: string) => {
+    const removeWorkspace = useCallback(async (id: string) => {
         if (!token) return;
         const response = await deleteWorkspaceRequest(id, token);
 
         if (response) {
             toast.success('Workspace removed');
-            setWorkspaces(prev => prev.filter(ws => ws.id !== id));
-        } else {
-            toast.error('Failed to delete workspace');
+            setWorkspaces(prev => {
+                const next = { ...prev };
+                delete next[id];
+                return next;
+            });
         }
-    };
+    }, [token]);
 
-    // The Drag & Drop Logic (Optimistic UI)
-    const assignWorkflow = async (workflowId: string, workspaceId: string | null, workflow: any) => {
+    const setWorkflowInWorkspace = useCallback((
+        workflowId: string,
+        workspaceId: string | null,
+        workflow?: any
+    ) => {
+        setWorkspaces(prev => {
+            const next = { ...prev };
+            let targetWorkflow = workflow;
+
+            // Step A: Remove from any existing workspace and capture the object if not provided
+            Object.keys(next).forEach(id => {
+                if (next[id].workflows[workflowId]) {
+                    if (!targetWorkflow) targetWorkflow = next[id].workflows[workflowId];
+
+                    const newWorkflows = { ...next[id].workflows };
+                    delete newWorkflows[workflowId];
+                    next[id] = { ...next[id], workflows: newWorkflows };
+                }
+            });
+
+            // Step B: Add to the new workspace (if target is a workspace and we have the workflow data)
+            if (workspaceId && next[workspaceId] && targetWorkflow) {
+                next[workspaceId] = {
+                    ...next[workspaceId],
+                    workflows: {
+                        [workflowId]: targetWorkflow,
+                        ...next[workspaceId].workflows
+                    }
+                };
+            }
+
+            return next;
+        });
+    }, []);
+
+    const assignWorkflow = useCallback(async (
+        workflowId: string,
+        workspaceId: string | null,
+        workflow?: any
+    ) => {
         if (!token) return;
 
-        // Optimistic Update: Move the workflow locally first
-        const previousState = [...workspaces];
+        const previousState = { ...workspaces };
 
-        if (workflow) {
-            setWorkspaces(prev => prev.map(ws => ws.id === workspaceId
-                ? ({
-                    ...ws,
-                    workflows: [workflow, ...ws.workflows]
-                })
-                : ws));
-        }
+        // 1. Optimistic Update using our extracted logic
+        setWorkflowInWorkspace(workflowId, workspaceId, workflow);
 
-        const response = await assignWorkflowToWorkspaceRequest(
-            { workflowId, workspaceId },
-            token
-        );
+        try {
+            const response = await assignWorkflowToWorkspaceRequest({ workflowId, workspaceId }, token);
+            if (!response) {
 
-        if (response) {
-
-        } else {
-            setWorkspaces(previousState); // Rollback on error
+            }
+        } catch (error) {
+            setWorkspaces(previousState);
             toast.error('Failed to reassign workflow');
         }
-    };
+    }, [token, workspaces, setWorkflowInWorkspace]);
+
 
     useEffect(() => {
-        if (user && token) {
-            loadWorkspaces();
-        }
-    }, [loadWorkspaces]);
+        if (user && token) loadWorkspaces();
+    }, [loadWorkspaces, user, token]);
+
+    const value = useMemo(() => ({
+        workspaces,
+        isLoading,
+        refreshWorkspaces: loadWorkspaces,
+        createWorkspace,
+        deleteWorkspace: removeWorkspace,
+        assignWorkflow,
+        setWorkflowInWorkspace,
+    }), [
+        workspaces,
+        isLoading,
+        loadWorkspaces,
+        createWorkspace,
+        removeWorkspace,
+        assignWorkflow,
+        setWorkflowInWorkspace]);
 
     return (
-        <WorkspaceContext.Provider value={{
-            workspaces,
-            isLoading,
-            refreshWorkspaces: loadWorkspaces,
-            createWorkspace,
-            deleteWorkspace: removeWorkspace,
-            assignWorkflow
-        }}>
+        <WorkspaceContext.Provider value={value}>
             {children}
         </WorkspaceContext.Provider>
     );

@@ -5,3 +5,7 @@ export * from "./types/node.types";
 export * from "./types/edge.type";
 export * from "./types/connection.type";
 export * from "./types/errors.types";
+
+
+//      "@neuron/shared": ["../../packages/shared/dist"],
+//      "@neuron/shared/*": ["../../packages/shared/dist/*"],

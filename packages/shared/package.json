@@ -2,10 +2,10 @@
   "name": "@neuron/shared",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "types": "dict/index.d.ts",
+  "types": "dict/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/types/index.d.ts",
       "default": "./dist/index.js"
     }
   },

@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 export default function WorkflowPage() {
     const router = useRouter();
-    const { workspaces, isLoading: isWorkspaceLoading } = useWorkspaces();
+    const { isLoading: isWorkspaceLoading } = useWorkspaces();
     const {
         workflows,
         isWorkflowLoading,

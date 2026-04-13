@@ -3,15 +3,16 @@
 import React, { useMemo } from 'react';
 import { useWorkspaces } from '@/hooks/workspace/useWorkspace';
 import { DraggableWorkflowWrapper } from '../DraggableWorkflowWrapper';
-import { WorkflowType } from '@neuron/shared';
 import { WorkspaceGroup } from './WorkspaceGroup';
 import { WorkflowCard } from '../WorkflowCard';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import {WorkflowActionsDropdown} from "@/components/workflow/WorkflowActionsDropdown";
+import {WorkspaceCard} from "@/components/workflow/workspace/WorkspaceCard";
 
 interface WorkspaceContainerProps {
-    workflows: WorkflowType[];
+    workflows: any[];
     deleteWorkflow: (id: string) => Promise<void>;
     onCardClick: (id: string) => void;
 }
@@ -21,80 +22,70 @@ export const WorkspaceContainer = ({
                                        deleteWorkflow,
                                        onCardClick,
                                    }: WorkspaceContainerProps) => {
-    const { workspaces, assignWorkflow } = useWorkspaces();
+    const { workspaces, assignWorkflow, setWorkflowInWorkspace } = useWorkspaces();
     const { open } = useSidebar();
 
+    /**
+     * Identify assigned IDs by looking through our WorkspaceRecord
+     */
     const assignedWorkflowIds = useMemo(() => {
         const ids = new Set<string>();
-        workspaces.forEach(ws => {
-            ws.workflows?.forEach(wf => ids.add(wf.id));
+        Object.values(workspaces).forEach(ws => {
+            Object.keys(ws.workflows).forEach(wfId => ids.add(wfId));
         });
         return ids;
     }, [workspaces]);
 
+    /**
+     * Workflows not present in any workspace Record
+     */
     const unassignedWorkflows = useMemo(() => {
-        return workflows.filter(wf => !assignedWorkflowIds.has(wf.id));
+        return workflows.filter(wf => !assignedWorkflowIds.has(wf.id) || wf.workspaceId === null);
     }, [workflows, assignedWorkflowIds]);
 
 
-    function handleDragEnd(event: DragEndEvent) {
+    async function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
 
         if (!over) return;
 
         const workflowId = active.id as string;
         const destinationId = over.id as string;
+        const workflowData = active.data.current?.workflow;
 
-        // If destination is 'general', we send null to unassign it
+        // Optimistically update the record-based state
+        setWorkflowInWorkspace(workflowId, destinationId === 'general' ? null : destinationId, workflowData);
+
+        // Trigger backend sync
         const workspaceId = destinationId === 'general' ? null : destinationId;
-
-        // This triggers the backend request and UI refresh we built earlier
-        assignWorkflow(workflowId, workspaceId, active.data.workflow);
+        await assignWorkflow(workflowId, workspaceId, workflowData);
     }
 
 
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <div className="flex flex-col gap-12 py-4">
-                {/* --- Workspace Grid: 3 Columns on LG --- */}
+                {/* --- Workspace Grid: Using Object.values for Records --- */}
                 <div className={cn(
                     "grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-500",
                     open && "lg:grid-cols-2 xl:grid-cols-3"
                 )}>
-                    {workspaces.map((workspace) => (
-                        <WorkspaceGroup
-                            id={workspace.id}
+                    {Object.values(workspaces).map((workspace) => (
+                        <WorkspaceCard
                             key={workspace.id}
-                            title={workspace.name}
-                            count={workspace.workflows?.length || 0}
-                        >
-                            {/* Inner Workflow Grid: Col-2 / Row-2 style */}
-                            <div className="grid grid-cols-2 grid-rows-2 container-full! gap-2 p-3">
-                                {workspace.workflows?.slice(0, 4).map((wf) => (
-                                    <div
-                                        key={wf.id}
-                                        className="aspect-video rounded-lg container-full! h-full! bg-muted/65 border border-white/5 flex items-center justify-center p-2 group/wf"
-                                        onClick={() => onCardClick(wf.id)}
-                                    >
-                                        <div className="w-full truncate text-sm text-neutral-500 group-hover/wf:text-white transition-colors">
-                                            {wf.name}
-                                        </div>
-                                    </div>
-                                ))}
-                                {/* Fill empty slots to maintain 2x2 feel */}
-                                {Array.from({ length: Math.max(0, 4 - (workspace.workflows?.length || 0)) }).map((_, i) => (
-                                    <div key={i} className="aspect-video rounded-lg container-full! h-full! bg-muted/65 border border-dashed border-white/5" />
-                                ))}
-                            </div>
-                        </WorkspaceGroup>
+                            workspace={workspace}
+                            onWorkflowClick={onCardClick}
+                            onDeleteWorkflow={deleteWorkflow}
+                        />
                     ))}
                 </div>
 
-                {/* --- Unassigned Section (Kept as flat grid for visibility) --- */}
+                {/* --- Unassigned Section --- */}
                 <div className="mt-8">
                     <h2 className="mb-6 text-sm font-bold tracking-[0.2em] text-neutral-500 uppercase">
                         Workflows
                     </h2>
+                    {/* The unassigned area also acts as a "general" drop target */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {unassignedWorkflows.map((wf) => (
                             <DraggableWorkflowWrapper key={wf.id} id={wf.id} workflow={wf}>

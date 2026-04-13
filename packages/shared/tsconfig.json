@@ -6,8 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "paths": {
-      "@neuron/shared": ["../../packages/shared/dist"],
-      "@neuron/shared/*": ["../../packages/shared/dist/*"]
+      "@neuron/shared": ["../../packages/shared/src/index.ts"],
+      "@neuron/shared/*": ["../../packages/shared/src/*"]
     },
 
     "module": "CommonJS",

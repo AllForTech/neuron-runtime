@@ -7,7 +7,6 @@ import { DialogWrapper } from '@/components/DialogWrapper';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
-import { WorkflowType } from '@neuron/shared';
 import { nanoid } from 'nanoid';
 import { useWorkflows } from '@/hooks/workflow/useWorkflows';
 import { useWorkspaces } from '@/hooks/workspace/useWorkspace';
@@ -19,7 +18,7 @@ export const WorkflowsHeader = () => {
 
     // States
     const [workspaceName, setWorkspaceName] = useState('');
-    const [newWorkflow, setNewWorkflow] = useState<WorkflowType>({
+    const [newWorkflow, setNewWorkflow] = useState<any>({
         id: nanoid(),
         isActive: false,
         name: '',
