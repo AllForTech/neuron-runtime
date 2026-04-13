@@ -65,7 +65,7 @@ export async function deleteWorkspaceController(req: AuthRequest, res: Response)
         const { id } = req.params as any;
         await deleteWorkspace(id, userId);
 
-        return res.status(204).send();
+        return res.status(204).json({ success: true, message: "workspace deleted." });
     } catch (error: any) {
         console.error("Delete Workspace Error:", error);
         return res.status(500).json({ error: "Internal server error" });

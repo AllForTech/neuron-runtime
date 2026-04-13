@@ -75,24 +75,26 @@ export function SheetWrapper({
           </div>
 
           {/* VIEW TOGGLE BUTTON */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setView(view === 'config' ? 'execution' : 'config')}
-            className="mr-6 h-8 gap-2 border-neutral-800 bg-neutral-900/50 text-neutral-300 hover:bg-neutral-800"
-          >
-            {view === 'config' ? (
-              <>
-                <Settings2 className="h-3.5 w-3.5" />
-                <span className="text-[11px]">Execution Settings</span>
-              </>
-            ) : (
-              <>
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span className="text-[11px]">Back to Config</span>
-              </>
+            {nodeId && (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setView(view === 'config' ? 'execution' : 'config')}
+                    className="mr-6 h-8 gap-2 border-neutral-800 bg-neutral-900/50 text-neutral-300 hover:bg-neutral-800"
+                >
+                    {view === 'config' ? (
+                        <>
+                            <Settings2 className="h-3.5 w-3.5" />
+                            <span className="text-[11px]">Execution Settings</span>
+                        </>
+                    ) : (
+                        <>
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            <span className="text-[11px]">Back to Config</span>
+                        </>
+                    )}
+                </Button>
             )}
-          </Button>
         </SheetHeader>
 
         <ScrollArea className="h-[80dvh] flex-1">

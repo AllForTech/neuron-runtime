@@ -9,6 +9,9 @@ import {
 } from '@/lib/api-client/workspace.client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import {useWorkflows} from "@/hooks/workflow/useWorkflows";
+import {getWorkflowsRequest} from "@/lib/api-client/client";
+import {WorkflowActionType} from "@/constants";
 
 interface Workspace {
     id: string;
@@ -33,7 +36,8 @@ export const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 
 export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) => {
     const [workspaces, setWorkspaces] = useState<WorkspaceRecord>({});
-    const [isLoading, setIsLoading] = useState(true);
+    const { workflowsDispatcher } = useWorkflows();
+    const [isLoading, setIsLoading] = useState(false);
     const { user, session } = useAuth();
 
     const token = session?.access_token;
@@ -41,12 +45,26 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     const loadWorkspaces = useCallback(async () => {
         if (!token) return;
 
-        setIsLoading(true);
         try {
-            const response = await getWorkspacesRequest(token);
-            if (response?.data) {
-                const record = response.data.reduce((acc: WorkspaceRecord, ws: any) => {
-                    // Transform nested workflows array to record
+            setIsLoading(true);
+
+            // 1. Fetch both in parallel for speed
+            const [wsResponse, wfResponse] = await Promise.all([
+                getWorkspacesRequest(token),
+                getWorkflowsRequest(token)
+            ]);
+
+            // 2. Process Workflows (Global List)
+            if (wfResponse?.success) {
+                workflowsDispatcher({
+                    type: WorkflowActionType.SET_WORKFLOWS,
+                    payload: wfResponse.data,
+                });
+            }
+
+            // 3. Process Workspaces (Nested Record)
+            if (wsResponse?.data) {
+                const record = wsResponse.data.reduce((acc: WorkspaceRecord, ws: any) => {
                     const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
                         wAcc[wf.id] = wf;
                         return wAcc;
@@ -59,12 +77,11 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
                 setWorkspaces(record);
             }
         } catch (error) {
-            console.error('Error fetching workspaces:', error);
-            toast.error('Failed to load workspaces');
+            toast.error('Failed to synchronize data');
         } finally {
             setIsLoading(false);
         }
-    }, [token]);
+    }, [token, workflowsDispatcher]);
 
     const createWorkspace = useCallback(async (name: string, description?: string) => {
         if (!token) return;
@@ -93,7 +110,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
         const response = await deleteWorkspaceRequest(id, token);
 
         if (response) {
-            toast.success('Workspace removed');
+            toast.success(response?.message ?? 'Workspace removed');
             setWorkspaces(prev => {
                 const next = { ...prev };
                 delete next[id];
@@ -163,7 +180,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
 
     useEffect(() => {
         if (user && token) loadWorkspaces();
-    }, [loadWorkspaces, user, token]);
+    }, [token, user]);
 
     const value = useMemo(() => ({
         workspaces,

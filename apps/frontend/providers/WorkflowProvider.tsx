@@ -31,6 +31,7 @@ export const CreateWorkflowTabs = {
 
 type WorkflowContextType = {
   workflows: WorkflowType[];
+    workflowsDispatcher: (action: WorkflowAction) => void;
   newWorkflow: INewWorkflow;
   setNewWorkflow: (prev: any) => void; // TODO: FIX Type
   isWorkflowLoading: boolean;
@@ -214,6 +215,7 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     <WorkflowContext.Provider
       value={{
         workflows,
+          workflowsDispatcher,
         newWorkflow,
         setNewWorkflow,
         isWorkflowLoading,

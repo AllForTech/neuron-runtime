@@ -19,7 +19,7 @@ export async function authorizedFetch(
   });
 
   if (!response.ok) {
-    throw new Error(response ?? 'Request failed');
+    throw new Error(response as any ?? 'Request failed');
   }
 
   console.log('Request response', response);

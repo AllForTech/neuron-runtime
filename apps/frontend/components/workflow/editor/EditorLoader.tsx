@@ -80,7 +80,7 @@ export function EditorLoader() {
       <div className="max-w-sm space-y-4 text-center">
         <div className="flex items-center justify-center gap-3">
           <span className="text-4xl font-extrabold tracking-tighter text-white">
-            Jaguar
+            Neuron
           </span>
           <Badge
             variant="outline"

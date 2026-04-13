@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Folder } from 'lucide-react';
 import {useDroppable} from "@dnd-kit/core";
+import {WorkspaceActionsDropdown} from "@/components/workflow/workspace/WorkspaceActionDropdown";
 
 interface WorkspaceGroupProps {
     id: string;
@@ -36,6 +37,10 @@ export const WorkspaceGroup = ({ id, title, count, children }: WorkspaceGroupPro
                 <div className="absolute top-4 right-4 rounded-full bg-neutral-950/50 px-2 py-1 text-[9px] font-bold text-neutral-400 backdrop-blur-md border border-white/5">
                     {count} ITEMS
                 </div>
+
+                <div className="absolute top-4 left-2 rounded-full px-2 py-1 font-bold">
+
+                </div>
             </div>
 
             {/* Label at the Bottom (Outside the BG) */}
@@ -46,7 +51,13 @@ export const WorkspaceGroup = ({ id, title, count, children }: WorkspaceGroupPro
                         {title}
                     </span>
                 </div>
-                <div className="h-1 w-1 rounded-full bg-neutral-800 group-hover:bg-white transition-colors" />
+
+                <WorkspaceActionsDropdown
+                    workspaceId={id}
+                    workspaceName={title}
+                    onEdit={() => console.log("Open Edit Modal")}
+                />
+                {/*<div className="h-1 w-1 rounded-full bg-neutral-800 group-hover:bg-white transition-colors" />*/}
             </div>
         </div>
     );

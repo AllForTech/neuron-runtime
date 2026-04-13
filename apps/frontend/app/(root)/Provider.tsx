@@ -9,13 +9,13 @@ import {WorkspaceProvider} from "@/providers/WorkspaceProvider";
 export const Provider = ({ children }: { children: ReactNode }) => {
   return (
     <>
-        <WorkspaceProvider>
-            <WorkflowProvider>
+        <WorkflowProvider>
+            <WorkspaceProvider>
                 <SidebarProvider>
                     <DashboardProvider>{children}</DashboardProvider>
                 </SidebarProvider>
-            </WorkflowProvider>
-        </WorkspaceProvider>
+            </WorkspaceProvider>
+        </WorkflowProvider>
     </>
   );
 };
