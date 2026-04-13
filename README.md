@@ -1,5 +1,7 @@
 # Neuron
 
+![Neuron Hero](apps/frontend/assets/Neuron-Hero-Screenshot.png)
+
 Neuron is a programmable workflow platform designed to move beyond static automation into adaptive execution systems. It allows users to design, deploy, and operate workflows that do more than follow predefined steps, they can interpret data, make decisions, and evolve based on context.
 
 At its core, Neuron is built around the idea that workflows should behave less like rigid pipelines and more like dynamic systems. Instead of simply chaining actions together, it enables the creation of interconnected processes where data flows, transforms, and influences outcomes in real time.
@@ -19,6 +21,8 @@ Rather than treating automation as a fixed sequence of steps, Neuron treats it a
 ## Core Capabilities
 
 ### Visual Workflow Construction
+
+![Neuron Editor](apps/frontend/assets/Neuron-Editor-Screenshot.png)
 
 Neuron allows workflows to be designed as connected nodes, where each node represents a specific operation or piece of logic. These nodes can be combined to form complex systems that are easy to understand at a glance while remaining powerful under the hood.
 
