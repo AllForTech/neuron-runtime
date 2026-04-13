@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@neuron/shared": "workspace:*"
+    "@neuron/shared": "file:../../packages/shared"
   },
   "peerDependencies": {
     "@neuron/shared": "*"
