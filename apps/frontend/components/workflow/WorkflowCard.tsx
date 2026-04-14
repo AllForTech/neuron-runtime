@@ -30,7 +30,9 @@ export const WorkflowCard = ({
             )}
         >
             {/* 1. TOP: Actions (Using the reusable component) */}
-            <div className="absolute bottom-3 right-3 flex items-center gap-1 opacity-0 transition-opacity duration-200 rounded-md group-hover:opacity-100">
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute z-10 bottom-3 right-3 flex items-center gap-1 opacity-0 transition-opacity duration-200 rounded-md group-hover:opacity-100">
                 <WorkflowActionsDropdown
                     workflow={workflow}
                     onDelete={handleDelete}
@@ -41,7 +43,10 @@ export const WorkflowCard = ({
 
             {/* 2. ICON & TITLE */}
             <div
-                onClick={handleClick}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleClick();
+                }}
                 className="flex items-start cursor-pointer rounded-md p-1 gap-3 hover:bg-neutral-800/40 transition-colors"
             >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-neutral-800/50">
@@ -59,7 +64,10 @@ export const WorkflowCard = ({
 
             {/* 3. METRICS / TAGS */}
             <div
-                onClick={handleClick}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleClick();
+                }}
                 className="flex flex-wrap cursor-pointer items-center rounded-md p-2 gap-4 pt-1 hover:bg-neutral-800/40 transition-colors"
             >
                 <div className="flex items-center gap-1.5 text-neutral-500">
@@ -86,7 +94,10 @@ export const WorkflowCard = ({
             {/* 4. FOOTER */}
             <div className="mt-1 flex items-center justify-start">
                 <div
-                    onClick={handleClick}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleClick();
+                    }}
                     className="flex cursor-pointer items-center gap-1 text-[11px] font-medium text-neutral-500 transition-colors group-hover:text-neutral-300"
                 >
                     Open Project

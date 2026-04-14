@@ -3,11 +3,11 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { cn } from '@/lib/utils';
-import {WorkflowType} from "@neuron/shared";
+import { WorkflowType } from "@neuron/shared";
 
 interface DraggableWorkflowWrapperProps {
     id: string;
-    workflow: WorkflowType; // Use WorkflowType
+    workflow: WorkflowType;
     children: React.ReactNode;
 }
 
@@ -29,10 +29,16 @@ export const DraggableWorkflowWrapper = ({
         },
     });
 
-    // Apply the transformation smoothly while dragging
-    const style = transform ? {
+    /**
+     * Inline styles for dnd-kit transformation.
+     * translate3d for hardware acceleration.
+     */
+    const style: React.CSSProperties | undefined = transform ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        transition: isDragging ? 'none' : undefined,
+        // Disable transitions while dragging to prevent "laggy" following
+        transition: isDragging ? 'none' : 'transform 200ms cubic-bezier(0.2, 0, 0, 1)',
+        zIndex: isDragging ? 999 : undefined,
+        position: 'relative',
     } : undefined;
 
     return (
@@ -41,9 +47,11 @@ export const DraggableWorkflowWrapper = ({
             style={style}
             {...listeners}
             {...attributes}
+            // Pointer-events: none on the wrapper during drag can help
+            // the 'over' detection on drop targets
             className={cn(
-                "relative z-0 transition-transform duration-200",
-                isDragging && "z-50 cursor-grabbing scale-[1.02] opacity-40 grayscale-[0.5]"
+                "relative group touch-none",
+                isDragging && "cursor-grabbing scale-[1.05] opacity-50 grayscale-[0.5] shadow-2xl"
             )}
         >
             {children}
