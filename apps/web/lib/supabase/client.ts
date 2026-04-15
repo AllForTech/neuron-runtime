@@ -1,1 +1,1 @@
-export { createClient } from "@neuron/auth";
+export { createClient } from "@neuron/auth/client";
