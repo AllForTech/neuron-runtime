@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseEnvironmentVariables } from '@/lib/utils';
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, getSupabaseEnvironmentVariables } from "@neuron/auth";
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({

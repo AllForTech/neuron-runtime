@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useCallback, useMemo } from 'react';
+import { createContext, useCallback, useMemo } from 'react';
 import { NodeMetaType, ValidationError } from '@neuron/shared';
 import { nodeRegistry } from '@/registry/nodeRegistry';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';

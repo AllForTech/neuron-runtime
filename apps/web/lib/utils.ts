@@ -25,30 +25,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getSupabaseEnvironmentVariables() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabasePublishableKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
-
-  if (
-    supabaseUrl === null ||
-    supabaseUrl === undefined ||
-    supabasePublishableKey === null ||
-    supabasePublishableKey === undefined ||
-    supabaseAnonKey === null ||
-    supabaseAnonKey === undefined
-  ) {
-    throw new Error(`Missing environment variable.`);
-  } else {
-    return {
-      supabaseUrl,
-      supabaseAnonKey,
-      supabasePublishableKey,
-    };
-  }
-}
-
 export function getBackendEndpoint(): string {
   return process.env.NEXT_PUBLIC_API_ENDPOINT ?? 'http://localhost:5000/api/v1';
 }

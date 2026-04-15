@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as dotenv from "dotenv";
-import * as schema from "../schemas/index";
+import * as schema from "./schemas/index";
 import postgres from "postgres";
 
-dotenv.config({ path: ".env.example" });
+dotenv.config({ path: "../../../.env" });
 
 if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not set in .env");
