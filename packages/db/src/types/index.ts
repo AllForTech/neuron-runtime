@@ -4,11 +4,11 @@ import {
     deployedWorkflows,
     executionLogs,
     executions,
-    globalVariables,
+    globalVariables, vaultSecrets,
     workflowEdges,
     workflowNodes,
     workflows,
-    workflowVersions
+    workflowVersions, workspaces
 } from "../schemas";
 
 export type Workflow = InferSelectModel<typeof workflows>;
@@ -32,8 +32,14 @@ export type NewWorkflowNode = InferInsertModel<typeof workflowNodes>;
 export type WorkflowEdge = InferSelectModel<typeof workflowEdges>;
 export type NewWorkflowEdge = InferInsertModel<typeof workflowEdges>;
 
+export type Vault = InferSelectModel<typeof vaultSecrets>;
+export type NewVault = InferInsertModel<typeof vaultSecrets>;
+
 export type DeployedWorkflow = InferSelectModel<typeof deployedWorkflows>;
 export type NewDeployedWorkflow = InferInsertModel<typeof deployedWorkflows>;
+
+export type Workspace = InferSelectModel<typeof workspaces>;
+export type NewWorkspace = InferInsertModel<typeof workspaces>;
 
 // export type ExecuteWorkflowType = {
 //     runId: string;

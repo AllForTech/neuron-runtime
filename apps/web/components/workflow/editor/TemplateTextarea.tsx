@@ -15,7 +15,7 @@ import { cn, getVariableQuery, insertVariable } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { UpstreamNodePicker } from '@/components/workflow/editor/UpstreamNodePicker';
-import { WorkflowNode } from '../../../../shared/src/types/node.types';
+import { WorkflowNode } from '@neuron/shared';
 
 interface Props {
   value: string;

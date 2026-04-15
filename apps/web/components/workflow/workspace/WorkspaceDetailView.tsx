@@ -22,7 +22,7 @@ export const WorkspaceDetailView = ({
     // Select the specific workspace from the Record
     const workspace = useMemo(() => workspaces[workspaceId], [workspaces, workspaceId]);
 
-    const handleClick = useCallback(async (id: string): Promise<void> => {
+    const handleClick = useCallback(async (id: string) => {
         router.push(`/editor/${id}`)
     }, [workspaceId]);
 

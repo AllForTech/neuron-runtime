@@ -2,12 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type {
   GlobalVariable,
-  IGlobalVariablesDefinition,
-  NewWorkflowType,
   NodeExecutionConfig,
-  WorkflowDefinition,
-  WorkflowTableSchemaType,
-  WorkflowType,
 } from '@neuron/shared';
 import type {
   FieldInput,
@@ -20,6 +15,7 @@ import { Edge, Node, NodeProps } from 'reactflow';
 import type { WorkflowEdge } from '@neuron/shared';
 import crypto from 'crypto';
 import { WorkflowNodeError } from '@/providers/ValidationContext';
+import {NewWorkflow, Workflow} from "@neuron/db";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,15 +61,19 @@ export function convertFieldInputToSchema(
 }
 
 export function toWorkflowTableSchema(
-  workflow: NewWorkflowType
-): WorkflowTableSchemaType {
+  workflow: NewWorkflow
+): Workflow {
   return {
-    name: workflow.name,
-    description: workflow.description,
-    isActive: workflow.isActive,
-    runs: workflow.runs,
-    userId: workflow.userId,
-    status: workflow.status,
+      id: workflow.id,
+      name: workflow.name,
+      description: workflow.description,
+      isActive: workflow.isActive,
+      runs: workflow.runs,
+      userId: workflow.userId,
+      status: workflow.status,
+      workspaceId: workflow.workspaceId,
+      createdAt: workflow.createdAt,
+      updatedAt: workflow.updatedAt,
   };
 }
 
@@ -317,8 +317,8 @@ export function getAvailableUpstreamNodes(
 
 export function arrayToGlobalVariables(
   variables: GlobalVariable[]
-): IGlobalVariablesDefinition {
-  const incomingMap: IGlobalVariablesDefinition = {};
+): Record<string, GlobalVariable> {
+  const incomingMap: Record<string, GlobalVariable> = {};
 
   for (const variable of variables) {
     incomingMap[variable.key] = variable;
@@ -328,7 +328,7 @@ export function arrayToGlobalVariables(
 }
 
 export function globalVariablesToArray(
-  variables: IGlobalVariablesDefinition
+  variables: Record<string, GlobalVariable>
 ): GlobalVariable[] {
   return Object.entries(variables).map(([key, value]) => value);
 }

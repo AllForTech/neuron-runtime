@@ -14,9 +14,10 @@ import {
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import {Workflow} from "@neuron/db";
 
 interface WorkflowActionsDropdownProps {
-    workflow: any;
+    workflow: Workflow;
     onDelete: () => void;
     isDeleting?: boolean;
     triggerClassName?: string;

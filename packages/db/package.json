@@ -10,7 +10,9 @@
     "db:push": "npx drizzle-kit push"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts",
+    "./schemas": "./src/schemas/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,10 +25,7 @@
     "postgres": "^3.4.8"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
     "@types/node": "^25.2.3",
-    "@types/socket.io": "^3.0.1",
     "drizzle-kit": "^0.31.9",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

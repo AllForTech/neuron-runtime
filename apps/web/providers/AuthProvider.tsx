@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useEffect, useState, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User } from '@neuron/auth';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 

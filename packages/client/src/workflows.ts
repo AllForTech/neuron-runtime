@@ -1,5 +1,4 @@
-import { authorizedFetch } from '@neuron/auth';
-import { safeTask } from '@neuron/shared/utils';
+import {authorizedFetch, safeTask} from '@neuron/shared';
 import type {
     WorkflowNode,
     WorkflowEdge,
@@ -42,6 +41,18 @@ export const workflows = {
         safeTask(() => authorizedFetch(`${URL}/workflows/deploy/${workflowId}`, {
             method: 'POST',
             body: JSON.stringify(data)
+        }, token)),
+
+    /** Deploy a workflow */
+    getDeployment: (workflowId: string, token: string) =>
+        safeTask(() => authorizedFetch(`${URL}/workflows/deploy/${workflowId}`, {
+            method: 'GET',
+        }, token)),
+
+    /** Delete a deployment */
+    deleteDeployment: (workflowId: string, token: string) =>
+        safeTask(() => authorizedFetch(`${URL}/workflows/deploy/${workflowId}`, {
+            method: 'DELETE',
         }, token)),
 
     /** Run/Execute a workflow */

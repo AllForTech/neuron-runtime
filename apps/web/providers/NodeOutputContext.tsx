@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { SchemaField } from '../../shared/src/types/node.types';
+import React, { createContext, useState, ReactNode } from 'react';
+import { SchemaField } from "@neuron/shared";
 
 type NodeOutputContextType = {
   nodeOutputs: Record<string, Record<string, SchemaField>>;

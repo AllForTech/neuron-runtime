@@ -2,16 +2,12 @@
 
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Secret } from '@/types/workflow';
-import {
-    createSecretRequest,
-    deleteSecretRequest,
-    getSecretRequest,
-} from '@/lib/api-client/client';
 import { useAuth } from "@/hooks/useAuth";
+import { Vault } from "@neuron/db";
+import { secrets as secretsClient } from "@neuron/client";
 
 interface VaultContextType {
-    secrets: Secret[];
+    secrets: Vault[];
     isLoading: boolean;
     refreshSecrets: () => Promise<void>;
     addSecret: (name: string, value: string) => Promise<void>;
@@ -22,27 +18,27 @@ export const VaultContext = createContext<VaultContextType | undefined>(undefine
 
 export function VaultProvider({ children }: { children: React.ReactNode }) {
     const { user, session } = useAuth();
-    const [secrets, setSecrets] = useState<Secret[]>([]);
+    const [secrets, setSecrets] = useState<Vault[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // FIX: Simply extract the token string. No async useMemo needed.
     const token = session?.access_token;
 
     const refreshSecrets = useCallback(async () => {
         if (!user || !token) return;
 
         setIsLoading(true);
-        try {
-            // Pass the string token directly
-            const response = await getSecretRequest(token);
-            setSecrets(response);
-        } catch (error) {
+
+        const [data, error] = await secretsClient.list(token);
+
+        if (error) {
             console.error('Vault Error:', error);
             toast.error('Could not load secrets from vault');
-        } finally {
-            setIsLoading(false);
+        } else if (data) {
+            setSecrets(data as Vault[]);
         }
-    }, [user, token]); // Add token to dependencies
+
+        setIsLoading(false);
+    }, [user, token]);
 
     useEffect(() => {
         if (user && token) {
@@ -53,25 +49,29 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     const addSecret = async (name: string, value: string) => {
         if (!token) return;
 
-        try {
-            await createSecretRequest(name, value, token);
-            toast.success('Secret stored securely');
-            await refreshSecrets();
-        } catch (error) {
+        const [_, error] = await secretsClient.create(name, value, token);
+
+        if (error) {
             toast.error('Failed to encrypt and store secret');
+            return;
         }
+
+        toast.success('Secret stored securely');
+        await refreshSecrets();
     };
 
     const removeSecret = async (id: string) => {
         if (!token) return;
 
-        try {
-            await deleteSecretRequest(id, token);
-            setSecrets((prev) => prev.filter((s) => s.id !== id));
-            toast.success('Secret removed from vault');
-        } catch (error) {
+        const [_, error] = await secretsClient.delete(id, token);
+
+        if (error) {
             toast.error('Could not delete secret');
+            return;
         }
+
+        setSecrets((prev) => prev.filter((s) => s.id !== id));
+        toast.success('Secret removed from vault');
     };
 
     return (

@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as dotenv from "dotenv";
 import * as schema from "./schemas/index";
-import postgres from "postgres";
+import * as postgres from "postgres";
 
 dotenv.config({ path: "../../../.env" });
 

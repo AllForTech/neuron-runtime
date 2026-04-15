@@ -1,5 +1,4 @@
-import { authorizedFetch } from '@neuron/auth';
-import { safeTask } from '@neuron/shared/utils';
+import {authorizedFetch, safeTask} from '@neuron/shared';
 
 const URL = process.env.NEXT_PUBLIC_API_ENDPOINT!;
 

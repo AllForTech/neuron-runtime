@@ -15,7 +15,7 @@ import {
     useDroppable // Added for the unassigned area
 } from '@dnd-kit/core';
 import { WorkspaceCard } from "@/components/workflow/workspace/WorkspaceCard";
-import { WorkflowType } from "@neuron/shared";
+import { Workflow as WorkflowType } from "@neuron/db";
 
 interface WorkspaceContainerProps {
     workflows: WorkflowType[];

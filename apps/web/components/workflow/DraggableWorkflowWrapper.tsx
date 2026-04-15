@@ -3,7 +3,7 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { cn } from '@/lib/utils';
-import { WorkflowType } from "@neuron/shared";
+import { Workflow as WorkflowType } from "@neuron/db";
 
 interface DraggableWorkflowWrapperProps {
     id: string;

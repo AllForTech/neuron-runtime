@@ -1,12 +1,10 @@
 import { WorkflowActionType, WorkflowEditorActionType } from '@/constants';
 import type {
   WorkflowDefinition,
-  WorkflowType,
   WorkflowEdge,
-  BaseNode,
   WorkflowNode,
 } from '@neuron/shared';
-import { Execution } from '@/types/execution';
+import {DeployedWorkflow, Execution, Workflow as WorkflowType} from '@neuron/db';
 
 export type NewWorkflowGeneralType = {
   name: string;
@@ -132,7 +130,7 @@ export type WorkflowEditorAction =
     }
   | {
       type: WorkflowEditorActionType.SET_DEPLOYMENT;
-      payload: Record<string, any> | null;
+      payload: Record<string, DeployedWorkflow> | null;
     }
   | {
       type: WorkflowEditorActionType.UPDATE_DEPLOYMENT;
