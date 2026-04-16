@@ -4,7 +4,7 @@ import {
     updateExecutionLog,
     getExecutionLogsByExecutionId,
     deleteExecutionLogsByExecutionId,
-} from "../services/repository/execution.logs.repository";
+} from "@neuron/db";
 
 /**
  * Create execution log (usually internal, but exposed if needed)

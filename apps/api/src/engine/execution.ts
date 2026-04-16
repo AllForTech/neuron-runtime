@@ -1,8 +1,8 @@
-import {workflowBroadcast} from "../services/supabase/supabase.services";
-import {WorkflowEditorActionType} from "../constant";
-import {getGlobalVariables} from "../services/repository/global.variables.repository";
-import {WorkflowNode, WorkflowEdge, ExecuteWorkflowType} from "../types/workflow/workflow.types";
-import {createContextEntry} from "../utils/telemetry";
+import {VaultService, workflowBroadcast} from "@neuron/db"
+import {WorkflowEditorActionType} from "@neuron/shared";
+import {getGlobalVariables} from "@neuron/db";
+import {ExecuteWorkflowType} from "@neuron/shared";
+import {createContextEntry} from "@neuron/shared";
 import {executeNodeRuntime, resolveConfig} from "./runtime/node.runtime";
 import {logNodeExecutionEnd, logNodeExecutionStart} from "./services/executionLogger";
 import {resolveNextNodes} from "./runtime/branching";
@@ -17,10 +17,10 @@ export type FinalResponseType = {
 
 
 export async function executeWorkflow({
-    runId,
-    workflowId,
-    graph,
-    userId
+                                          runId,
+                                          workflowId,
+                                          graph,
+                                          userId
                                       }: ExecuteWorkflowType) {
     const { nodes, edges } = graph;
     const { dispatch } = workflowBroadcast(workflowId);
@@ -33,6 +33,8 @@ export async function executeWorkflow({
     const validNodeIds = new Set(nodes.map(n => n.id));
     const incoming: Record<string, string[]> = {};
     const outgoing: Record<string, string[]> = {}
+
+    const vault = new VaultService(userId);
 
     // --- NEW: THE RESPONSE CONTAINER ---
     let finalResponse: Record<string, any> | null = null;
@@ -80,7 +82,10 @@ export async function executeWorkflow({
             const resolvedConfig = await resolveConfig(
                 node.config,
                 nodesContext,
-                globalVariables
+                {
+                    variables: globalVariables,
+                    vault
+                }
             );
 
             const parentInput = nodesContext[incoming[nodeId]?.[0]];
@@ -157,13 +162,13 @@ export async function executeWorkflow({
                 error: e.message
             });
 
-           if (logId){
-               await logNodeExecutionEnd({
-                   logId,
-                   error: e.message,
-                   duration: 0
-               }, workflowId, nodeId);
-           }
+            if (logId){
+                await logNodeExecutionEnd({
+                    logId,
+                    error: e.message,
+                    duration: 0
+                }, workflowId, nodeId);
+            }
 
         } finally {
             running.delete(nodeId);

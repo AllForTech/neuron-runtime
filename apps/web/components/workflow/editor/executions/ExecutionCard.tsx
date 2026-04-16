@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { Execution } from '@/types';
+import { Execution } from '@neuron/db';
 
 function ExecutionCard({
   execution,

@@ -1,70 +1,74 @@
 import { Request, Response } from 'express';
-import { eq } from 'drizzle-orm';
-import {vaultSecrets} from "../schemas";
-import {db} from "../db/client";
-import {encrypt, decrypt} from "../utils/secrets";
-import {getAllVaultSecrets} from "../services/repository/vault.repository";
+import { encrypt, decrypt } from "@neuron/shared";
+import {
+    getAllVaultSecrets,
+    insertVaultSecret,
+    deleteVaultSecretById,
+    findSecretById
+} from "@neuron/db";
+import {AuthRequest} from "./execution.controller";
 
-export const listSecrets = async (req: Request, res: Response) => {
+const secret = process.env.VAULT_SECRET!;
+
+export const listSecrets = async (req: AuthRequest, res: Response) => {
     try {
-        // Only return metadata for security
-        console.log("loading secrets from DB...");
-        const results = await getAllVaultSecrets();
-
+        console.log("Loading secrets from DB...");
+        const userId = req.user.id;
+        const results = await getAllVaultSecrets(userId);
         res.json(results);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch secrets' });
     }
 };
 
-export const createSecret = async (req: Request, res: Response) => {
+export const createSecret = async (req: AuthRequest, res: Response) => {
     try {
         const { name, value } = req.body;
+        const userId = req.user.id;
         if (!name || !value) {
             return res.status(400).json({ error: 'Name and value are required' });
         }
 
-        console.log("Creating secret...");
+        console.log("Creating encrypted secret...");
 
-        // TODO: Encrypt value.
-        const encrypted = value;
+        // Utilizing your shared encryption logic
+        const encrypted = encrypt(secret, value);
 
-        const [newSecret] = await db.insert(vaultSecrets).values({
+        const newSecret = await insertVaultSecret({
             name,
-            content: encrypted,
-            iv: "82683837",
-            tag: "37376",
-            // iv: encrypted.iv,
-            // tag: encrypted.tag,
-        }).returning({ id: vaultSecrets.id, name: vaultSecrets.name });
+            content: encrypted.content,
+            iv: encrypted.iv,
+            tag: encrypted.tag,
+            userId,
+        });
 
         res.status(201).json(newSecret);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to create secret' });
     }
 };
 
-export const deleteSecret = async (req: Request, res: Response) => {
+export const deleteSecret = async (req: AuthRequest, res: Response) => {
     try {
         const { id } = req.params as any;
-
         console.log(`Deleting secret ${id}...`);
 
-        await db.delete(vaultSecrets).where(eq(vaultSecrets.id, id));
+        await deleteVaultSecretById(id);
         res.json({ message: 'Secret deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete secret' });
     }
 };
 
-export const getDecryptedSecret = async (req: Request, res: Response) => {
+export const getDecryptedSecret = async (req: AuthRequest, res: Response) => {
     try {
         const { id } = req.params as any;
-        const [secret] = await db.select().from(vaultSecrets).where(eq(vaultSecrets.id, id));
+        const secret = await findSecretById(id);
 
         if (!secret) return res.status(404).json({ error: 'Not found' });
 
-        const plainValue = decrypt({
+        const plainValue = decrypt(secret, {
             content: secret.content,
             iv: secret.iv,
             tag: secret.tag,
@@ -72,6 +76,7 @@ export const getDecryptedSecret = async (req: Request, res: Response) => {
 
         res.json({ name: secret.name, value: plainValue });
     } catch (error) {
+        console.error("Decryption failed:", error);
         res.status(500).json({ error: 'Decryption failed' });
     }
 };

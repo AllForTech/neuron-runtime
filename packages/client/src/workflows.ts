@@ -20,6 +20,12 @@ export const workflows = {
             body: JSON.stringify(data)
         }, token)),
 
+    /** Delete a workflow */
+    delete: (workflowId: string, token: string) =>
+        safeTask(() => authorizedFetch(`${URL}/workflows/${workflowId}`, {
+            method: 'DELETE',
+        }, token)),
+
     /** Get specific graph nodes and edges */
     getGraph: (workflowId: string, token: string) =>
         safeTask(() => authorizedFetch<{ nodes: WorkflowNode[]; edges: WorkflowEdge[] }>(
@@ -43,7 +49,7 @@ export const workflows = {
             body: JSON.stringify(data)
         }, token)),
 
-    /** Deploy a workflow */
+    /** get a deployment */
     getDeployment: (workflowId: string, token: string) =>
         safeTask(() => authorizedFetch(`${URL}/workflows/deploy/${workflowId}`, {
             method: 'GET',

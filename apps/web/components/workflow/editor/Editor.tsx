@@ -49,6 +49,7 @@ import { EditorLeftMenu } from '@/components/workflow/editor/menu/EditorLeftMenu
 import { EditorRightMenu } from '@/components/workflow/editor/menu/EditorRightMenu';
 import { EditorBottomMenu } from '@/components/workflow/editor/menu/EditorBottomMenu';
 import { WorkflowInspector } from '@/components/workflow/editor/WorkflowInspector';
+import {DndProvider, DroppableZone} from "@neuron/ui/*";
 
 // --------------------------------------------
 // Component
@@ -225,6 +226,10 @@ export function Editor() {
     setIsSheetOpen(true);
   };
 
+  const handleDnd = (templateId: string, targetId: string, nodeTemplate: any) => {
+
+  }
+
   // --------------------------------------------
   // Render
   // --------------------------------------------
@@ -234,145 +239,149 @@ export function Editor() {
   }
 
   return (
-    <ReactFlow
-      className={'container-full'}
-      nodes={graphNodes}
-      edges={graphEdges}
-      nodeTypes={nodeTypes}
-      onNodesChange={handleNodesChange}
-      onEdgesChange={handleEdgesChange}
-      onNodeDragStop={onNodeDragStop}
-      onConnect={onConnect}
-      onNodeDoubleClick={handleNodeDoubleClick}
-      fitView
-      snapToGrid={true}
-      snapGrid={snapGrid}
-      minZoom={0.12}
-      maxZoom={2}
-    >
-      <Background
-        color={'#121212'}
-        gap={80}
-        variant={BackgroundVariant.Cross}
-        size={18}
-      />
+      <DndProvider onMove={handleDnd}>
+          <DroppableZone id={null}>
+              <ReactFlow
+                  className={'container-full'}
+                  nodes={graphNodes}
+                  edges={graphEdges}
+                  nodeTypes={nodeTypes}
+                  onNodesChange={handleNodesChange}
+                  onEdgesChange={handleEdgesChange}
+                  onNodeDragStop={onNodeDragStop}
+                  onConnect={onConnect}
+                  onNodeDoubleClick={handleNodeDoubleClick}
+                  fitView
+                  snapToGrid={true}
+                  snapGrid={snapGrid}
+                  minZoom={0.12}
+                  maxZoom={2}
+              >
+                  <Background
+                      color={'#121212'}
+                      gap={80}
+                      variant={BackgroundVariant.Cross}
+                      size={18}
+                  />
 
-      <EditorTopMenu />
-      <EditorLeftMenu />
-      <EditorRightMenu />
-      <EditorBottomMenu />
+                  <EditorTopMenu />
+                  <EditorLeftMenu />
+                  <EditorRightMenu />
+                  <EditorBottomMenu />
 
-      <NodesInspector />
-      <WorkflowInspector />
+                  <NodesInspector />
+                  <WorkflowInspector />
 
-      {graphNodes.length === 0 && (
-        <Panel
-          position="top-center"
-          className={'container-fit canter top-[40%]!'}
-        >
-          <EmptyGraphMenu onAddNode={handleAddNode} />
-        </Panel>
-      )}
+                  {graphNodes.length === 0 && (
+                      <Panel
+                          position="top-center"
+                          className={'container-fit canter top-[40%]!'}
+                      >
+                          <EmptyGraphMenu onAddNode={handleAddNode} />
+                      </Panel>
+                  )}
 
-      <NodeTemplateSheet
-        open={isSheetOpen}
-        onOpenChange={setIsSheetOpen}
-        onSelectTemplate={handleSelectTemplate}
-      />
+                  <NodeTemplateSheet
+                      open={isSheetOpen}
+                      onOpenChange={setIsSheetOpen}
+                      onSelectTemplate={handleSelectTemplate}
+                  />
 
-      <GlobalVariablesSheet />
+                  <GlobalVariablesSheet />
 
-      <DeployWorkflowPanel
-        isOpen={isDeployWorkflowDialogOpen}
-        onOpenChange={setIsDeployWorkflowDialogOpen}
-        workflowName={editorState.workflow?.name}
-      />
+                  <DeployWorkflowPanel
+                      isOpen={isDeployWorkflowDialogOpen}
+                      onOpenChange={setIsDeployWorkflowDialogOpen}
+                      workflowName={editorState.workflow?.name}
+                  />
 
-      <ExecutionHistorySheet />
+                  <ExecutionHistorySheet />
 
-      {selectedNode && sheetOpen && selectedNode.type === 'trigger' && (
-        <TriggerNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'httpNode' && (
-        <HttpRequestNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'debug' && (
-        <DebugNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'condition' && (
-        <ConditionNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'transform' && (
-        <TransformNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'llmNode' && (
-        <LLMNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'decisionNode' && (
-        <DecisionNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'integrationNode' && (
-        <IntegrationNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'outputNode' && (
-        <OutputNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'respondNode' && (
-        <RespondNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
-      {selectedNode && sheetOpen && selectedNode.type === 'contextNode' && (
-        <ContextNodeConfigSheet
-          node={selectedNode}
-          open={sheetOpen}
-          onOpen={setSheetOpen}
-        />
-      )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'trigger' && (
+                      <TriggerNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'httpNode' && (
+                      <HttpRequestNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'debug' && (
+                      <DebugNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'condition' && (
+                      <ConditionNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'transform' && (
+                      <TransformNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'llmNode' && (
+                      <LLMNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'decisionNode' && (
+                      <DecisionNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'integrationNode' && (
+                      <IntegrationNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'outputNode' && (
+                      <OutputNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'respondNode' && (
+                      <RespondNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
+                  {selectedNode && sheetOpen && selectedNode.type === 'contextNode' && (
+                      <ContextNodeConfigSheet
+                          node={selectedNode}
+                          open={sheetOpen}
+                          onOpen={setSheetOpen}
+                      />
+                  )}
 
-      <ExecutionTrace
-        className={'h-full! w-[700px]! p-2.5!'}
-        open={open}
-        onOpenChange={setOpen}
-      />
-    </ReactFlow>
+                  <ExecutionTrace
+                      className={'h-full! w-[700px]! p-2.5!'}
+                      open={open}
+                      onOpenChange={setOpen}
+                  />
+              </ReactFlow>
+          </DroppableZone>
+      </DndProvider>
   );
 }

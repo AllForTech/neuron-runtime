@@ -41,14 +41,12 @@ export type NewDeployedWorkflow = InferInsertModel<typeof deployedWorkflows>;
 export type Workspace = InferSelectModel<typeof workspaces>;
 export type NewWorkspace = InferInsertModel<typeof workspaces>;
 
-// export type ExecuteWorkflowType = {
-//     runId: string;
-//     workflowId: string;
-//     graph: {
-//         nodes: WorkflowNode[];
-//         edges: WorkflowEdge[];
-//     },
-//     userId: string;
-//     params?: any
-// }
+
+export type VaultPayload = {
+    id: string
+    name: string
+    content: string
+    iv: string
+    tag: string
+}
 

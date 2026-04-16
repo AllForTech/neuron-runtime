@@ -11,6 +11,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./db": "./src/client",
     "./types": "./src/types/index.ts",
     "./schemas": "./src/schemas/index.ts"
   },
@@ -19,6 +20,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@neuron/auth": "workspace:*",
+    "@neuron/shared": "workspace:*",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "pg": "^8.18.0",

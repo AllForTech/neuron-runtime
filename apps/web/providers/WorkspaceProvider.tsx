@@ -46,7 +46,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
         const [
             [wsData, wsError],
             [wfData, wfError]
-        ] = await Promise.all([
+        ]: any = await Promise.all([
             workspaceClient.list(token),
             workflowClient.list(token)
         ]);
@@ -57,10 +57,10 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
             return;
         }
 
-        if (wfData) {
+        if (wfData.success) {
             workflowsDispatcher({
                 type: WorkflowActionType.SET_WORKFLOWS,
-                payload: wfData,
+                payload: wfData.data as WorkflowType[],
             });
         }
 

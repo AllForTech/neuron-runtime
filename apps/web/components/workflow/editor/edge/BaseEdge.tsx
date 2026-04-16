@@ -11,7 +11,7 @@ export default function WorkflowEdge(props: EdgeProps) {
   const isActive = editorState.runtime?.activeEdges?.[id];
 
   return (
-    <BaseEdge
+    <div
       {...props}
       style={{
         stroke: isActive ? '#a3a3a3' : '#989898',

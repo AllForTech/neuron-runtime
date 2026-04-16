@@ -1,23 +1,33 @@
 import { resolveTemplate } from "../resolveTemplate";
 import { nodeRegistry } from "../node.registry";
+import {IVaultResolver} from "@neuron/shared";
 
 export async function resolveConfig(
     config: any,
     context: Record<string, any>,
-    variables?: Record<string, string>
+    options: {
+        variables?: Record<string, string>;
+        vault?: IVaultResolver;
+    }
 ): Promise<any> {
+    // 1. Handle Strings (The actual template resolution)
     if (typeof config === "string") {
-        return await resolveTemplate(config, context, variables);
+        return await resolveTemplate(config, context, options);
     }
 
+    // 2. Handle Arrays (Recursive)
     if (Array.isArray(config)) {
-        return await Promise.all(config.map(v => resolveConfig(v, context, variables)));
+        return await Promise.all(
+            config.map(v => resolveConfig(v, context, options))
+        );
     }
 
+    // 3. Handle Objects (Recursive)
     if (config && typeof config === "object") {
         const result: any = {};
         for (const key of Object.keys(config)) {
-            result[key] = await resolveConfig(config[key], context, variables);
+            // Pass the entire options object down
+            result[key] = await resolveConfig(config[key], context, options);
         }
         return result;
     }
@@ -28,7 +38,7 @@ export async function resolveConfig(
 export async function executeNodeRuntime({
                                              node,
                                              input,
-    resolvedConfig,
+                                             resolvedConfig,
                                          }: {
     node: any;
     resolvedConfig: Record<string, any>;

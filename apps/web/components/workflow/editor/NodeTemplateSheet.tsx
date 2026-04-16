@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { useEditorState } from '@tiptap/react';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { NodeType } from '@neuron/shared';
+import {DraggableItem} from "@neuron/ui/*";
 
 interface NodeTemplateSheetProps {
   open: boolean;
@@ -142,14 +143,18 @@ export function NodeTemplateSheet({
             {filteredTemplates.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 pb-10">
                 {filteredTemplates.map((template) => (
-                  <TemplateCard
-                    key={template.key}
-                    template={template}
-                    onClick={() => {
-                      onSelectTemplate(template);
-                      onOpenChange(false);
-                    }}
-                  />
+                    <DraggableItem
+                        key={template.key}
+                        id={template.key}
+                        data={{ template }}>
+                        <TemplateCard
+                            template={template}
+                            onClick={() => {
+                                onSelectTemplate(template);
+                                onOpenChange(false);
+                            }}
+                        />
+                    </DraggableItem>
                 ))}
               </div>
             ) : (

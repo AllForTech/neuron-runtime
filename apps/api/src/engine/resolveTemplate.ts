@@ -1,7 +1,4 @@
-
-
-// Support for UUIDs and deep paths: node-uuid.data.item
-import {vaultService} from "./vault";
+import {IVaultResolver} from "@neuron/shared";
 
 const TEMPLATE_REGEX = /{{\s*([\w.-]+)\s*}}/g;
 const BLOCKED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
@@ -26,7 +23,10 @@ function safePathLookup(obj: any, path: string) {
 export async function resolveTemplate(
     template: string,
     context: Record<string, any>,
-    variables?: Record<string, string>
+    options?: {
+        variables?: Record<string, string>;
+        vault?: IVaultResolver;
+    }
 ) {
     if (!template || typeof template !== "string" || !template.includes("{{")) {
         return template;
@@ -42,7 +42,7 @@ export async function resolveTemplate(
 
     if (isSingleVar) {
         const path = trimmed.slice(2, -2).trim();
-        return await extractValue(path, context, variables);
+        return await extractValue(path, context, options.variables);
     }
 
     // --- 2. STRING INTERPOLATION ---
@@ -52,7 +52,7 @@ export async function resolveTemplate(
 
     for (const match of matches) {
         const [fullMatch, path] = match;
-        const resolvedValue = await extractValue(path!, context, variables);
+        const resolvedValue = await extractValue(path!, context, options.variables);
 
         if (resolvedValue !== undefined && resolvedValue !== null) {
             const stringified = typeof resolvedValue === "object"
@@ -72,7 +72,7 @@ export async function resolveTemplate(
 /**
  * Helper to handle the logic of where to pull data from
  */
-async function extractValue(path: string, context: Record<string, any>, variables?: Record<string, string>) {
+async function extractValue(path: string, context: Record<string, any>, options?: { variables?: Record<string, string>; vault?: IVaultResolver }) {
     const segments = path.split(".").filter(Boolean);
     const namespace = segments[0];
     const keyOrPath = segments.slice(1).join(".");
@@ -80,9 +80,13 @@ async function extractValue(path: string, context: Record<string, any>, variable
     try {
         switch (namespace) {
             case "Vault":
-                return await vaultService.resolve(keyOrPath);
+                if (!options?.vault) {
+                    console.warn("[Template Engine] Vault namespace used but no VaultService provided.");
+                    return undefined;
+                }
+                return await options.vault.resolve(keyOrPath);
             case "Global":
-                return variables?.[keyOrPath];
+                return options.variables?.[keyOrPath];
             default:
                 // Standard node data lookup (e.g., node_1.output)
                 return safePathLookup(context, path);

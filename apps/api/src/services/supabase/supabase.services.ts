@@ -1,4 +1,4 @@
-import {supabase} from "../../middleware/supabaseAuth";
+import {supabase} from "@neuron/auth";
 
 export async function getUserFromRequest(req: any): Promise<any> {
     const token = req.headers.authorization?.replace("Bearer ", "");
@@ -59,28 +59,4 @@ async function retryWithBackoff<T>(
     }
     throw lastError;
 }
-
-
-export const workflowBroadcast = (runId: string) => ({
-
-    dispatch: async (type: string, payload: any) => {
-        await supabase.channel(`workflow_${runId}`).send({
-            type: 'broadcast',
-            event: 'workflow_action',
-            payload: { type, ...payload }
-        });
-    }
-});
-
-
-export const workflowRuntimeBroadcast = (runId: string) => ({
-
-    dispatch: async (type: string, payload: any) => {
-        await supabase.channel(`workflow_${runId}`).send({
-            type: 'broadcast',
-            event: 'workflow_runtime_action',
-            payload: { type, ...payload }
-        });
-    }
-});
 

@@ -1,18 +1,9 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import * as dotenv from "dotenv";
-import * as schema from "../schemas/index";
-import postgres from "postgres";
+import "dotenv/config"; // <-- MUST be first
 
-dotenv.config({ path: ".env" });
+import { createDb } from "@neuron/db";
 
-if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not set in .env");
-}
+const { d } = createDb(process.env.DATABASE_URL!);
 
-const connectionString = process.env.DATABASE_URL;
+console.log("DB initialized");
 
-const client = postgres(connectionString, {
-    prepare: false,
-});
-
-export const db = drizzle(client, { schema });
+// start server here...

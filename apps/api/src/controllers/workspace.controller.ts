@@ -6,7 +6,7 @@ import {
     getWorkspacesByUser,
     moveWorkflowToWorkspace,
     updateWorkspace
-} from "../services/repository/workspace.repository";
+} from "@neuron/db";
 
 export async function createWorkspaceController(req: AuthRequest, res: Response) {
     try {

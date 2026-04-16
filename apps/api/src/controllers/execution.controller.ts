@@ -10,7 +10,7 @@ import {
     deleteExecutionsByWorkflow,
     getExecutionMetrics,
     getRecentExecutions,
-} from "../services/repository/execution.repository";
+} from "@neuron/db";
 
 export type AuthRequest = Request & {
     user: { id: string };

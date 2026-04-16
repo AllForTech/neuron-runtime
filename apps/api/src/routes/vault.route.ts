@@ -5,7 +5,7 @@ import {authenticate} from "../middleware/supabaseAuth";
 const router = Router();
 
 // Used by the Vault UI
-router.get('/', SecretsController.listSecrets);
+router.get('/', authenticate, SecretsController.listSecrets);
 router.post('/', authenticate, SecretsController.createSecret);
 router.delete('/delete/:id', authenticate, SecretsController.deleteSecret);
 

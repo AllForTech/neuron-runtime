@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { JsonRenderer } from '@/components/JsonRenederer';
-import { OutputFormatType } from '../../../../../shared/src/types/node.types';
+import { OutputFormatType } from '@neuron/shared';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -106,7 +106,7 @@ export const OutputRenderer = ({ content, format }: OutputRendererProps) => {
                         priority
                         alt={props.alt || 'Image'}
                         className="object-cover"
-                        src={props.src || ''}
+                        src={props.src as any || ''}
                       />
                     </div>
                   ),

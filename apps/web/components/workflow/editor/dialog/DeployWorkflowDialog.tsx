@@ -38,8 +38,7 @@ export function DeployWorkflowPanel({
   onOpenChange: (open: boolean) => void;
   workflowName: string;
 }) {
-  const { editorState, deployWorkflow, deleteDeployment, isDeploying } =
-    useWorkflowEditor();
+  const { editorState, deployWorkflow, deleteDeployment, isDeploying } = useWorkflowEditor();
 
   const [isPrivate, setIsPrivate] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -115,8 +114,7 @@ export function DeployWorkflowPanel({
                       Instance Active
                     </p>
                     <h4 className="text-sm font-semibold tracking-tight text-white">
-                      {editorState.deployment?.name ||
-                        editorState.workflow.name}
+                      {editorState.deployment[0].name || editorState.workflow.name}
                     </h4>
                   </div>
                 </div>
@@ -170,20 +168,20 @@ export function DeployWorkflowPanel({
                 <DetailCard
                   icon={<Hash size={14} />}
                   label="Deployment ID"
-                  value={editorState.deployment?.id?.slice(0, 18) + '...'}
+                  value={editorState.deployment[0]?.id?.slice(0, 18) + '...'}
                 />
                 <DetailCard
                   icon={<Calendar size={14} />}
                   label="Deployed At"
                   value={new Date(
-                    editorState.deployment?.createdAt
+                    editorState.deployment[0]?.createdAt
                   ).toLocaleDateString()}
                 />
                 <DetailCard
                   icon={<Lock size={14} />}
                   label="Security"
                   value={
-                    editorState.deployment?.private
+                    editorState.deployment[0]?.private
                       ? 'Private Key'
                       : 'Public Access'
                   }

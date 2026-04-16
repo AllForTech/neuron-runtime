@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx --watch src/index.ts",
+    "dev": "tsx --watch -r dotenv/config src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "clean": "rm -rf dist"
@@ -13,6 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ai-sdk/google": "^3.0.23",
+    "@neuron/auth": "workspace:*",
+    "@neuron/db": "workspace:*",
+    "@neuron/shared": "workspace:*",
+    "ai": "^6.0.78",
     "cors": "^2.8.6",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
@@ -20,6 +25,7 @@
     "express-rate-limit": "^8.3.2",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.6",
+    "vm2": "^3.10.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {

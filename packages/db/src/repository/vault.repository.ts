@@ -1,0 +1,55 @@
+import {db} from "../client";
+import {vaultSecrets} from "../schemas";
+import {and, eq} from 'drizzle-orm';
+
+export async function getAllVaultSecrets(userId: string) {
+
+    return db
+        .select({
+            id: vaultSecrets.id,
+            name: vaultSecrets.name,
+            iv: vaultSecrets.iv,
+            tag: vaultSecrets.tag,
+            content: vaultSecrets.content,
+            createdAt: vaultSecrets.createdAt,
+        })
+        .from(vaultSecrets)
+        .where(
+            eq(vaultSecrets.userId, userId),
+        );
+}
+
+export const findSecretById = async (id: string) => {
+    const [result] = await db.select().from(vaultSecrets).where(eq(vaultSecrets.id, id));
+    return result || null;
+};
+
+export const findSecretByName = async (name: string, userId: string) => {
+    const [result] = await db
+        .select()
+        .from(vaultSecrets)
+        .where(
+            and(
+                eq(vaultSecrets.id, name),
+                eq(vaultSecrets.userId, userId),
+            )
+        );
+    return result || null;
+};
+
+export const insertVaultSecret = async (data: {
+    name: string;
+    content: string;
+    iv: string;
+    tag: string;
+    userId: string;
+}) => {
+    const [newSecret] = await db.insert(vaultSecrets)
+        .values(data)
+        .returning({ id: vaultSecrets.id, name: vaultSecrets.name });
+    return newSecret;
+};
+
+export const deleteVaultSecretById = async (id: string) => {
+    return db.delete(vaultSecrets).where(eq(vaultSecrets.id, id));
+};

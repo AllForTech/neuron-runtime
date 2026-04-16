@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import rateLimit from 'express-rate-limit';
 
 import testRoute from "./routes/test/test.route";
@@ -11,7 +10,10 @@ import deploymentRoutes from "./routes/deployment.route";
 import executionRoute from "./routes/execution.route";
 import workspaceRoute from "./routes/workspace.route";
 
-dotenv.config();
+import * as dotenv from "dotenv";
+import path from "node:path";
+
+dotenv.config({ path: ".env" });
 
 const app = express();
 

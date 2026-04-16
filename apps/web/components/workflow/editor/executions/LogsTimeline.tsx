@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/accordion';
 import { ExecutionDataInspector } from './ExecutionDataInspector';
 import { memo, useMemo } from 'react';
-import { ExecutionLog } from '@/types';
+import { ExecutionLog } from '@neuron/db';
 import { nanoid } from 'nanoid';
 
 const nodeIconMap: Record<string, any> = {

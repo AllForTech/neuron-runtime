@@ -4,11 +4,10 @@ import {
     createWorkflow,
     getWorkflowGraph,
     getWorkflowsByUser, saveWorkflowGraph
-} from "../services/repository/workflow.repository";
-import {toWorkflowDTO} from "../utils/workflow";
+} from "@neuron/db";
 import {executeWorkflow} from "../engine/execution";
-import {getGlobalVariables, saveGlobalVariables} from "../services/repository/global.variables.repository";
-import {createExecution, getExecutionsByWorkflow, updateExecutionStatus} from "../services/repository/execution.repository";
+import {getGlobalVariables, saveGlobalVariables} from "@neuron/db";
+import {createExecution, getExecutionsByWorkflow, updateExecutionStatus} from "@neuron/db";
 import {AuthRequest} from "./execution.controller";
 
 // POST /api/workflows
@@ -96,11 +95,8 @@ export const getWorkflowController = async (req: AuthRequest, res: Response) => 
             return res.status(404).json({ message: "No workflows found" });
         }
 
-        // 4. Formatting logic
-        const formatedWorkflows = workflows.map(w => toWorkflowDTO(w));
-
         // 5. Final Successful Response
-        return res.json({ data: formatedWorkflows });
+        return res.json({ data: workflows });
 
     } catch (error) {
         console.error("Controller Error:", error);

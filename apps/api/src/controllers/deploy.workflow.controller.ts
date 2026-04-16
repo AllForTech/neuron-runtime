@@ -1,15 +1,13 @@
-import {deployedWorkflows} from "../schemas";
-import {db} from "../db/client";
-import {and, eq} from "drizzle-orm";
-import {supabase} from "../middleware/supabaseAuth";
-import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "../types/workflow/workflow.types";
 import {
+    createExecution,
     deleteDeploymentByWorkflowId,
+    getDeploymentById,
     getDeploymentByWorkflowId,
-    saveDeployWorkflowData
-} from "../services/repository/deployed.workflow.repository";
+    saveDeployWorkflowData, updateExecutionStatus
+} from "@neuron/db";
+import {supabase} from "@neuron/auth";
+import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "@neuron/db";
 import {executeWorkflow} from "../engine/execution";
-import {createExecution, updateExecutionStatus} from "../services/repository/execution.repository";
 
 
 export const deployWorkflowController = async (req: any, res: any) => {
@@ -146,24 +144,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
     try {
 
-        const [deployment] = await db
-            .select({
-                id: deployedWorkflows.id,
-                nodes: deployedWorkflows.nodes,
-                edges: deployedWorkflows.edges,
-                userId: deployedWorkflows.userId,
-                isPrivate: deployedWorkflows.private,
-                isActive: deployedWorkflows.isActive,
-                workflowId: deployedWorkflows.workflowId,
-            })
-            .from(deployedWorkflows)
-            .where(
-                and(
-                    eq(deployedWorkflows.id, workflowId),
-                    eq(deployedWorkflows.isActive, true)
-                )
-            )
-            .limit(1);
+        const deployment = await getDeploymentById(workflowId)
 
         if (!deployment) {
             return res.status(404).json({
