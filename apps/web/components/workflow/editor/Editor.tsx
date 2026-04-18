@@ -240,7 +240,7 @@ export function Editor() {
 
   return (
       <DndProvider onMove={handleDnd}>
-          <DroppableZone id={null}>
+          <DroppableZone className={"screen"} id={null}>
               <ReactFlow
                   className={'container-full'}
                   nodes={graphNodes}

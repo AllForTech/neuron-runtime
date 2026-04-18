@@ -1,22 +1,15 @@
 import {db} from "../client";
-import {vaultSecrets} from "../schemas";
-import {and, eq} from 'drizzle-orm';
+import {vaultSecrets, workspaces} from "../schemas";
+import {and, desc, eq} from 'drizzle-orm';
 
 export async function getAllVaultSecrets(userId: string) {
 
     return db
-        .select({
-            id: vaultSecrets.id,
-            name: vaultSecrets.name,
-            iv: vaultSecrets.iv,
-            tag: vaultSecrets.tag,
-            content: vaultSecrets.content,
-            createdAt: vaultSecrets.createdAt,
+        .query.vaultSecrets.findMany({
+            where: eq(vaultSecrets.userId, userId),
+            orderBy: [desc(workspaces.createdAt)]
         })
-        .from(vaultSecrets)
-        .where(
-            eq(vaultSecrets.userId, userId),
-        );
+
 }
 
 export const findSecretById = async (id: string) => {

@@ -1,7 +1,7 @@
 import type {Request, Response} from "express";
 import {
     addNodeToWorkflow,
-    createWorkflow,
+    createWorkflow, deleteWorkflow,
     getWorkflowGraph,
     getWorkflowsByUser, saveWorkflowGraph
 } from "@neuron/db";
@@ -107,6 +107,37 @@ export const getWorkflowController = async (req: AuthRequest, res: Response) => 
         }
     }
 };
+
+
+export async function deleteWorkflowController(req: AuthRequest, res: Response){
+    try {
+        const user = req.user;
+        const workflowId = req.params.workflowId;
+
+        if (!workflowId){
+            return res.status(401).json({
+                error: "Workflow Id must be provided in params",
+            });
+        }
+
+        if (!user) {
+            return res.status(401).json({
+                error: "Unauthorized",
+            });
+        }
+
+       await deleteWorkflow(workflowId, user.id);
+
+        return res.json({ success: true, message: "Workflow deleted successfully" });
+    } catch (error) {
+        console.error("Controller Error:", error);
+
+        // Final Safety Check: Don't try to send a 500 if we already sent a 401/404
+        if (!res.headersSent) {
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+}
 
 
 export async function fetchWorkflowGraphController(

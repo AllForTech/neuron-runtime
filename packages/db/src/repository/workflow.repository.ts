@@ -48,7 +48,7 @@ export async function getWorkflowsByUser(
     return db.query.workflows.findMany({
         where: eq(workflows.userId, userId),
         orderBy: desc(workflows.createdAt),
-    })
+    }) ?? []
 }
 
 export async function createWorkflowVersion(
@@ -112,6 +112,17 @@ export async function getWorkflowGraph({
         nodes: dbWorkflowNodes,
         edges: dbWorkflowEdges,
     };
+}
+
+
+export async function deleteWorkflow(workflowId: string, userId: string){
+    return db.delete(workflows)
+        .where(
+            and(
+                eq(workflows.id, workflowId),
+                eq(workflows.userId, userId)
+            )
+        )
 }
 
 

@@ -1,7 +1,7 @@
-// components/dashboard/execution-feed.tsx
+"use client";
 
 import ExecutionCard from '@/components/workflow/editor/executions/ExecutionCard';
-import { ExecutionLog } from '@/types';
+import { ExecutionLog } from '@neuron/db';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 

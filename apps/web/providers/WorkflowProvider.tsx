@@ -8,7 +8,6 @@ import {
     useReducer,
     useState,
 } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import type { NewWorkflow as NewWorkflowType, Workflow as WorkflowType } from '@neuron/db';
 import { NewWorkflowGeneralType, WorkflowAction } from '@/types/workflow';
 import { WorkflowActionType } from '@/constants';

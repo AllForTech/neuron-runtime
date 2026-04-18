@@ -1,3 +1,5 @@
+import 'server-only';
+
 // @ts-ignore
 import crypto from "crypto";
 

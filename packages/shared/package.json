@@ -2,19 +2,12 @@
   "name": "@neuron/shared",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
-  "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts",
-    "./validators": "./src/validators/index.ts",
-    "./constants": "./src/constants/index.ts"
+    "./server": "./src/server.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.8.0",

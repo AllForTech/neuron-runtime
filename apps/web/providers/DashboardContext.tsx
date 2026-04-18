@@ -6,6 +6,7 @@ import React, {
     useEffect,
     useState,
     useMemo,
+    useRef,
 } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Execution, ExecutionLog } from "@neuron/db";
@@ -35,18 +36,61 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     const [logs, setLogs] = useState<Record<string, ExecutionLog>>({});
     const [loading, setLoading] = useState(true);
     const [isLogsLoading, setIsLogsLoading] = useState(false);
+    const isFetching = useRef(false);
 
     const supabase = useMemo(() => createClient(), []);
 
+    /**
+     * Retrieves the current Supabase authentication token
+     */
     const getToken = useCallback(async () => {
         const { data } = await supabase.auth.getSession();
-        if (!data.session) throw new Error('No session');
+        if (!data?.session) throw new Error('No session');
         return data.session.access_token;
     }, [supabase]);
 
-    const fetchDashboardData = useCallback(async () => {
+    /**
+     * Fetches detailed logs for a specific execution ID
+     */
+    const getExecutionLogs = useCallback(
+        async (executionId: string) => {
+            if (!executionId) return {};
+            try {
+                setIsLogsLoading(true);
+                setCurrentExecId(executionId);
+
+                const token = await getToken();
+                const [data, error] = await executionsClient.getLogs(executionId, token);
+
+                if (error) throw error;
+
+                if (data) {
+                    const logsRecord: Record<string, ExecutionLog> = {};
+                    (data as ExecutionLog[]).forEach((e) => (logsRecord[e.id] = e));
+                    setLogs(logsRecord);
+                    return logsRecord;
+                }
+
+                return {};
+            } catch (e) {
+                console.error('Failed to fetch logs:', e);
+                return {};
+            } finally {
+                setIsLogsLoading(false);
+            }
+        },
+        [getToken]
+    );
+
+    /**
+     * Synchronizes core dashboard metrics and recent execution data
+     */
+    const fetchDashboardData = useCallback(async (isInitial = false) => {
+        if (isFetching.current) return;
+
         try {
-            setLoading(true);
+            isFetching.current = true;
+            if (isInitial) setLoading(true);
 
             const token = await getToken();
 
@@ -63,56 +107,29 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             }
 
             setMetrics(metricsData);
-            setExecutions((executionsData as Execution[]) || []);
+            const latestExecutions = (executionsData as Execution[]) || [];
+            setExecutions(latestExecutions);
 
-            if (executionsData) {
-                const lastExecId = (executionsData as Execution[])[0]?.id ?? null;
-                if (lastExecId) {
-                    await getExecutionLogs(lastExecId);
-                }
+            if (isInitial && latestExecutions.length > 0) {
+                await getExecutionLogs(latestExecutions[0].id);
             }
         } catch (error) {
-            console.error('Dashboard Intelligence Sync Failed:', error);
+            console.error('Dashboard Sync Failed:', error);
         } finally {
-            setLoading(false);
+            if (isInitial) setLoading(false);
+            isFetching.current = false;
         }
-    }, [getToken]);
-
-    const getExecutionLogs = useCallback(
-        async (executionId: string) => {
-            try {
-                setIsLogsLoading(true);
-                setCurrentExecId(executionId);
-
-                const token = await getToken();
-                const [data, error] = await executionsClient.getLogs(executionId, token);
-
-                if (error) throw error;
-
-                if (data) {
-                    const logsRecord: Record<string, ExecutionLog> = {};
-                    (data as ExecutionLog[]).map((e: ExecutionLog) => (logsRecord[e.id] = e));
-                    setLogs(logsRecord);
-                    return logsRecord;
-                }
-
-                return {};
-            } catch (e) {
-                console.error('Failed to fetch logs:', e.message);
-                return {};
-            } finally {
-                setIsLogsLoading(false);
-            }
-        },
-        [getToken]
-    );
+    }, [getToken, getExecutionLogs]);
 
     useEffect(() => {
-        fetchDashboardData();
+        fetchDashboardData(true);
     }, [fetchDashboardData]);
 
     useEffect(() => {
-        const interval = setInterval(fetchDashboardData, 60000);
+        const interval = setInterval(() => {
+            fetchDashboardData(false);
+        }, 30000);
+
         return () => clearInterval(interval);
     }, [fetchDashboardData]);
 
@@ -123,7 +140,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             logs,
             loading,
             isLogsLoading,
-            refresh: fetchDashboardData,
+            refresh: () => fetchDashboardData(false),
             getExecutionLogs,
             currentExecId,
         }),

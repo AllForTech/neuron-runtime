@@ -34,7 +34,7 @@ import {
     RuntimeAction,
     RuntimeActionType,
     RuntimeState,
-} from '@/types/index';
+} from '@/types';
 import {
     workflows as workflowClient,
     executions as executionsClient

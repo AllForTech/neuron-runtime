@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { encrypt, decrypt } from "@neuron/shared";
 import {
     getAllVaultSecrets,
     insertVaultSecret,
@@ -32,13 +31,14 @@ export const createSecret = async (req: AuthRequest, res: Response) => {
         console.log("Creating encrypted secret...");
 
         // Utilizing your shared encryption logic
-        const encrypted = encrypt(secret, value);
+        // const encrypted = encrypt(secret, value);
 
+        // TODO: Encrypt value
         const newSecret = await insertVaultSecret({
             name,
-            content: encrypted.content,
-            iv: encrypted.iv,
-            tag: encrypted.tag,
+            content: value,
+            iv: value,
+            tag: value,
             userId,
         });
 
@@ -68,13 +68,7 @@ export const getDecryptedSecret = async (req: AuthRequest, res: Response) => {
 
         if (!secret) return res.status(404).json({ error: 'Not found' });
 
-        const plainValue = decrypt(secret, {
-            content: secret.content,
-            iv: secret.iv,
-            tag: secret.tag,
-        });
-
-        res.json({ name: secret.name, value: plainValue });
+        res.json({ name: secret.name, value: secret.content });
     } catch (error) {
         console.error("Decryption failed:", error);
         res.status(500).json({ error: 'Decryption failed' });

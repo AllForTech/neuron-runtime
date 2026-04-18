@@ -11,16 +11,25 @@ export async function authorizedFetch<T>(
         ...options,
         headers: {
             'Content-Type': 'application/json',
-            ...options?.headers,
+            ...options.headers,
             Authorization: `Bearer ${token}`,
         },
     });
 
+    // 1. Parse the JSON once
+    const data = await response.json().catch(() => null);
+
     if (!response.ok) {
-        // Attempt to get a specific error message from the API body
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || `Request failed with status ${response.status}`);
+        // 2. If it's a 500, log it to the console so you can see it on Zorin OS
+        console.error(`[API Error] ${response.status} ${url}:`, data);
+
+        throw new Error(
+            data?.message ||
+            data?.error ||
+            `Request failed with status ${response.status}`
+        );
     }
 
-    return response.json();
+    // 3. Return the already-parsed data
+    return data as T;
 }

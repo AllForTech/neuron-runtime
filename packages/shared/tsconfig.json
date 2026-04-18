@@ -5,5 +5,9 @@
     "rootDir": "src"
   },
   "include": ["src"],
+  "paths": {
+    "@neuron/shared": ["./packages/shared/src/index.ts"],
+    "@neuron/shared/server": ["./packages/shared/src/server.ts"]
+  },
   "exclude": ["node_modules", "dist"]
 }

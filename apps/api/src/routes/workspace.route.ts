@@ -4,7 +4,7 @@ import {
     deleteWorkspaceController,
     getWorkspacesController,
     updateWorkspaceController,
-    assignWorkflowToWorkspaceController
+    assignWorkflowToWorkspaceController, getWorkspacesWithWorkflowsController
 } from '../controllers/workspace.controller';
 import {authenticate} from "../middleware/supabaseAuth";
 
@@ -16,7 +16,7 @@ router.use(authenticate);
  * @route   GET /api/workspaces
  * @desc    Fetch all workspaces for the authenticated user
  */
-router.get('/', getWorkspacesController);
+router.get('/', getWorkspacesWithWorkflowsController);
 
 /**
  * @route   POST /api/workspaces

@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "./execution.controller";
 import {
     createWorkspace,
-    deleteWorkspace,
+    deleteWorkspace, getWorkflowsByUser,
     getWorkspacesByUser,
     moveWorkflowToWorkspace,
     updateWorkspace
@@ -33,6 +33,24 @@ export async function getWorkspacesController(req: AuthRequest, res: Response) {
 
         const workspaces = await getWorkspacesByUser(userId);
         return res.status(200).json({ data: workspaces });
+    } catch (error: any) {
+        console.error("Get Workspaces Error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function getWorkspacesWithWorkflowsController(req: AuthRequest, res: Response) {
+    try {
+        console.log("Loading Workspaces and workflows...");
+        const userId = req.user?.id;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const [workspaces, workflows] = await Promise.all([
+            getWorkspacesByUser(userId),
+            getWorkflowsByUser(userId)
+        ])
+
+        return res.status(200).json({ workspaces, workflows });
     } catch (error: any) {
         console.error("Get Workspaces Error:", error);
         return res.status(500).json({ error: "Internal server error" });

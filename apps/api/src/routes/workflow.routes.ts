@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     addNodeController,
-    createWorkflowController,
+    createWorkflowController, deleteWorkflowController,
     executeWorkflowController,
     getWorkflowController,
     getWorkflowFullStateController,
@@ -30,6 +30,7 @@ router.use(authenticate);
 // --- Core Workflows ---
 router.get("/", getWorkflowController);
 router.post("/", createWorkflowController);
+router.delete("/:workflowId", deleteWorkflowController);
 
 // --- Graph & State Management ---
 router.get("/:workflowId/graph", getWorkflowFullStateController);

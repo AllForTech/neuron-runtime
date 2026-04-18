@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Copy, Eye, EyeOff, Key, Trash2, Plus, Search } from 'lucide-react';
 import { useVault } from '@/hooks/useVault';
-import { Secret } from '@/types/workflow';
+import { Vault as Secret } from '@neuron/db';
 
 function maskSecret() {
   return '••••••••••••••••';

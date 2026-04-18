@@ -18,7 +18,7 @@ export async function getWorkspacesByUser(userId: string) {
         where: eq(workspaces.userId, userId),
         with: { workflows: true },
         orderBy: [desc(workspaces.createdAt)],
-    });
+    }) ?? [];
 }
 
 export async function updateWorkspace(params: { id: string; userId: string; data: any }) {

@@ -235,45 +235,6 @@ function getVaultKey(): Buffer {
   return crypto.createHash('sha256').update(secret).digest();
 }
 
-export function encrypt(text: string) {
-  const iv = crypto.randomBytes(16);
-  const key = getVaultKey();
-  const cipher = crypto.createCipheriv(algorithm, key, iv);
-
-  const encrypted = Buffer.concat([
-    cipher.update(text, 'utf8'),
-    cipher.final(),
-  ]);
-
-  return {
-    content: encrypted.toString('hex'),
-    iv: iv.toString('hex'),
-    tag: cipher.getAuthTag().toString('hex'),
-  };
-}
-
-export function decrypt(payload: any) {
-  if (!payload || !payload.content || !payload.iv || !payload.tag) {
-    console.error('[Crypto] Malformed decryption payload:', payload);
-    throw new Error('Decryption failed: Missing content, iv, or tag.');
-  }
-
-  const key = getVaultKey();
-  const decipher = crypto.createDecipheriv(
-    algorithm,
-    key,
-    Buffer.from(payload.iv, 'hex')
-  );
-
-  decipher.setAuthTag(Buffer.from(payload.tag, 'hex'));
-
-  const decrypted = Buffer.concat([
-    decipher.update(Buffer.from(payload.content, 'hex')),
-    decipher.final(),
-  ]);
-
-  return decrypted.toString('utf8');
-}
 
 export function getAvailableUpstreamNodes(
   targetNodeId: string,

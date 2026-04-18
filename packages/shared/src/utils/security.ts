@@ -1,6 +1,8 @@
+import 'server-only';
 // @ts-ignore
 import dns from "dns/promises";
 import { isIP } from "net";
+// @ts-ignore
 import jwt from "jsonwebtoken";
 
 // Robust CIDR or prefix check for private ranges

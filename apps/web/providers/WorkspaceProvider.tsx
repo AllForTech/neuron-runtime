@@ -43,29 +43,23 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
 
         setIsLoading(true);
 
-        const [
-            [wsData, wsError],
-            [wfData, wfError]
-        ]: any = await Promise.all([
-            workspaceClient.list(token),
-            workflowClient.list(token)
-        ]);
+        const [data, error]: any = await workspaceClient.list(token);
 
-        if (wfError || wsError) {
+        if (error) {
             toast.error('Failed to synchronize data');
             setIsLoading(false);
             return;
         }
 
-        if (wfData.success) {
+        if (data.workflows) {
             workflowsDispatcher({
                 type: WorkflowActionType.SET_WORKFLOWS,
-                payload: wfData.data as WorkflowType[],
+                payload: data.workflows as WorkflowType[],
             });
         }
 
-        if (wsData) {
-            const record = (wsData as any[]).reduce((acc: WorkspaceRecord, ws: any) => {
+        if (data.workspaces) {
+            const record = data.workspaces.reduce((acc: WorkspaceRecord, ws: any) => {
                 const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
                     wAcc[wf.id] = wf;
                     return wAcc;
