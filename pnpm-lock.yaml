@@ -32,6 +32,9 @@ importers:
       '@neuron/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@neuron/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
       '@neuron/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -415,6 +418,85 @@ importers:
       typescript-eslint:
         specifier: ^8.50.0
         version: 8.50.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.2)
+
+  packages/nodes:
+    dependencies:
+      '@neuron/node-http-request':
+        specifier: workspace:*
+        version: link:../sdk/node-http-request
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/runtime:
+    dependencies:
+      '@neuron/db':
+        specifier: workspace:*
+        version: link:../db
+      '@neuron/nodes':
+        specifier: workspace:*
+        version: link:../nodes
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-http-request:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/nodes-sdk:
+    dependencies:
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/shared:
     dependencies:

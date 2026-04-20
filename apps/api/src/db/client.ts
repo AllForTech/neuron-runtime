@@ -1,9 +1,5 @@
-import "dotenv/config"; // <-- MUST be first
+import "dotenv/config";
 
-import { createDb } from "@neuron/db";
-
-const { d } = createDb(process.env.DATABASE_URL!);
+export { db } from "@neuron/db";
 
 console.log("DB initialized");
-
-// start server here...

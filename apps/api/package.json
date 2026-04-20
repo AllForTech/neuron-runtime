@@ -17,6 +17,7 @@
     "@neuron/auth": "workspace:*",
     "@neuron/db": "workspace:*",
     "@neuron/shared": "workspace:*",
+    "@neuron/runtime": "workspace:*",
     "ai": "^6.0.78",
     "cors": "^2.8.6",
     "date-fns": "^4.1.0",

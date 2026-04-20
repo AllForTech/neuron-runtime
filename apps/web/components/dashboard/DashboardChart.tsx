@@ -96,7 +96,7 @@ export function DashboardChart({ data }: { data: Execution[] }) {
                                 stroke="#404040"
                                 fontSize={10}
                                 fontWeight={500}
-                                interval={0} 
+                                interval={0}
                             />
 
                             <ChartTooltip

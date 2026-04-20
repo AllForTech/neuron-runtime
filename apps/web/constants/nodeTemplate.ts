@@ -1,17 +1,17 @@
 import {
-  ConditionNodeConfig,
-  ContextNodeConfig,
-  DebugNodeConfig,
-  DecisionNodeConfig,
-  HttpRequestNodeConfig,
-  IntegrationNodeConfig,
-  LLMNodeConfig,
-  NodeConfigType,
-  NodeType,
-  OutputNodeConfig,
-  RespondNodeConfig,
-  TransformNodeConfig,
-  TriggerNodeConfig,
+    ConditionNodeConfig,
+    ContextNodeConfig,
+    DebugNodeConfig,
+    DecisionNodeConfig, getBaseConfig,
+    HttpRequestNodeConfig,
+    IntegrationNodeConfig,
+    LLMNodeConfig,
+    NodeConfigType,
+    NodeType,
+    OutputNodeConfig,
+    RespondNodeConfig,
+    TransformNodeConfig,
+    TriggerNodeConfig,
 } from '@neuron/shared';
 import {
   Zap,
@@ -46,22 +46,7 @@ export const HTTP_METHODS = [
 /**
  * Helper to generate default base settings for templates
  */
-const getBaseConfig = (label: string) => ({
-  meta: {
-    label,
-    description: '',
-  },
-  executionConfig: {
-    retry: {
-      enabled: false,
-      maxAttempts: 3,
-      delayMs: 1000,
-      strategy: 'fixed' as const,
-    },
-    timeout: { enabled: true, durationMs: 30000 },
-    errorHandling: { continueOnError: false },
-  },
-});
+
 
 export const NODE_TEMPLATES: NodeTemplate[] = [
   {

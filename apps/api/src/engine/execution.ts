@@ -1,7 +1,7 @@
 import {VaultService, workflowBroadcast} from "@neuron/db"
-import {WorkflowEditorActionType} from "@neuron/shared";
+import {logger, WorkflowEditorActionType} from "@neuron/shared";
 import {getGlobalVariables} from "@neuron/db";
-import {ExecuteWorkflowType} from "@neuron/shared";
+import {ExecuteWorkflowType, Runtime} from "@neuron/runtime";
 import {createContextEntry} from "@neuron/shared";
 import {executeNodeRuntime, resolveConfig} from "./runtime/node.runtime";
 import {logNodeExecutionEnd, logNodeExecutionStart} from "./services/executionLogger";
@@ -16,8 +16,8 @@ export type FinalResponseType = {
 
 
 
-export async function executeWorkflow({
-                                          runId,
+export async function executeWorkflows({
+                                          executorId,
                                           workflowId,
                                           graph,
                                           userId
@@ -91,7 +91,7 @@ export async function executeWorkflow({
             const parentInput = nodesContext[incoming[nodeId]?.[0]];
 
             logId = await logNodeExecutionStart({
-                runId,
+                runId: executorId,
                 nodeId,
                 input: resolvedConfig,
                 userId,
@@ -185,4 +185,24 @@ export async function executeWorkflow({
         globalVariables,
         response: finalResponse as FinalResponseType
     };
+}
+
+export async function executeWorkflow({
+                                          executorId,
+                                          workflowId,
+                                          graph,
+                                          userId
+                                      }: ExecuteWorkflowType) {
+    const runtime = new Runtime({
+        executorId,
+        workflowId,
+        graph,
+        userId
+    });
+
+    const result = await runtime.execute();
+
+    logger.info("Runtime", "Execution Result", result);
+
+    return result;
 }

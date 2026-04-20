@@ -1,3 +1,4 @@
+export * from "./logger";
 export * from "./safeTask";
 export * from "./authorizeFetch";
 export * from "./node";

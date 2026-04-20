@@ -1,31 +1,33 @@
-import type {LucideIcon} from "lucide-react";
-import {NodeConfigType, NodeType, WorkflowNode} from "./nodes";
+import {BaseNode, BaseNodeConfig, NodeType, WorkflowNode} from "./nodes";
 
 export interface NodeExecutorContext {
-    node: WorkflowNode;
-    inputs: any;
-    env?: Record<string, any>;
+    nodeType: NodeType;
+    config: BaseNodeConfig;
+    input: any;
 }
 
 export type NodeExecutor = (
     ctx: NodeExecutorContext
-) => Promise<any>;
+) => Promise<ExecutorOutput>;
 
-export interface NodeDefinition {
+export type ExecutorOutput = {
+    success: boolean;
+    error?: string | null;
+    output: any | null;
+}
+
+export interface NodeDefinition<TConfig = any> {
     type: NodeType;
 
-    // backend execution
     executor: NodeExecutor;
 
-    // frontend + UI
-    ui: {
+    template: {
         key: string;
         label: string;
         description: string;
         category: string;
-        icon: LucideIcon;
-    };
+        icon: any;
 
-    // default config (your existing structure)
-    defaultConfig: NodeConfigType;
+        defaultConfig: TConfig;
+    };
 }
