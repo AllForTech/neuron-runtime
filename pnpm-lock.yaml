@@ -421,9 +421,39 @@ importers:
 
   packages/nodes:
     dependencies:
+      '@neuron/node-condition':
+        specifier: workspace:*
+        version: link:../sdk/node-condition
+      '@neuron/node-context':
+        specifier: workspace:*
+        version: link:../sdk/node-context
+      '@neuron/node-debug':
+        specifier: workspace:*
+        version: link:../sdk/node-debug
+      '@neuron/node-decision':
+        specifier: workspace:*
+        version: link:../sdk/node-decision
       '@neuron/node-http-request':
         specifier: workspace:*
         version: link:../sdk/node-http-request
+      '@neuron/node-integration':
+        specifier: workspace:*
+        version: link:../sdk/node-integration
+      '@neuron/node-llm':
+        specifier: workspace:*
+        version: link:../sdk/node-llm
+      '@neuron/node-output':
+        specifier: workspace:*
+        version: link:../sdk/node-output
+      '@neuron/node-respond':
+        specifier: workspace:*
+        version: link:../sdk/node-respond
+      '@neuron/node-transform':
+        specifier: workspace:*
+        version: link:../sdk/node-transform
+      '@neuron/node-trigger':
+        specifier: workspace:*
+        version: link:../sdk/node-trigger
       '@neuron/shared':
         specifier: workspace:*
         version: link:../shared
@@ -460,7 +490,227 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/sdk/node-condition:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-context:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-debug:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-decision:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/sdk/node-http-request:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-integration:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-llm:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-output:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-respond:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-transform:
+    dependencies:
+      '@neuron/nodes-sdk':
+        specifier: workspace:*
+        version: link:../nodes-sdk
+      '@neuron/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.2.3
+        version: 25.6.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/sdk/node-trigger:
     dependencies:
       '@neuron/nodes-sdk':
         specifier: workspace:*

@@ -1,4 +1,4 @@
-import { VaultService, WorkflowNode } from "@neuron/db";
+import { WorkflowNode } from "@neuron/db";
 import { INodeRegistry } from "@neuron/nodes";
 import { NodeExecutionResult } from "../types";
 import { BaseNodeConfig, NodeType } from "@neuron/shared";
@@ -19,7 +19,7 @@ export class NodeRunner {
             const hasNode = this.registry.has(node.type as NodeType);
 
             if (!hasNode) {
-                throw new Error("[Runtime] [NodeRunner] Error: Node type not found in Node Registry.");
+                throw new Error(`[Runtime] Error: Node type ${node.type} not found in Node Registry.`);
             }
             const definition = this.registry.get(node.type as NodeType);
 

@@ -54,7 +54,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
         if (data.workflows) {
             workflowsDispatcher({
                 type: WorkflowActionType.SET_WORKFLOWS,
-                payload: data.workflows as WorkflowType[],
+                payload: data?.workflows as WorkflowType[] ?? [],
             });
         }
 

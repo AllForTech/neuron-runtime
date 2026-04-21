@@ -1,4 +1,4 @@
-import {IVaultResolver} from "@neuron/shared";
+import {IVaultResolver, logger} from "@neuron/shared";
 import {ExecutionError, ExecutionMetrics, NodeExecutionResult} from "../types";
 
 const TEMPLATE_REGEX = /{{\s*([\w.-]+)\s*}}/g;
@@ -67,7 +67,6 @@ export async function resolveTemplate(
         return template;
     }
 
-    // --- 1. RAW INJECTION CHECK ---
     // If the template is ONLY a single variable, return the RAW value (Object, Array, etc.)
     // Matches: "{{node_1}}" or "{{ Global.KEY }}" but NOT "ID: {{node_1}}"
     const trimmed = template.trim();
@@ -80,7 +79,6 @@ export async function resolveTemplate(
         return await extractValue(path, context, options.variables);
     }
 
-    // --- 2. STRING INTERPOLATION ---
     // If there is surrounding text, we treat it as a string
     const matches = Array.from(template.matchAll(TEMPLATE_REGEX));
     let resolvedString = template;
@@ -93,11 +91,11 @@ export async function resolveTemplate(
             const stringified = typeof resolvedValue === "object"
                 ? JSON.stringify(resolvedValue)
                 : String(resolvedValue);
-            console.warn(`[Template Engine] Could not resolve: ${path}. Falling back to raw string.`);
+            logger.warn("Runtime", "Could not resolve: ${path}. Falling back to raw string.");
 
             resolvedString = resolvedString?.replaceAll(fullMatch, stringified);
         } else {
-            console.warn(`[Template Engine] Could not resolve: ${path}`);
+            logger.warn("Runtime", `Could not resolve: ${path}`)
         }
     }
 
@@ -116,7 +114,7 @@ async function extractValue(path: string, context: Record<string, any>, options?
         switch (namespace) {
             case "Vault":
                 if (!options?.vault) {
-                    console.warn("[Template Engine] Vault namespace used but no VaultService provided.");
+                    logger.warn("Runtime", `Vault namespace used but no VaultService provided.`)
                     return undefined;
                 }
                 return await options.vault.resolve(keyOrPath);
@@ -127,7 +125,8 @@ async function extractValue(path: string, context: Record<string, any>, options?
                 return safePathLookup(context, path);
         }
     } catch (err) {
-        console.error(`[Template Engine] Resolution error for ${path}:`, err);
+        logger.warn("Runtime", `Resolution error for ${path}:`, err)
+
         return undefined;
     }
 }

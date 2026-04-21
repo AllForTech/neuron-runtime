@@ -1,4 +1,4 @@
-import {LogLevel, LogPayload} from "../types/logger";
+import {LogLevel, LogPayload} from "../types";
 
 const IS_BROWSER = typeof window !== 'undefined';
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -8,6 +8,8 @@ const IS_PROD = process.env.NODE_ENV === 'production';
  * Automatically adapts formatting for Browser, Node.js, and Production environments.
  */
 class Logger {
+    private readonly defaultModule = "Runtime";
+
     private getTimestamp(): string {
         return new Date().toISOString();
     }
@@ -70,22 +72,22 @@ class Logger {
     }
 
     /** Logs general application events */
-    info(module: string, message: string, context?: Record<string, any>) {
+    info(module = this.defaultModule, message: string, context?: Record<string, any>) {
         this.format('info', message, { module, context });
     }
 
     /** Logs recoverable issues or warnings */
-    warn(module: string, message: string, context?: Record<string, any>) {
+    warn(module = this.defaultModule, message: string, context?: Record<string, any>) {
         this.format('warn', message, { module, context });
     }
 
     /** Logs critical failures and exceptions */
-    error(module: string, message: string, error?: any, context?: Record<string, any>) {
+    error(module = this.defaultModule, message: string, error?: any, context?: Record<string, any>) {
         this.format('error', message, { module, error, context });
     }
 
     /** Logs detailed information for troubleshooting */
-    debug(module: string, message: string, context?: Record<string, any>) {
+    debug(module = this.defaultModule, message: string, context?: Record<string, any>) {
         this.format('debug', message, { module, context });
     }
 }

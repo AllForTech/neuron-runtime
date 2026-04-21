@@ -25,7 +25,7 @@ export async function executeWorkflows({
     const { nodes, edges } = graph;
     const { dispatch } = workflowBroadcast(workflowId);
 
-    const contextNode: Record<string, any> = {}; // for storing the output data of nodes
+    const contextNode: Record<string, any> = {};
     const nodesContext: Record<string, any> = {};
     const globalVariables: Record<string, string> = {};
     const completed = new Set<string>();

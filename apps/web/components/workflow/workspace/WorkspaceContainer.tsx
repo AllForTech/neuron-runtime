@@ -52,7 +52,7 @@ export const WorkspaceContainer = ({
     }, [workspaces]);
 
     const unassignedWorkflows = useMemo(() => {
-        return workflows.filter(wf => !assignedWorkflowIds.has(wf.id) || wf.workspaceId === null);
+        return workflows ? workflows.filter(wf => !assignedWorkflowIds.has(wf.id) || wf.workspaceId === null) : [];
     }, [workflows, assignedWorkflowIds]);
 
     async function handleDragEnd(event: DragEndEvent) {

@@ -107,6 +107,8 @@ export class Runtime {
 
         await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, { nodeId });
 
+        logger.info("Runtime", `Attempting to resolve config for ${node.type} node - ${node.id}`);
+
         try {
             const resolvedConfig = await resolveConfig(
                 node.config,
