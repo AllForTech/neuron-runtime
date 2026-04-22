@@ -20,7 +20,7 @@ export const transformNode = createNode<TransformNodeConfig>({
             The code has access to the current execution context and must return the 
             transformed data structure for the next step.
         `.trim(),
-        category: "Logic",
+        category: "Utility",
         icon: Code2,
 
         defaultConfig: {

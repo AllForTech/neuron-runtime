@@ -25,7 +25,7 @@ export const integrationNode = createNode<IntegrationNodeConfig>({
             authentication and parameter mapping automatically, allowing you to focus on 
             workflow logic rather than API documentation.
         `.trim(),
-        category: "Integrations",
+        category: "Integration",
         icon: Layers,
 
         defaultConfig: {

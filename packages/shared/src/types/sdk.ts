@@ -1,4 +1,4 @@
-import {BaseNode, BaseNodeConfig, NodeType, WorkflowNode} from "./nodes";
+import {BaseNode, BaseNodeConfig, NodeCategory, NodeType, WorkflowNode} from "./nodes";
 
 export interface NodeExecutorContext {
     nodeType: NodeType;
@@ -25,7 +25,7 @@ export interface NodeDefinition<TConfig = any> {
         key: string;
         label: string;
         description: string;
-        category: string;
+        category: NodeCategory;
         icon: any;
 
         defaultConfig: TConfig;

@@ -35,6 +35,7 @@
     "@neuron/client": "workspace:*",
     "@neuron/db": "workspace:*",
     "@neuron/shared": "workspace:*",
+    "@neuron/nodes": "workspace:*",
     "@neuron/ui": "workspace:*",
     "@radix-ui/react-context-menu": "^2.2.16",
     "@react-three/drei": "^10.7.7",

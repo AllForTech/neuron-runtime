@@ -30,7 +30,7 @@ export const triggerNode = createNode<TriggerNodeConfig>({
             'Webhook' for receiving real-time data from external services via HTTP, 
             and 'Schedule' for recurring, time-based operations.
         `.trim(),
-        category: "Core",
+        category: "Trigger",
         icon: Zap,
 
         defaultConfig: {

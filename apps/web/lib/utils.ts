@@ -11,11 +11,12 @@ import type {
   SchemaField,
   WorkflowNode,
 } from '@neuron/shared';
-import { Edge, Node, NodeProps } from 'reactflow';
+import { NodeProps } from 'reactflow';
 import type { WorkflowEdge } from '@neuron/shared';
 import crypto from 'crypto';
 import { WorkflowNodeError } from '@/providers/ValidationContext';
 import {NewWorkflow, Workflow} from "@neuron/db";
+import {nodeCatalog} from "@neuron/nodes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -361,4 +362,14 @@ export const getNodeValidationStyles = (
   return cn(
     'border-amber-500/40 bg-amber-500/15 shadow-[0_0_15px_rgba(245,158,11,0.05)]'
   );
+};
+
+
+export const getNodesByCategory = () => {
+    return nodeCatalog.reduce((acc, node) => {
+        const category = node.category || 'Utility';
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(node);
+        return acc;
+    }, {} as Record<string, typeof nodeCatalog>);
 };

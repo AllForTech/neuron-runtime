@@ -24,7 +24,7 @@ import 'reactflow/dist/style.css';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { WorkflowEditorActionType } from '@/constants';
 import { EmptyGraphMenu } from '@/components/workflow/editor/EmptyGraphContextMenu';
-import { NodeTemplateSheet } from '@/components/workflow/editor/NodeTemplateSheet';
+import { NodeTemplateSheet } from '@/components/workflow/editor/sheet/templates/NodeTemplateSheet';
 import DynamicNode from '@/components/workflow/editor/nodes/DynamicNode';
 import { HttpRequestNodeConfigSheet } from '@/components/workflow/editor/sheet/HttpNodeConfigSheet';
 import { DebugNodeConfigSheet } from '@/components/workflow/editor/sheet/DebugNodeSheet';

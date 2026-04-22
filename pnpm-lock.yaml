@@ -147,6 +147,9 @@ importers:
       '@neuron/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@neuron/nodes':
+        specifier: workspace:*
+        version: link:../../packages/nodes
       '@neuron/shared':
         specifier: workspace:*
         version: link:../../packages/shared

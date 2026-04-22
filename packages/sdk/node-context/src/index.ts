@@ -22,7 +22,7 @@ export const contextNode = createNode<ContextNodeConfig>({
             automations where information gathered at the start needs to be preserved for 
             final processing or conditional logic.
         `.trim(),
-        category: "Core",
+        category: "Utility",
         icon: Database,
 
         defaultConfig: {

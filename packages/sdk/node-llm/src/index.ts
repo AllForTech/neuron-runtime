@@ -27,7 +27,7 @@ export const llmNode = createNode<LLMNodeConfig>({
             Enable 'JSON Mode' to force the AI to return structured data that can be 
             immediately parsed and used by downstream nodes in your automation chain.
         `.trim(),
-        category: "Intelligence",
+        category: "AI",
         icon: BrainCircuit,
 
         defaultConfig: {

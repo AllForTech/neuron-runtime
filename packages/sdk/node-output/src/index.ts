@@ -32,7 +32,7 @@ export const outputNode = createNode<OutputNodeConfig>({
             necessary templating and syntax tools. It defines how the final 'answer' 
             of your workflow is presented and delivered to the end-user or downstream system.
         `.trim(),
-        category: "Network",
+        category: "Utility",
         icon: FileJson,
 
         defaultConfig: {
