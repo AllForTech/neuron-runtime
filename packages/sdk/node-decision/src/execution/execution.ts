@@ -1,11 +1,9 @@
-import {NodeExecutorContext} from "@neuron/shared";
-import {DecisionNodeConfig} from "../index";
+import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
+import { DecisionNodeConfig } from "../index";
 
-export const executor = async ({
-                                   nodeType,
-                                   config,
-                                   input: paramsInput,
-                               }: NodeExecutorContext) => {
+export const executor: NodeExecutor = async ({
+                                                 config,
+                                             }: NodeExecutorContext): Promise<ExecutorOutput> => {
 
     const { input, rules, inputTransforms = [] } = config as DecisionNodeConfig;
 
@@ -19,16 +17,11 @@ export const executor = async ({
         return res;
     };
 
-    // 1. Initial global processing
     const globalInput = runTransform(input, inputTransforms);
 
-    // 2. Evaluate rules
     const matchedRuleIds = rules
         .filter((rule) => {
             const { operator, value, transforms = [] } = rule;
-
-            // Apply rule-specific logic to both sides
-            // const finalInput = runTransform(globalInput, transforms);
             const finalValue = runTransform(value, transforms);
 
             switch (operator) {
@@ -43,5 +36,10 @@ export const executor = async ({
         })
         .map((rule) => rule.id);
 
-    return matchedRuleIds.length > 0 ? matchedRuleIds : ["default-else"];
+    const output = matchedRuleIds.length > 0 ? matchedRuleIds : ["default-else"];
+
+    return {
+        success: true,
+        output,
+    };
 }

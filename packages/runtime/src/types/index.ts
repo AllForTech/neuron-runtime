@@ -13,7 +13,7 @@ export interface GraphDefinition {
 export interface ExecuteWorkflowType {
     workflowId: string;
     userId: string;
-    executorId: string;
+    executionId: string;
     graph: GraphDefinition;
 }
 

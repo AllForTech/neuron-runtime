@@ -10,6 +10,14 @@ import { decisionNode } from '@neuron/node-decision';
 import { integrationNode } from '@neuron/node-integration';
 import { contextNode } from '@neuron/node-context';
 import { outputNode } from '@neuron/node-output';
+import {NodeDefinition, NodeType} from "@neuron/shared";
+
+export interface INodeRegistry {
+    register(node: NodeDefinition): void;
+    get(type: NodeType): NodeDefinition;
+    getAll(): NodeDefinition[];
+    has(type: NodeType): boolean;
+}
 
 const installedNodes = [
     triggerNode,
@@ -44,5 +52,3 @@ export type { DecisionNodeConfig } from "@neuron/node-decision";
 export type { IntegrationNodeConfig } from "@neuron/node-integration";
 export type { ContextNodeConfig } from "@neuron/node-context";
 export type { OutputNodeConfig } from "@neuron/node-output";
-
-export * from "./types";

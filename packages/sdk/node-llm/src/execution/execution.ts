@@ -1,19 +1,16 @@
-import {NodeExecutorContext} from "@neuron/shared";
-import {LLMNodeConfig} from "../index";
-import {parseZodSchema} from "../utils/utils";
+import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
+import { LLMNodeConfig } from "../index";
+import { parseZodSchema } from "../utils/utils";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import {generateText, Output} from "ai";
+import { generateText, Output } from "ai";
 
 const defaultModel = "gemini-2.5-flash" as const;
 
-export const executor = async ({
-                                   nodeType,
-                                   config,
-                                   input,
-                               }: NodeExecutorContext) => {
+export const executor: NodeExecutor = async ({
+                                                 config,
+                                             }: NodeExecutorContext): Promise<ExecutorOutput> => {
 
     const {
-        model,
         systemPrompt,
         userPrompt,
         temperature,
@@ -38,8 +35,6 @@ export const executor = async ({
     if (jsonMode && outputSchema) {
         const dynamicZodSchema = parseZodSchema(outputSchema);
 
-        console.log(">>>>>>>>>>> Dynamic Zod Schema:", dynamicZodSchema);
-
         options.output = Output.object({
             schema: dynamicZodSchema
         });
@@ -48,13 +43,15 @@ export const executor = async ({
     const { text, output, usage, finishReason } = await generateText(options);
 
     return {
-        // Return the object if in JSON mode, otherwise fallback to text
-        content: jsonMode ? output : text,
-        usage: {
-            promptTokens: usage.inputTokens,
-            completionTokens: usage.outputTokens,
-            totalTokens: usage.totalTokens,
-        },
-        finishReason
+        success: true,
+        output: {
+            content: jsonMode ? output : text,
+            usage: {
+                promptTokens: usage.inputTokens,
+                completionTokens: usage.outputTokens,
+                totalTokens: usage.totalTokens,
+            },
+            finishReason
+        }
     };
 }

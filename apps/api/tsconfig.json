@@ -1,22 +1,28 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-
+    "rootDir": "../../",
     "target": "es2021",
     "module": "CommonJS",
     "moduleResolution": "node",
-
     "baseUrl": ".",
     "paths": {
-      "@neuron/shared": ["../../packages/shared/dist"],
-      "@neuron/shared/*": ["../../packages/shared/dist/*"]
+      "@neuron/shared": ["../../packages/shared/src/index.ts"],
+      "@neuron/shared/*": ["../../packages/shared/src/*"],
+      "@neuron/runtime": ["../../packages/runtime/src/index.ts"],
+      "@neuron/nodes": ["../../packages/nodes/src/server/index.ts"],
+      "@neuron/node-*": ["../../packages/sdk/node-*/src/index.ts"]
     },
-
     "strict": false,
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "../../packages/shared/src/**/*",
+    "../../packages/runtime/src/**/*",
+    "../../packages/nodes/src/**/*",
+    "../../packages/sdk/*/src/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

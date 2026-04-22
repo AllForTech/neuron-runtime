@@ -1,7 +1,7 @@
-import {NodeExecutorContext} from "@neuron/shared";
+import {NodeExecutor, NodeExecutorContext} from "@neuron/shared";
 import {RespondNodeConfig} from "../index";
 
-export const executor = async ({
+export const executor: NodeExecutor = async ({
                                    nodeType,
                                    config,
                                    input,
@@ -12,12 +12,15 @@ export const executor = async ({
     console.log("Respond Node Config received:", config);
 
     return {
-        __isTerminal: true,
-        status: Number(statusCode) || 200,
-        headers: {
-            "Content-Type": "application/json",
-            ...headers
-        },
-        body: body
+        success: true,
+        output: {
+            __isTerminal: true,
+            status: Number(statusCode) || 200,
+            headers: {
+                "Content-Type": "application/json",
+                ...headers
+            },
+            body: body
+        }
     };
 }

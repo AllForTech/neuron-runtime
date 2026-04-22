@@ -1,5 +1,5 @@
 import {NodeDefinition, NodeType} from '@neuron/shared';
-import {INodeRegistry} from "../types";
+import {INodeRegistry} from "../nodes";
 
 export class NodeRegistry implements INodeRegistry {
     private nodes = new Map<string, NodeDefinition>();

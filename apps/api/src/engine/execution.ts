@@ -17,7 +17,7 @@ export type FinalResponseType = {
 
 
 export async function executeWorkflows({
-                                          executorId,
+                                           executionId,
                                           workflowId,
                                           graph,
                                           userId
@@ -91,7 +91,7 @@ export async function executeWorkflows({
             const parentInput = nodesContext[incoming[nodeId]?.[0]];
 
             logId = await logNodeExecutionStart({
-                runId: executorId,
+                runId: executionId,
                 nodeId,
                 input: resolvedConfig,
                 userId,
@@ -188,13 +188,13 @@ export async function executeWorkflows({
 }
 
 export async function executeWorkflow({
-                                          executorId,
+                                          executionId,
                                           workflowId,
                                           graph,
                                           userId
                                       }: ExecuteWorkflowType) {
     const runtime = new Runtime({
-        executorId,
+        executionId,
         workflowId,
         graph,
         userId

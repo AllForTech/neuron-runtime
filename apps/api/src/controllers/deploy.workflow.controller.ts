@@ -164,7 +164,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
         // await neuronEngine.run(deployment.nodes, deployment.edges);
         executeWorkflow({
-            runId: execution.id,
+            executionId: execution.id,
             workflowId: deployment.workflowId,
             graph: {
                 nodes: deployment.nodes as WorkflowNode[],

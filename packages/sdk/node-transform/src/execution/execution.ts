@@ -1,6 +1,6 @@
-import {NodeExecutorContext} from "@neuron/shared";
+import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import { NodeVM } from "vm2";
-import {TransformNodeConfig} from "../index";
+import { TransformNodeConfig } from "../index";
 
 function normalizeTransformCode(code: string) {
     const trimmed = code.trim();
@@ -8,11 +8,10 @@ function normalizeTransformCode(code: string) {
     return `return (${trimmed})`;
 }
 
-export const executor = async ({
-                                   nodeType,
-                                   config,
-                                   input,
-                               }: NodeExecutorContext) => {
+export const executor: NodeExecutor = async ({
+                                                 config,
+                                                 input,
+                                             }: NodeExecutorContext): Promise<ExecutorOutput> => { // Explicitly define return type
 
     try {
         const vm = new NodeVM({
@@ -53,7 +52,10 @@ export const executor = async ({
             throw new Error("Transform must return a value.");
         }
 
-        return result;
+        return {
+            success: true,
+            output: result,
+        };
 
     } catch (error: any) {
         const message = error.message.includes("Script execution timed out")

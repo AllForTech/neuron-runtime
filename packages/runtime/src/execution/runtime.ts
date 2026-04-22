@@ -1,5 +1,4 @@
 import { getGlobalVariables, VaultService, WorkflowEdge, WorkflowNode, workflowBroadcast } from "@neuron/db";
-import { INodeRegistry, nodeRegistry } from "@neuron/nodes";
 import { ExecuteWorkflowType, NodeExecutionResult } from "../types";
 import { NodeRunner } from "./nodeRunner";
 import {WorkflowEditorActionType, createContextEntry, logger} from "@neuron/shared";
@@ -29,7 +28,7 @@ export class Runtime {
     constructor(params: ExecuteWorkflowType) {
         this.workflowId = params.workflowId;
         this.userId = params.userId;
-        this.executorId = params.executorId;
+        this.executorId = params.executionId;
         this.nodes = params.graph.nodes;
         this.edges = params.graph.edges;
         this.vault = new VaultService(params.userId);
@@ -122,7 +121,7 @@ export class Runtime {
             // Log detailed node activity
             logger.debug("Runtime", `Executing node: ${node.type}`, { nodeId });
 
-            const runner = new NodeRunner(nodeRegistry);
+            const runner = new NodeRunner();
             const result: NodeExecutionResult = await runner.run(node, resolvedConfig);
 
             if (result.status === 'failed') {

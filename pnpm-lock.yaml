@@ -624,15 +624,24 @@ importers:
 
   packages/sdk/node-llm:
     dependencies:
+      '@ai-sdk/google':
+        specifier: ^3.0.23
+        version: 3.0.63(zod@4.3.6)
       '@neuron/nodes-sdk':
         specifier: workspace:*
         version: link:../nodes-sdk
       '@neuron/shared':
         specifier: workspace:*
         version: link:../../shared
+      ai:
+        specifier: ^6.0.78
+        version: 6.0.160(zod@4.3.6)
       lucide-react:
         specifier: ^1.8.0
         version: 1.8.0(react@19.2.3)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -699,6 +708,9 @@ importers:
       lucide-react:
         specifier: ^1.8.0
         version: 1.8.0(react@19.2.3)
+      vm2:
+        specifier: ^3.10.5
+        version: 3.10.5
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
