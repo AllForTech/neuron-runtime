@@ -19,7 +19,7 @@ export interface DecisionNodeConfig extends BaseNodeConfig {
 }
 
 export const decisionNode = createNode<DecisionNodeConfig>({
-    type: "decisionNode",
+    type: "Logic.Decision",
 
     template: {
         key: "decisionNode",

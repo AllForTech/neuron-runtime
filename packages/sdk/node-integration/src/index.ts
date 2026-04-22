@@ -12,7 +12,7 @@ export interface IntegrationNodeConfig extends BaseNodeConfig {
 }
 
 export const integrationNode = createNode<IntegrationNodeConfig>({
-    type: "integrationNode",
+    type: "Integration.Service",
 
     template: {
         key: "integrationNode",

@@ -8,19 +8,29 @@ export type NodeExecutionStatus =
     | "success"
     | "error";
 
+export type NodeCategory =
+    | "Trigger"
+    | "Network"
+    | "Logic"
+    | "AI"
+    | "Utility"
+    | "Integration";
+
 export type NodeType =
-    | "trigger"
-    | "httpNode"
-    | "debug"
-    | "delay"
-    | "condition"
-    | "transform"
-    | "llmNode"
-    | "decisionNode"
-    | "outputNode"
-    | "respondNode"
-    | "contextNode"
-    | "integrationNode";
+    | "Trigger.Webhook"
+    | "Trigger.Schedule"
+    | "Trigger.Manual"
+    | "Network.Http"
+    | "Network.Respond"
+    | "Logic.Condition"
+    | "Logic.Decision"
+    | "Logic.Delay"
+    | "AI.Llm"
+    | "Utility.Context"
+    | "Utility.Transform"
+    | "Utility.Debug"
+    | "Utility.Output"
+    | "Integration.Service";
 
 // --- SHARED BASE STRUCTURES ---
 export type NodeMetaType = {
@@ -118,6 +128,16 @@ export interface FieldInput {
 
 export interface TriggerNodeConfig extends BaseNodeConfig {
     triggerType: "manual" | "webhook" | "schedule";
+    cron?: string;
+    webhook?: {
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'ALL';
+        path?: string;
+    };
+    webhookData?: {
+        body: any;
+        query: Record<string, any>;
+        headers: Record<string, any>;
+    };
 }
 
 export interface HttpRequestNodeConfig extends BaseNodeConfig {

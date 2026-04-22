@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { JsonRenderer } from '@/components/JsonRenederer';
 import { cn } from '@/lib/utils';
 import { OutputResultDialog } from '@/components/workflow/editor/dialog/OutputResultDialog';
+import {NODE_KIND} from "@neuron/shared";
 
 interface NodePreviewProps {
   nodeId: string;
@@ -35,7 +36,7 @@ export function NodePreview({
 
   if (!output) return null;
 
-  const isOutputNode = nodeType === 'outputNode';
+  const isOutputNode = nodeType === NODE_KIND.UTILITY_OUTPUT;
 
   return (
     <div className={cn('container-fit z-50', className)}>

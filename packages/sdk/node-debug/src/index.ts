@@ -8,7 +8,7 @@ export interface DebugNodeConfig extends BaseNodeConfig {
 }
 
 export const debugNode = createNode<DebugNodeConfig>({
-    type: "debug",
+    type: "Utility.Debug",
 
     template: {
         key: "debug",

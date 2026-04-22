@@ -171,7 +171,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 edges: deployment.edges as WorkflowEdge[],
             },
             userId: deployment.userId,
-        })
+        }, req)
             .then(async (finalContext) => {
                 console.log(`Workflow ${deployment.workflowId} finished.`);
 

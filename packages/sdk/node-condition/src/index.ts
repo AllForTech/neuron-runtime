@@ -10,7 +10,7 @@ export interface ConditionNodeConfig extends BaseNodeConfig {
 }
 
 export const conditionNode = createNode<ConditionNodeConfig>({
-    type: "condition",
+    type: "Logic.Condition",
 
     template: {
         key: "condition",

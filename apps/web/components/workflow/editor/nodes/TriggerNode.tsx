@@ -20,7 +20,6 @@ export default function TriggerNode(node: NodeProps) {
     editorState,
     workflowEditorDispatch,
     setSheetOpen,
-    selectedNode,
     setSelectedNode,
   } = useWorkflowEditor();
 
@@ -57,7 +56,7 @@ export default function TriggerNode(node: NodeProps) {
           {/* Toolbar */}
           <DynamicNodeToolbar
             nodeId={id}
-            nodeType="trigger"
+            nodeType="Trigger.Webhook"
             config={data}
             isVisible={selected}
             onSettingsClick={() => {

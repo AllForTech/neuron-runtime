@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { ChevronDown, Share2, AlertCircle, Link2 } from 'lucide-react';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { WorkflowEditorActionType } from '@/constants';
-import { ContextNode, NodeConfigType } from '@neuron/shared';
+import {ContextNode, NODE_KIND, NodeConfigType} from '@neuron/shared';
 import { cn } from '@/lib/utils';
 
 export const ContextRegistrationSheet = ({ nodeId }: { nodeId: string }) => {
@@ -22,7 +22,7 @@ export const ContextRegistrationSheet = ({ nodeId }: { nodeId: string }) => {
   const nodes = editorState.graph.nodes;
   const currentNode = nodes[nodeId];
   const contextNode = Object.values(nodes).find(
-    (n) => n.type === 'contextNode'
+    (n) => n.type === NODE_KIND.UTILITY_CONTEXT
   ) as ContextNode;
 
   if (!currentNode) return null;

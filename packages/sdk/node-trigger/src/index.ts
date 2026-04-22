@@ -3,15 +3,23 @@ import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
 import { Zap } from "lucide-react";
 import { executor } from "./execution";
 
-/**
- * Configuration for the entry point of a workflow.
- */
+
 export interface TriggerNodeConfig extends BaseNodeConfig {
     triggerType: "manual" | "webhook" | "schedule";
+    cron?: string;
+    webhook?: {
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'ALL';
+        path?: string;
+    };
+    webhookData?: {
+        body: any;
+        query: Record<string, any>;
+        headers: Record<string, any>;
+    };
 }
 
 export const triggerNode = createNode<TriggerNodeConfig>({
-    type: "trigger",
+    type: "Trigger.Webhook",
 
     template: {
         key: "trigger",

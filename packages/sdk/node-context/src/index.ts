@@ -9,7 +9,7 @@ export interface ContextNodeConfig extends BaseNodeConfig {
 }
 
 export const contextNode = createNode<ContextNodeConfig>({
-    type: "contextNode",
+    type: "Utility.Context",
 
     template: {
         key: "contextNode",

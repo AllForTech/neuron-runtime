@@ -334,7 +334,7 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
         userId,
     })
 
-    executeWorkflow({ executionId: execution.id, workflowId, graph, userId })
+    executeWorkflow({ executionId: execution.id, workflowId, graph, userId }, req)
         .then(async finalContext => {
             // Update status (Success)
             await updateExecutionStatus({

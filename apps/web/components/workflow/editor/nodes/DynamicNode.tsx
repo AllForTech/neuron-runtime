@@ -21,6 +21,7 @@ import { DecisionNodeHandlesRenderer } from '@/components/workflow/editor/nodes/
 import { DynamicNodeToolbar } from '@/components/workflow/editor/nodes/toolbar/DynamicNodeToolbar';
 import { useValidation } from '@/hooks/useValidation';
 import { nodeRegistry } from '@/registry/nodeRegistry';
+import {NODE_KIND} from "@neuron/shared";
 
 export default function DynamicNode(node: NodeProps) {
     const { id, selected, data, type } = node;
@@ -30,7 +31,7 @@ export default function DynamicNode(node: NodeProps) {
     const { getNodeErrors } = useValidation();
 
     const nodeDef = nodeRegistry[type as keyof typeof nodeRegistry];
-    const Icon = nodeDef?.icon || Cpu;
+    const Icon: any = nodeDef?.icon || Cpu;
 
     const nodeError = useMemo(() => getNodeErrors(id), [getNodeErrors, id]);
 
@@ -73,7 +74,7 @@ export default function DynamicNode(node: NodeProps) {
                         statusClass,
                         nodeError && validationStyles,
                         selected && 'border-neutral-700! border-3!',
-                        node.type === 'contextNode' && 'w-[250px]'
+                        node.type === NODE_KIND.UTILITY_CONTEXT  && 'w-[250px]'
                     )}
                 >
                     {nodeError && (
@@ -108,24 +109,24 @@ export default function DynamicNode(node: NodeProps) {
                     <NodeHandle
                         className={cn(
                             '-right-[35px]!',
-                            node?.type === 'condition' && 'hidden',
-                            node?.type === 'decisionNode' && 'hidden',
-                            node.type === 'debug' && 'hidden',
-                            node.type === 'contextNode' && 'hidden'
+                            node?.type === NODE_KIND.LOGIC_CONDITION && 'hidden',
+                            node?.type === NODE_KIND.LOGIC_DECISION && 'hidden',
+                            node.type === NODE_KIND.UTILITY_DEBUG && 'hidden',
+                            node.type === NODE_KIND.UTILITY_CONTEXT && 'hidden'
                         )}
                         node={node}
                         type="source"
                         position={Position.Right}
                     />
 
-                    {node?.type === 'decisionNode' && (
+                    {node?.type === NODE_KIND.LOGIC_DECISION && (
                         <DecisionNodeHandlesRenderer node={node} />
                     )}
 
                     <Card
                         className={cn(
                             'container-full flex h-full flex-col rounded-xl border-0 p-2 transition',
-                            'bg-neutral-900/60 group-hover:bg-neutral-800'.
+                            'bg-neutral-900/60 group-hover:bg-neutral-800',
                                 selected && 'bg-neutral-700!',
                         )}
                     >
@@ -157,8 +158,8 @@ export default function DynamicNode(node: NodeProps) {
                             'flex h-full flex-col rounded-xl border-0 p-2 transition',
                             'bg-neutral-900/60 group-hover:bg-neutral-800',
                             selected && 'bg-neutral-700!',
-                            node.type === 'contextNode' && 'h-[100px]',
-                            node.type === 'decisionNode' && 'h-[50px]',
+                            node.type === NODE_KIND.UTILITY_CONTEXT && 'h-[100px]',
+                            node.type === NODE_KIND.LOGIC_DECISION && 'h-[50px]',
                             (node.type === 'httpNode' || node.type === 'debug') && 'hidden'
                         )}
                     >
@@ -179,7 +180,7 @@ export default function DynamicNode(node: NodeProps) {
                     >
                         <CardContent className="mt-2 flex flex-grow items-center justify-start p-0">
               <span className="text-[11px] font-medium text-neutral-300">
-                {node.type || 'Untitled Node'}
+                {node.data?.meta?.label || 'Untitled Node'}
               </span>
                         </CardContent>
                     </Card>

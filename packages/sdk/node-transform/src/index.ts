@@ -8,7 +8,7 @@ export interface TransformNodeConfig extends BaseNodeConfig {
 }
 
 export const transformNode = createNode<TransformNodeConfig>({
-    type: "transform",
+    type: "Utility.Transform",
 
     template: {
         key: "transform",

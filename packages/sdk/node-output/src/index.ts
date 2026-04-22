@@ -20,7 +20,7 @@ export interface OutputNodeConfig extends BaseNodeConfig {
 }
 
 export const outputNode = createNode<OutputNodeConfig>({
-    type: "outputNode",
+    type: "Utility.Output",
 
     template: {
         key: "outputNode",

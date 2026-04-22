@@ -50,6 +50,7 @@ import { EditorRightMenu } from '@/components/workflow/editor/menu/EditorRightMe
 import { EditorBottomMenu } from '@/components/workflow/editor/menu/EditorBottomMenu';
 import { WorkflowInspector } from '@/components/workflow/editor/WorkflowInspector';
 import {DndProvider, DroppableZone} from "@neuron/ui/*";
+import {isNodeType, NodeType} from "@neuron/shared";
 
 // --------------------------------------------
 // Component
@@ -297,82 +298,102 @@ export function Editor() {
 
                   <ExecutionHistorySheet />
 
-                  {selectedNode && sheetOpen && selectedNode.type === 'trigger' && (
-                      <TriggerNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'httpNode' && (
-                      <HttpRequestNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'debug' && (
-                      <DebugNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'condition' && (
-                      <ConditionNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'transform' && (
-                      <TransformNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'llmNode' && (
-                      <LLMNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'decisionNode' && (
-                      <DecisionNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'integrationNode' && (
-                      <IntegrationNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'outputNode' && (
-                      <OutputNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'respondNode' && (
-                      <RespondNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
-                  )}
-                  {selectedNode && sheetOpen && selectedNode.type === 'contextNode' && (
-                      <ContextNodeConfigSheet
-                          node={selectedNode}
-                          open={sheetOpen}
-                          onOpen={setSheetOpen}
-                      />
+                  {selectedNode && sheetOpen && (
+                      <>
+                          {/* Entry Points */}
+                          {isNodeType.trigger(selectedNode.type as NodeType) && (
+                              <TriggerNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {/* Networking */}
+                          {isNodeType.http(selectedNode.type as NodeType) && (
+                              <HttpRequestNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {isNodeType.respond(selectedNode.type as NodeType) && (
+                              <RespondNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {/* Intelligence */}
+                          {isNodeType.llm(selectedNode.type as NodeType) && (
+                              <LLMNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {/* Logic & Routing */}
+                          {isNodeType.condition(selectedNode.type as NodeType) && (
+                              <ConditionNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {isNodeType.decision(selectedNode.type as NodeType) && (
+                              <DecisionNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {/* Integrations */}
+                          {isNodeType.integration(selectedNode.type as NodeType) && (
+                              <IntegrationNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {/* Utilities */}
+                          {isNodeType.transform(selectedNode.type as NodeType) && (
+                              <TransformNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {isNodeType.context(selectedNode.type as NodeType) && (
+                              <ContextNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {isNodeType.debug(selectedNode.type as NodeType) && (
+                              <DebugNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+
+                          {isNodeType.output(selectedNode.type as NodeType) && (
+                              <OutputNodeConfigSheet
+                                  node={selectedNode}
+                                  open={sheetOpen}
+                                  onOpen={setSheetOpen}
+                              />
+                          )}
+                      </>
                   )}
 
                   <ExecutionTrace

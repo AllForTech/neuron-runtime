@@ -17,7 +17,7 @@ export interface RespondNodeConfig extends BaseNodeConfig {
 }
 
 export const respondNode = createNode<RespondNodeConfig>({
-    type: "respondNode",
+    type: "Network.Respond",
 
     template: {
         key: "respondNode",

@@ -22,3 +22,32 @@ export enum WorkflowEditorActionType {
     EDGE_EXECUTION_START = "EDGE_EXECUTION_START",
     EDGE_EXECUTION_END = "EDGE_EXECUTION_END",
 }
+
+
+export const NODE_KIND = {
+    // Triggers
+    TRIGGER_WEBHOOK: "Trigger.Webhook",
+    TRIGGER_SCHEDULE: "Trigger.Schedule",
+    TRIGGER_MANUAL: "Trigger.Manual",
+
+    // Network
+    NETWORK_HTTP: "Network.Http",
+    NETWORK_RESPOND: "Network.Respond",
+
+    // Logic
+    LOGIC_CONDITION: "Logic.Condition",
+    LOGIC_DECISION: "Logic.Decision",
+    LOGIC_DELAY: "Logic.Delay",
+
+    // AI
+    AI_LLM: "AI.Llm",
+
+    // Utility
+    UTILITY_CONTEXT: "Utility.Context",
+    UTILITY_TRANSFORM: "Utility.Transform",
+    UTILITY_DEBUG: "Utility.Debug",
+    UTILITY_OUTPUT: "Utility.Output",
+
+    // Integration
+    INTEGRATION_SERVICE: "Integration.Service",
+} as const;

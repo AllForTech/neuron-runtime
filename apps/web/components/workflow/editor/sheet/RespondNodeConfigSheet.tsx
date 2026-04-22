@@ -31,7 +31,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
-import { RespondNodeConfig } from '@neuron/shared';
+import {NODE_KIND, RespondNodeConfig} from '@neuron/shared';
 
 function RespondConfigSheet({
   node,
@@ -47,7 +47,7 @@ function RespondConfigSheet({
 
   // 1. Detect presence of Context Node
   const hasContextNode = useMemo(
-    () => Object.values(nodes).some((n) => n.type === 'contextNode'),
+    () => Object.values(nodes).some((n) => n.type === NODE_KIND.UTILITY_CONTEXT),
     [nodes]
   );
 

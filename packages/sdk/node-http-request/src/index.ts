@@ -14,7 +14,7 @@ export interface HttpNodeConfig extends BaseNodeConfig {
 }
 
 export const httpNode = createNode<HttpNodeConfig>({
-    type: "httpNode",
+    type: "Network.Http",
 
     template: {
         key: "httpNode",

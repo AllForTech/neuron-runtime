@@ -15,7 +15,7 @@ export interface LLMNodeConfig extends BaseNodeConfig {
 }
 
 export const llmNode = createNode<LLMNodeConfig>({
-    type: "llmNode",
+    type: "AI.Llm",
 
     template: {
         key: "llmNode",
