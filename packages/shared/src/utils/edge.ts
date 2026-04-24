@@ -1,4 +1,4 @@
-import {WorkflowEdge} from "../types";
+import {WorkflowEdge} from "../types/index.js";
 
 export function convertEdgeToDBSchema(edge: WorkflowEdge) {
     return {

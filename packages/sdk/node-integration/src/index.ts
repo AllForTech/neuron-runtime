@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Layers } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface IntegrationNodeConfig extends BaseNodeConfig {
     connectionId: string;
@@ -26,7 +25,7 @@ export const integrationNode = createNode<IntegrationNodeConfig>({
             workflow logic rather than API documentation.
         `.trim(),
         category: "Integration",
-        icon: Layers,
+        icon: "Layers",
 
         defaultConfig: {
             connectionId: "",

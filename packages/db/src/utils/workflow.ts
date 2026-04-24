@@ -1,1 +1,1 @@
-import {Workflow} from "../types";
+import {Workflow} from "../types/index.js";

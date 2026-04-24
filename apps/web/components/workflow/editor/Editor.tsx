@@ -49,7 +49,7 @@ import { EditorLeftMenu } from '@/components/workflow/editor/menu/EditorLeftMenu
 import { EditorRightMenu } from '@/components/workflow/editor/menu/EditorRightMenu';
 import { EditorBottomMenu } from '@/components/workflow/editor/menu/EditorBottomMenu';
 import { WorkflowInspector } from '@/components/workflow/editor/WorkflowInspector';
-import {DndProvider, DroppableZone} from "@neuron/ui/*";
+import {DndProvider, DroppableZone} from "@neuron/ui";
 import {isNodeType, NodeType} from "@neuron/shared";
 
 // --------------------------------------------

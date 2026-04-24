@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
-import { getSupabaseEnvironmentVariables } from "../utils";
+import { getSupabaseEnvironmentVariables } from "../utils/index.js";
 
 const { supabaseUrl, supabaseAnonKey } = getSupabaseEnvironmentVariables();
 

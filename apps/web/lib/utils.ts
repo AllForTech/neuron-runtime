@@ -16,7 +16,7 @@ import type { WorkflowEdge } from '@neuron/shared';
 import crypto from 'crypto';
 import { WorkflowNodeError } from '@/providers/ValidationContext';
 import {NewWorkflow, Workflow} from "@neuron/db";
-import {nodeCatalog} from "@neuron/nodes";
+import {nodeCatalog} from "@neuron/nodes/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

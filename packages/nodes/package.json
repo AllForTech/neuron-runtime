@@ -1,38 +1,40 @@
 {
   "name": "@neuron/nodes",
   "version": "1.0.0",
-  "main": "src/server/index.ts",
-  "types": "src/nodes.ts",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/nodes.ts",
-    "./client": "./src/client/index.ts.ts",
-    "./server": "./src/server/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "scripts": {
+    "build": "tsup src/index.ts src/client/index.ts src/server/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts src/client/index.ts src/server/index.ts --format esm --dts --watch --onSuccess 'echo \"Nodes Synced\"'"
+  },
   "dependencies": {
-    "@neuron/shared": "workspace:*",
-    "@neuron/node-trigger": "workspace:*",
-    "@neuron/node-http-request": "workspace:*",
-    "@neuron/node-debug": "workspace:*",
-    "@neuron/node-respond": "workspace:*",
     "@neuron/node-condition": "workspace:*",
-    "@neuron/node-llm": "workspace:*",
-    "@neuron/node-transform": "workspace:*",
-    "@neuron/node-decision": "workspace:*",
-    "@neuron/node-integration": "workspace:*",
     "@neuron/node-context": "workspace:*",
-    "@neuron/node-output": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^25.2.3",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "@neuron/node-debug": "workspace:*",
+    "@neuron/node-decision": "workspace:*",
+    "@neuron/node-http-request": "workspace:*",
+    "@neuron/node-integration": "workspace:*",
+    "@neuron/node-llm": "workspace:*",
+    "@neuron/node-output": "workspace:*",
+    "@neuron/node-respond": "workspace:*",
+    "@neuron/node-transform": "workspace:*",
+    "@neuron/node-trigger": "workspace:*",
+    "@neuron/shared": "workspace:*",
+    "server-only": "^0.0.1"
   }
 }

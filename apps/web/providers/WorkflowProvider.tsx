@@ -9,7 +9,6 @@ import {
     useState,
 } from 'react';
 import type { NewWorkflow as NewWorkflowType, Workflow as WorkflowType } from '@neuron/db';
-import { NewWorkflowGeneralType, WorkflowAction } from '@/types/workflow';
 import { WorkflowActionType } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { toWorkflowTableSchema } from '@/lib/utils';
@@ -24,7 +23,7 @@ export const CreateWorkflowTabs = {
 
 type WorkflowContextType = {
     workflows: WorkflowType[];
-    workflowsDispatcher: (action: WorkflowAction) => void;
+    workflowsDispatcher: (action: any) => void;
     newWorkflow: INewWorkflow;
     setNewWorkflow: (prev: any) => void;
     isWorkflowLoading: boolean;
@@ -36,7 +35,7 @@ type WorkflowContextType = {
 };
 
 interface INewWorkflow {
-    general: NewWorkflowGeneralType;
+    general: any;
 }
 
 export const WorkflowContext = createContext<WorkflowContextType | undefined>(
@@ -63,9 +62,10 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     const [isWorkflowLoading, setIsWorkflowLoading] = useState(true);
     const [workflowErrors, setWorkflowErrors] = useState<string | null>(null);
 
+    // TODO: Fix type
     function workflowsReducer(
         state: WorkflowType[],
-        action: WorkflowAction
+        action: any
     ): WorkflowType[] {
         switch (action.type) {
             case WorkflowActionType.SET_WORKFLOWS:

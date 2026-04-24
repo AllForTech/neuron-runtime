@@ -5,7 +5,7 @@ import {
     jsonb,
     timestamp,
 } from "drizzle-orm/pg-core"
-import { workflows } from "./workflowSchema"
+import { workflows } from "./workflowSchema.js"
 
 export const workflowVersions = pgTable("workflow_versions", {
     id: uuid("id")

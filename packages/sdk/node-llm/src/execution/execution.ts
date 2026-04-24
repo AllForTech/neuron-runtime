@@ -1,6 +1,6 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
-import { LLMNodeConfig } from "../index";
-import { parseZodSchema } from "../utils/utils";
+import { LLMNodeConfig } from "../index.js";
+import { parseZodSchema } from "../utils/utils.js";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
 

@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Terminal } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface DebugNodeConfig extends BaseNodeConfig {
     message: string;
@@ -20,7 +19,7 @@ export const debugNode = createNode<DebugNodeConfig>({
             and ensuring variable interpolation is functioning as expected.
         `.trim(),
         category: "Utility",
-        icon: Terminal,
+        icon: "Terminal",
 
         defaultConfig: {
             message: "Debugging execution state...",

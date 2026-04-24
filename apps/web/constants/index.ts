@@ -21,6 +21,7 @@ import {
     Activity,
     Send, LucideIcon,
 } from 'lucide-react';
+import { NodeType } from "@neuron/shared";
 import { SectionType } from '@/components/layout/hero/HeroSection';
 
 export * from './nodeTemplate';
@@ -358,4 +359,4 @@ export const DATA: Record<SectionType, FloatingItem[]> = {
   ],
 };
 
-export const SINGLETON_NODE_TYPES = ['trigger', 'respondNode', 'contextNode'];
+export const SINGLETON_NODE_TYPES: NodeType[] = ['Trigger.Webhook', 'Trigger.Schedule', 'Trigger.Manual', 'Network.Respond', 'Utility.Context'];

@@ -1,4 +1,4 @@
-import {db} from "../client";
+import {db} from "../client.js";
 import {
     NewWorkflow,
     NewWorkflowVersion,
@@ -6,9 +6,9 @@ import {
     WorkflowNode,
     WorkflowEdge,
     WorkflowVersion
-} from "../types";
+} from "../types/index.js";
 import {and, desc, eq, sql} from "drizzle-orm";
-import {workflowEdges, workflowNodes, workflows, workflowVersions} from "../schemas";
+import {workflowEdges, workflowNodes, workflows, workflowVersions} from "../schemas/index.js";
 import {convertEdgeToDBSchema, convertNodeToDBSchema} from "@neuron/shared";
 
 export async function createWorkflow(
@@ -18,7 +18,7 @@ export async function createWorkflow(
         console.log(data)
         const [workflow] = await db
             .insert(workflows)
-            .values(data)
+            .values(data as any)
             .returning()
 
         return workflow as Workflow;
@@ -57,7 +57,7 @@ export async function createWorkflowVersion(
     console.log(`Workflow Data Received: ${data}`)
     const [version] = await db
         .insert(workflowVersions)
-        .values(data)
+        .values(data as any)
         .returning()
 
     return version as WorkflowVersion;

@@ -1,24 +1,21 @@
 {
   "name": "@neuron/db",
   "version": "1.0.0",
-  "main": "src/index.js",
-  "types": "src/index.ts",
-  "scripts": {
-    "db": "npx drizzle-kit generate && npx drizzle-kit migrate && npx drizzle-kit push",
-    "db:generate": "npx drizzle-kit generate",
-    "db:migrate": "npx drizzle-kit migrate",
-    "db:push": "npx drizzle-kit push"
-  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./db": "./src/client",
-    "./types": "./src/types/index.ts",
-    "./schemas": "./src/schemas/index.ts"
+    ".": "./dist/index.js",
+    "./db": "./dist/client/index.js",
+    "./types": "./dist/types/index.js",
+    "./schemas": "./dist/schemas/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push"
+  },
   "dependencies": {
     "@neuron/auth": "workspace:*",
     "@neuron/shared": "workspace:*",
@@ -30,7 +27,7 @@
   "devDependencies": {
     "@types/node": "^25.2.3",
     "drizzle-kit": "^0.31.9",
-    "tsx": "^4.21.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.3"
   }
 }

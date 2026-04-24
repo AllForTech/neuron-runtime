@@ -1,5 +1,5 @@
-import {db} from "../client";
-import {vaultSecrets, workspaces} from "../schemas";
+import {db} from "../client.js";
+import {vaultSecrets, workspaces} from "../schemas/index.js";
 import {and, desc, eq} from 'drizzle-orm';
 
 export async function getAllVaultSecrets(userId: string) {

@@ -1,11 +1,11 @@
 
 import { eq, and, asc } from "drizzle-orm";
-import {NewExecutionLog} from "../types";
-import {executionLogs} from "../schemas";
-import {db} from "../client";
+import {NewExecutionLog} from "../types/index.js";
+import {executionLogs} from "../schemas/index.js";
+import {db} from "../client.js";
 
 export async function createExecutionLog(data: NewExecutionLog) {
-    const [log] = await db.insert(executionLogs).values(data).returning();
+    const [log] = await db.insert(executionLogs).values(data as any).returning();
     return log;
 }
 

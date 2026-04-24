@@ -1,4 +1,4 @@
-import {BaseNode, BaseNodeConfig, NodeCategory, NodeType, WorkflowNode} from "./nodes";
+import {BaseNode, BaseNodeConfig, NodeCategory, NodeType, WorkflowNode} from "./nodes.js";
 
 export interface NodeExecutorContext {
     nodeType: NodeType;

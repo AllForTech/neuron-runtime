@@ -1,1 +1,1 @@
-export { nodeRegistry } from "../nodes";
+export { nodeRegistry } from "../index.js";

@@ -9,7 +9,7 @@ import {
     workflowNodes,
     workflows,
     workflowVersions, workspaces
-} from "../schemas";
+} from "../schemas/index.js";
 
 export type Workflow = InferSelectModel<typeof workflows>;
 export type NewWorkflow = InferInsertModel<typeof workflows>;

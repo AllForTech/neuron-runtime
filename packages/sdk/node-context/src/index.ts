@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Database } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface ContextNodeConfig extends BaseNodeConfig {
     label: string;
@@ -23,7 +22,7 @@ export const contextNode = createNode<ContextNodeConfig>({
             final processing or conditional logic.
         `.trim(),
         category: "Utility",
-        icon: Database,
+        icon: "Database",
 
         defaultConfig: {
             label: "Global State",

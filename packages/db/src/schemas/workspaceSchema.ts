@@ -1,6 +1,4 @@
 import { pgTable, uuid, text, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
-import { workflows } from './workflowSchema';
 
 export const workspaces = pgTable('workspaces', {
     id: uuid('id').primaryKey().defaultRandom(),

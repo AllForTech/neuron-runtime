@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { GitBranch } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 interface DecisionRule {
     id: string;
@@ -32,7 +31,7 @@ export const decisionNode = createNode<DecisionNodeConfig>({
             different categories of API requests or status-based logic.
         `.trim(),
         category: "Logic",
-        icon: GitBranch,
+        icon: "GitBranch",
 
         defaultConfig: {
             input: "",

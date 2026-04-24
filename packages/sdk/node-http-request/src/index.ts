@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Globe } from "lucide-react";
-import { executor } from "./executor";
+import { executor } from "./executor.js";
 
 /**
  * Configuration for making standardized REST API calls.
@@ -28,7 +27,7 @@ export const httpNode = createNode<HttpNodeConfig>({
             for processing, storage, or transformation.
         `.trim(),
         category: "Network",
-        icon: Globe,
+        icon: "Globe",
 
         defaultConfig: {
             url: "",

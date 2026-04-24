@@ -1,8 +1,8 @@
 import { WorkflowNode } from "@neuron/db";
 import { nodeRegistry } from "@neuron/nodes";
-import { NodeExecutionResult } from "../types";
+import { NodeExecutionResult } from "../types/index.js";
 import { BaseNodeConfig, NodeType } from "@neuron/shared";
-import { createExecutionResult } from "../utils";
+import { createExecutionResult } from "../utils/index.js";
 
 export class NodeRunner {
     private registry: any = null;

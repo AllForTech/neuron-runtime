@@ -7,9 +7,9 @@ import {
     integer,
     index
 } from "drizzle-orm/pg-core";
-import {workflows} from "./workflowSchema";
-import {users} from "./authSchema";
-import {executions} from "./executionSchema";
+import {workflows} from "./workflowSchema.js";
+import {users} from "./authSchema.js";
+import {executions} from "./executionSchema.js";
 
 export const executionLogs = pgTable("execution_logs", {
     id: uuid("id")

@@ -1,18 +1,18 @@
 import {relations} from "drizzle-orm";
-import {workspaces} from "./workspaceSchema";
-import {workflows} from "./workflowSchema";
+import {workspaces} from "./workspaceSchema.js";
+import {workflows} from "./workflowSchema.js";
 
-export * from "./workspaceSchema";
-export * from "./workflowSchema";
-export * from "./workflowVersionSchema";
-export * from "./executionSchema";
-export * from "./executionLogSchema";
-export * from "./authSchema";
-export * from "./workflowNodes";
-export * from "./workflowEdges";
-export * from "./vaultSecrets";
-export * from "./globalVariablesSchema";
-export * from "./deployedWorkflows";
+export * from "./workspaceSchema.js";
+export * from "./workflowSchema.js";
+export * from "./workflowVersionSchema.js";
+export * from "./executionSchema.js";
+export * from "./executionLogSchema.js";
+export * from "./authSchema.js";
+export * from "./workflowNodes.js";
+export * from "./workflowEdges.js";
+export * from "./vaultSecrets.js";
+export * from "./globalVariablesSchema.js";
+export * from "./deployedWorkflows.js";
 
 
 export const workspacesRelations = relations(workspaces, ({ many }) => ({

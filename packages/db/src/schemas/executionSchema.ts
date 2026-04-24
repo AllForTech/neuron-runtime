@@ -5,11 +5,11 @@ import {
     jsonb,
     timestamp, pgEnum,
 } from "drizzle-orm/pg-core"
-import { workflows } from "./workflowSchema"
-import { workflowVersions } from "./workflowVersionSchema"
-import {users} from "./authSchema";
+import { workflows } from "./workflowSchema.js"
+import { workflowVersions } from "./workflowVersionSchema.js"
+import {users} from "./authSchema.js";
 import {relations} from "drizzle-orm";
-import {executionLogs} from "./executionLogSchema";
+import {executionLogs} from "./executionLogSchema.js";
 
 export const executionStatusEnum = pgEnum("execution_status", [
     "pending",

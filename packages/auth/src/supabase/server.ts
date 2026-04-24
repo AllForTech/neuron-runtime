@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
-import {getSupabaseEnvironmentVariables} from "../utils";
+import {getSupabaseEnvironmentVariables} from "../utils/index.js";
 
 export async function createSupabaseServerClient(cookies: any) {
     const cookieStore = await cookies();

@@ -4,7 +4,7 @@ import {
     text,
     timestamp,
 } from "drizzle-orm/pg-core";
-import { workflows } from "./workflowSchema";
+import { workflows } from "./workflowSchema.js";
 
 export const globalVariables = pgTable("global_variables", {
     id: uuid("id").primaryKey().defaultRandom(),

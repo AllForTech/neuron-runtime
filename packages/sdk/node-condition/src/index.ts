@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Split } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface ConditionNodeConfig extends BaseNodeConfig {
     leftValue: string;
@@ -23,7 +22,7 @@ export const conditionNode = createNode<ConditionNodeConfig>({
             the corresponding output path.
         `.trim(),
         category: "Logic",
-        icon: Split,
+        icon: "Split",
 
         defaultConfig: {
             leftValue: "",

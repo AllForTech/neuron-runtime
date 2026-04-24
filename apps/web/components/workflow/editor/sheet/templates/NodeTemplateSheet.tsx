@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Search, SearchX, Layers2 } from 'lucide-react';
-import { nodeCatalog } from '@neuron/nodes';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Search, SearchX, Loader2 } from 'lucide-react';
+import { getAvailableNodes } from '@/lib/nodeCatalog/action';
 import { SheetWrapper } from '@/components/workflow/editor/SheetWrapper';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NodeTemplateCard } from './NodeTemplateCard';
 import { SINGLETON_NODE_TYPES } from '@/constants';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
@@ -23,16 +23,42 @@ export function NodeTemplateSheet({
     onOpenChange: (open: boolean) => void;
     onSelectTemplate: (template: any) => void;
 }) {
+    // --- State Management ---
+    const [nodes, setNodes] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+
     const { editorState } = useWorkflowEditor();
+
+    // --- Fetch Logic: Calls Server Action when component mounts/opens ---
+    useEffect(() => {
+        async function fetchNodes() {
+            if (!open && nodes.length > 0) return; // Prevent re-fetching if data exists and closed
+
+            setIsLoading(true);
+            try {
+                const response = await getAvailableNodes();
+                if (response.success && response.data) {
+                    setNodes(response.data);
+                }
+            } catch (err) {
+                console.error("Error fetching nodes:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchNodes();
+    }, [open]); // Re-fetch or check on open
 
     const activeNodeTypes = useMemo(() =>
             Object.values(editorState.graph.nodes).map((n) => n.type),
         [editorState.graph.nodes]);
 
+    // --- Filter Logic using fetched 'nodes' state ---
     const filteredNodes = useMemo(() => {
-        return nodeCatalog.filter((node) => {
+        return nodes.filter((node) => {
             // Singleton Logic
             const isSingleton = SINGLETON_NODE_TYPES.includes(node.type as any);
             if (isSingleton && activeNodeTypes.includes(node.type as NodeType)) return false;
@@ -42,7 +68,7 @@ export function NodeTemplateSheet({
 
             return matchesSearch && matchesCat;
         });
-    }, [search, activeCategory, activeNodeTypes]);
+    }, [search, activeCategory, activeNodeTypes, nodes]);
 
     return (
         <SheetWrapper
@@ -83,7 +109,11 @@ export function NodeTemplateSheet({
 
                 {/* Content Section */}
                 <ScrollArea className="flex-1 px-6">
-                    {filteredNodes.length > 0 ? (
+                    {isLoading ? (
+                        <div className="flex h-40 items-center justify-center">
+                            <Loader2 className="h-6 w-6 animate-spin text-neutral-800" />
+                        </div>
+                    ) : filteredNodes.length > 0 ? (
                         <div className="grid grid-cols-1 gap-3 pb-12">
                             {filteredNodes.map((node) => (
                                 <NodeTemplateCard

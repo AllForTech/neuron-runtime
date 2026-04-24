@@ -1,6 +1,6 @@
 import {pgTable, uuid, text, timestamp, jsonb, boolean} from "drizzle-orm/pg-core";
-import {users} from "./authSchema";
-import {workflows} from "./workflowSchema";
+import {users} from "./authSchema.js";
+import {workflows} from "./workflowSchema.js";
 
 export const deployedWorkflows = pgTable("deployed_workflows", {
     id: uuid("id").primaryKey().defaultRandom(),

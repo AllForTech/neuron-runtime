@@ -1,5 +1,5 @@
-import {WorkflowNode} from "./nodes";
-import {WorkflowEdge} from "./edges";
+import {WorkflowNode} from "./nodes.js";
+import {WorkflowEdge} from "./edges.js";
 
 export type ExecutionStatus = "pending" | "running" | "success" | "failed";
 

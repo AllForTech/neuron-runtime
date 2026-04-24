@@ -1,4 +1,4 @@
-import {WorkflowEdge, BaseNode} from "../types";
+import {WorkflowEdge, BaseNode} from "../types/index.js";
 
 
 
@@ -16,5 +16,5 @@ export function getNextNodes(  edges: WorkflowEdge[],  currentNodeId: string): s
 export function findTriggerNode(
     nodes: BaseNode[]
 ): BaseNode | undefined {
-    return nodes.find((node) => node.type === "trigger")
+    return nodes.find((node) => node.type.startsWith("Trigger."))
 }

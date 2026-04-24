@@ -10,7 +10,7 @@ import React, {
     useState,
 } from 'react';
 import { useParams } from 'next/navigation';
-import { WorkflowEditorAction } from '@/types/workflow';
+// import { WorkflowEditorAction } from '@/types/index';
 import type {
     NodeType,
     WorkflowDefinition,
@@ -42,7 +42,7 @@ import {
 
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
-    workflowEditorDispatch: (WorkflowEditorAction: WorkflowEditorAction) => void;
+    workflowEditorDispatch: (WorkflowEditorAction: any) => void;
     runtimeState: RuntimeState;
     runtimeDispatch: (RuntimeAction: RuntimeAction) => void;
     selectedNode: Node | null | undefined;
@@ -153,7 +153,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     const localDraft = useLiveQuery(() => db.drafts.get(workflowId), [workflowId]);
 
-    function workflowEditorReducer(state: IWorkflowEditorState, action: WorkflowEditorAction): IWorkflowEditorState {
+    function workflowEditorReducer(state: IWorkflowEditorState, action: any): IWorkflowEditorState {
         switch (action.type) {
             case WorkflowEditorActionType.SET_WORKFLOW_ID:
                 return { ...state, workflowId: action.workflowId };

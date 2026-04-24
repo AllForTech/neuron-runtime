@@ -1,4 +1,6 @@
-import {NodeRegistry} from './registry';
+import 'server-only';
+
+import {NodeRegistry} from './registry/index.js';
 import { httpNode } from '@neuron/node-http-request';
 import { triggerNode } from '@neuron/node-trigger';
 import { debugNode } from '@neuron/node-debug';
@@ -39,7 +41,7 @@ installedNodes.forEach((node) => {
     nodeRegistry.register(node);
 });
 
-export const nodeCatalog = installedNodes.map((node) => node.template);
+export { nodeCatalog } from './catalog/index.js';
 
 export type { HttpNodeConfig } from "@neuron/node-http-request";
 export type { TriggerNodeConfig } from "@neuron/node-trigger";

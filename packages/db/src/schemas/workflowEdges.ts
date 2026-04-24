@@ -1,5 +1,5 @@
 import {jsonb, pgTable, text, uuid} from "drizzle-orm/pg-core";
-import {workflows} from "./workflowSchema";
+import {workflows} from "./workflowSchema.js";
 import { relations } from "drizzle-orm";
 
 export const workflowEdges = pgTable("workflow_edges", {

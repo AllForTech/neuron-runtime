@@ -1,7 +1,7 @@
-import {db} from "../client";
-import {globalVariables} from "../schemas";
+import {db} from "../client.js";
+import {globalVariables} from "../schemas/index.js";
 import {and, desc, eq} from "drizzle-orm";
-import {GlobalVariable} from "../types";
+import {GlobalVariable} from "../types/index.js";
 
 export async function getGlobalVariables(workflowId: string): Promise<GlobalVariable[] | null> {
     if (!workflowId) throw Error(`Missing workflow id, workflow id must be provided.`);

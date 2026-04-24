@@ -1,5 +1,5 @@
 import {IVaultResolver, logger} from "@neuron/shared";
-import {ExecutionError, ExecutionMetrics, NodeExecutionResult} from "../types";
+import {ExecutionError, ExecutionMetrics, NodeExecutionResult} from "../types/index.js";
 
 const TEMPLATE_REGEX = /{{\s*([\w.-]+)\s*}}/g;
 const BLOCKED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
@@ -76,7 +76,7 @@ export async function resolveTemplate(
 
     if (isSingleVar) {
         const path = trimmed.slice(2, -2).trim();
-        return await extractValue(path, context, options.variables);
+        return await extractValue(path, context, options?.variables);
     }
 
     // If there is surrounding text, we treat it as a string
@@ -85,7 +85,7 @@ export async function resolveTemplate(
 
     for (const match of matches) {
         const [fullMatch, path] = match;
-        const resolvedValue = await extractValue(path!, context, options.variables);
+        const resolvedValue = await extractValue(path!, context, options?.variables);
 
         if (resolvedValue !== undefined && resolvedValue !== null) {
             const stringified = typeof resolvedValue === "object"
@@ -119,13 +119,13 @@ async function extractValue(path: string, context: Record<string, any>, options?
                 }
                 return await options.vault.resolve(keyOrPath);
             case "Global":
-                return options.variables?.[keyOrPath];
+                return options?.variables?.[keyOrPath];
             default:
                 // Standard node data lookup (e.g., node_1.output)
                 return safePathLookup(context, path);
         }
     } catch (err) {
-        logger.warn("Runtime", `Resolution error for ${path}:`, err)
+        logger.warn("Runtime", `Resolution error for ${path}:`, err as Record<string, any>)
 
         return undefined;
     }

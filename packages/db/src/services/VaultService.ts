@@ -1,4 +1,4 @@
-import { findSecretByName } from "../repository";
+import { findSecretByName } from "../repository/index.js";
 
 export class VaultService {
     private cache: Map<string, string> = new Map();

@@ -4,7 +4,7 @@ import {
     text,
     integer, jsonb,
 } from "drizzle-orm/pg-core"
-import {workflows} from "./workflowSchema";
+import {workflows} from "./workflowSchema.js";
 import {relations} from "drizzle-orm";
 
 export const workflowNodes = pgTable("workflow_nodes", {

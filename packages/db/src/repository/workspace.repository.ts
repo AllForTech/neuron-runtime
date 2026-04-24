@@ -1,6 +1,6 @@
-import { workspaces, workflows } from '../schemas';
+import { workspaces, workflows } from '../schemas/index.js';
 import { eq, and, desc } from 'drizzle-orm';
-import {db} from "../client";
+import {db} from "../client.js";
 
 export async function createWorkspace(data: { userId: string; name: string; description?: string }) {
     const [newWorkspace] = await db.insert(workspaces)

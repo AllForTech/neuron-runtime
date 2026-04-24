@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { FileJson } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface OutputNodeConfig extends BaseNodeConfig {
     label: string;
@@ -33,7 +32,7 @@ export const outputNode = createNode<OutputNodeConfig>({
             of your workflow is presented and delivered to the end-user or downstream system.
         `.trim(),
         category: "Utility",
-        icon: FileJson,
+        icon: "FileJson",
 
         defaultConfig: {
             label: "Formatted Output",

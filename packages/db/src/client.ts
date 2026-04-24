@@ -1,5 +1,5 @@
 import {drizzle} from "drizzle-orm/postgres-js";
-import * as schema from "./schemas/index";
+import * as schema from "./schemas/index.js";
 import postgres from "postgres";
 
 

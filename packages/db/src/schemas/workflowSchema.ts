@@ -5,12 +5,12 @@ import {
     boolean,
     timestamp, primaryKey, serial, pgEnum, integer,
 } from "drizzle-orm/pg-core"
-import {users} from "./authSchema";
+import {users} from "./authSchema.js";
 import {relations} from "drizzle-orm";
-import {workflowNodes} from "./workflowNodes";
-import {workflowEdges} from "./workflowEdges";
-import {executions} from "./executionSchema";
-import {workspaces} from "./workspaceSchema";
+import {workflowNodes} from "./workflowNodes.js";
+import {workflowEdges} from "./workflowEdges.js";
+import {executions} from "./executionSchema.js";
+import {workspaces} from "./workspaceSchema.js";
 
 export const workflowStatusEnum = pgEnum("workflow_status", [
     "draft",

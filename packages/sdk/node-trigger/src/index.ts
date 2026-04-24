@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Zap } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 
 export interface TriggerNodeConfig extends BaseNodeConfig {
@@ -31,7 +30,7 @@ export const triggerNode = createNode<TriggerNodeConfig>({
             and 'Schedule' for recurring, time-based operations.
         `.trim(),
         category: "Trigger",
-        icon: Zap,
+        icon: "Zap",
 
         defaultConfig: {
             triggerType: "manual",

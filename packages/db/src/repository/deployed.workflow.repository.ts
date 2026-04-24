@@ -1,6 +1,6 @@
-import {DeployedWorkflow, NewDeployedWorkflow} from "../types";
-import {db} from "../client";
-import {deployedWorkflows} from "../schemas";
+import {DeployedWorkflow, NewDeployedWorkflow} from "../types/index.js";
+import {db} from "../client.js";
+import {deployedWorkflows} from "../schemas/index.js";
 import {and, eq} from "drizzle-orm";
 
 
@@ -26,10 +26,10 @@ export async function getDeploymentById(id: string): Promise<Partial<DeployedWor
         )
         .limit(1);
 
-    return deployment;
+    return deployment as Partial<DeployedWorkflow>;
 }
 
-export async function saveDeployWorkflowData(workflowId: string, data: NewDeployedWorkflow) {
+export async function saveDeployWorkflowData(workflowId: string, data: any) {
     return db.transaction(async (tx) => {
         return tx
             .insert(deployedWorkflows)
@@ -58,7 +58,7 @@ export async function saveDeployWorkflowData(workflowId: string, data: NewDeploy
 export async function getDeploymentsByUserId(userId: string) {
     return await db.query.deployedWorkflows.findMany({
         where: eq(deployedWorkflows.userId, userId),
-        orderBy: (d, { desc }) => [desc(d.createdAt)]
+        orderBy: (d: any, { desc }: {desc: any}) => [desc(d.createdAt)]
     })
 }
 

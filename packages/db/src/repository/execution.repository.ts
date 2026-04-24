@@ -1,8 +1,8 @@
-import {executions} from "../schemas";
-import {db} from "../client";
+import {executions} from "../schemas/index.js";
+import {db} from "../client.js";
 import {and, eq} from "drizzle-orm";
 import { sql } from "drizzle-orm";
-import {workflowRuntimeBroadcast} from "../realtime/workflowBroadcast";
+import {workflowRuntimeBroadcast} from "../realtime/workflowBroadcast.js";
 import {RuntimeActionType} from "@neuron/shared";
 
 type CreateExecutionInput = {
@@ -37,7 +37,7 @@ export async function getExecutionsByUser(userId: string) {
             workflow: true,
             logs: true,
         },
-        orderBy: (exec, { desc }) => [desc(exec.startedAt)],
+        orderBy: (exec: { startedAt: any; }, {desc}: any) => [desc(exec.startedAt)],
     });
 }
 
@@ -49,7 +49,7 @@ export async function getExecutionsByWorkflow(userId: string, workflowId: string
             eq(executions.workflowId, workflowId)
         ),
         limit,
-        orderBy: (exec, { desc }) => [desc(exec.startedAt)],
+        orderBy: (exec: { startedAt: any; }, {desc}: any) => [desc(exec.startedAt)],
     });
 }
 
@@ -151,7 +151,7 @@ export async function getExecutionMetrics(userId: string) {
 export async function getRecentExecutions(userId: string, limit = 20) {
     return await db.query.executions.findMany({
         where: eq(executions.userId, userId),
-        orderBy: (exec, { desc }) => [desc(exec.startedAt)],
+        orderBy: (exec: { startedAt: any; }, {desc}: any) => [desc(exec.startedAt)],
         limit,
     });
 }

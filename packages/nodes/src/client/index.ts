@@ -1,1 +1,1 @@
-export { nodeCatalog } from "../nodes";
+export { nodeCatalog } from "../catalog/index.js"

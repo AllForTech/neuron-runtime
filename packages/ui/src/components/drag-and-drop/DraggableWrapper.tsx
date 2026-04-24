@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
-import { cn } from '../../utils/utils';
+import { cn } from '../../utils/utils.js';
 
 interface GenericDraggableProps {
     id: string;

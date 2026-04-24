@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
-import {users} from "./authSchema";
+import {users} from "./authSchema.js";
 
 export const vaultSecrets = pgTable("secrets", {
     id: uuid("id").primaryKey().defaultRandom(),

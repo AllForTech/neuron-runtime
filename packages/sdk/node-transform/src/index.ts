@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Code2 } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface TransformNodeConfig extends BaseNodeConfig {
     code: string;
@@ -21,7 +20,7 @@ export const transformNode = createNode<TransformNodeConfig>({
             transformed data structure for the next step.
         `.trim(),
         category: "Utility",
-        icon: Code2,
+        icon: "Code2",
 
         defaultConfig: {
             code: "// Write your transformation logic here\nreturn inputs;",

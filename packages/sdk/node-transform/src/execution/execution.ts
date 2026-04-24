@@ -1,6 +1,6 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import { NodeVM } from "vm2";
-import { TransformNodeConfig } from "../index";
+import { TransformNodeConfig } from "../index.js";
 
 function normalizeTransformCode(code: string) {
     const trimmed = code.trim();

@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { BrainCircuit } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface LLMNodeConfig extends BaseNodeConfig {
     provider: string;
@@ -28,7 +27,7 @@ export const llmNode = createNode<LLMNodeConfig>({
             immediately parsed and used by downstream nodes in your automation chain.
         `.trim(),
         category: "AI",
-        icon: BrainCircuit,
+        icon: "BrainCircuit",
 
         defaultConfig: {
             provider: "openai",

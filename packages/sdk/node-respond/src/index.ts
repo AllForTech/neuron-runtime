@@ -1,7 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { Send } from "lucide-react";
-import { executor } from "./execution";
+import { executor } from "./execution/index.js";
 
 export interface RespondNodeConfig extends BaseNodeConfig {
     statusCode: number | string;
@@ -29,7 +28,7 @@ export const respondNode = createNode<RespondNodeConfig>({
             lifecycle and can optionally attach the full execution context for tracing.
         `.trim(),
         category: "Network",
-        icon: Send,
+        icon: "Send",
 
         defaultConfig: {
             statusCode: 200,

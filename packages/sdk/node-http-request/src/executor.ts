@@ -1,5 +1,5 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
-import { HttpNodeConfig } from "./index";
+import { HttpNodeConfig } from "./index.js";
 
 export const executor: NodeExecutor = async ({
                                                  config,

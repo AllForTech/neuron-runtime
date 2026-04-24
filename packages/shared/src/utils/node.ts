@@ -1,4 +1,4 @@
-import {NodeCategory, NodeExecutionConfig, NodeType, WorkflowNode} from "../types";
+import {NodeCategory, NodeExecutionConfig, NodeType, WorkflowNode} from "../types/index.js";
 
 export function convertNodeToDBSchema(node: WorkflowNode) {
     return {

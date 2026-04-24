@@ -1,8 +1,8 @@
 import { getGlobalVariables, VaultService, WorkflowEdge, WorkflowNode, workflowBroadcast } from "@neuron/db";
-import { ExecuteWorkflowType, NodeExecutionResult } from "../types";
-import { NodeRunner } from "./nodeRunner";
+import { ExecuteWorkflowType, NodeExecutionResult } from "../types/index.js";
+import { NodeRunner } from "./nodeRunner.js";
 import {WorkflowEditorActionType, createContextEntry, logger} from "@neuron/shared";
-import {resolveConfig} from "../utils";
+import {resolveConfig} from "../utils/index.js";
 
 export class Runtime {
     private readonly workflowId: string;
@@ -56,8 +56,8 @@ export class Runtime {
 
             for (const edge of this.edges) {
                 if (this.nodeMap[edge.source] && this.nodeMap[edge.target]) {
-                    this.incoming[edge.target].push(edge.source);
-                    this.outgoing[edge.source].push(edge.target);
+                    this.incoming[edge.target]?.push(edge.source);
+                    this.outgoing[edge.source]?.push(edge.target);
                 }
             }
 
@@ -80,7 +80,7 @@ export class Runtime {
             executorId: this.executorId
         });
 
-        const startNodes = this.nodes.filter(n => this.incoming[n.id].length === 0);
+        const startNodes = this.nodes.filter(n => this.incoming[n.id]?.length === 0);
         await Promise.all(startNodes.map(node => this.runNode(node.id)));
 
         logger.info("Runtime", "Workflow execution completed", {
@@ -102,15 +102,20 @@ export class Runtime {
         if (this.completed.has(nodeId) || this.running.has(nodeId)) return;
 
         const node = this.nodeMap[nodeId];
+
+        if (!node){
+            throw new Error( "Unknown Node Error: Node id " + nodeId );
+        }
+
         this.running.add(nodeId);
 
         await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, { nodeId });
 
-        logger.info("Runtime", `Attempting to resolve config for ${node.type} node - ${node.id}`);
+        logger.info("Runtime", `Attempting to resolve config for ${node?.type} node - ${node?.id}`);
 
         try {
             const resolvedConfig = await resolveConfig(
-                node.config,
+                node?.config,
                 this.nodesContext,
                 {
                     variables: this.globalVariables,
@@ -168,8 +173,7 @@ export class Runtime {
         const nextIds = this.outgoing[nodeId] || [];
 
         const readyNodes = nextIds.filter(id =>
-            this.incoming[id].every(parentId => this.completed.has(parentId))
-        );
+            this.incoming[id]?.every(parentId => this.completed.has(parentId)));
 
         if (readyNodes.length > 0) {
             logger.debug("Runtime", `Triggering ${readyNodes.length} downstream nodes`, { fromNode: nodeId });
