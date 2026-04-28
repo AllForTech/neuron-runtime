@@ -1,4 +1,5 @@
 import {BaseNode, BaseNodeConfig, NodeCategory, NodeType, WorkflowNode} from "./nodes.js";
+import {NodeConfigSchema} from "../config-schema";
 
 export interface NodeExecutorContext {
     nodeType: NodeType;
@@ -28,4 +29,6 @@ export interface NodeDefinition<TConfig = any> {
 
         defaultConfig: TConfig;
     };
+
+    schema: NodeConfigSchema;
 }

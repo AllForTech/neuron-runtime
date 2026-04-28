@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {CONTEXT_NODE_SCHEMA} from "./schema";
 
 export interface ContextNodeConfig extends BaseNodeConfig {
     label: string;
@@ -28,5 +29,7 @@ export const contextNode = createNode<ContextNodeConfig>({
             fields: {},
             ...getBaseConfig("Execution Memory Store"),
         },
-    }
+    },
+
+    schema: CONTEXT_NODE_SCHEMA
 });

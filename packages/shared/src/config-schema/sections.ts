@@ -14,4 +14,8 @@ export interface NodeConfigSection {
     defaultCollapsed?: boolean;
 
     fields: ConfigField[];
+
+    hidden?:
+        | boolean
+        | ((values: Record<string, any>) => boolean);
 }

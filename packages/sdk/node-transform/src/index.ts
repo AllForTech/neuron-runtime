@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {TRANSFORM_NODE_SCHEMA} from "./schema";
 
 export interface TransformNodeConfig extends BaseNodeConfig {
     code: string;
@@ -25,5 +26,7 @@ export const transformNode = createNode<TransformNodeConfig>({
             code: "// Write your transformation logic here\nreturn inputs;",
             ...getBaseConfig("Custom Code Sandbox"),
         },
-    }
+    },
+
+    schema: TRANSFORM_NODE_SCHEMA
 });

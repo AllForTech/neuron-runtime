@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {DECISION_NODE_SCHEMA} from "./schema";
 
 interface DecisionRule {
     id: string;
@@ -39,5 +40,7 @@ export const decisionNode = createNode<DecisionNodeConfig>({
             includeDefault: true,
             ...getBaseConfig("Advanced Multi-Path Router"),
         },
-    }
+    },
+
+    schema: DECISION_NODE_SCHEMA
 });

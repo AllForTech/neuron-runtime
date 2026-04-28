@@ -1,6 +1,7 @@
 export type ConfigFieldType =
     | "text"
     | "textarea"
+    | "template"
     | "number"
     | "switch"
     | "select"

@@ -34,6 +34,19 @@ export interface BaseConfigField {
 export interface TextFieldSchema
     extends BaseConfigField {
     type: "text" | "textarea" | "secret" | "code" | "json";
+
+}
+
+export interface TemplateFieldSchema extends BaseConfigField {
+    type: "template";
+
+    /**
+     * Toggle to allow multi-line editing.
+     * If true, it uses the larger TemplateTextarea style.
+     */
+    multiline?: boolean;
+
+    showVariableHelper?: boolean;
 }
 
 export interface NumberFieldSchema
@@ -95,4 +108,5 @@ export type ConfigField =
     | SelectFieldSchema
     | ObjectFieldSchema
     | ArrayFieldSchema
-    | DialogFieldSchema;
+    | DialogFieldSchema
+    | TemplateFieldSchema;

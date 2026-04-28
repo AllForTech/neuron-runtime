@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {CONDITION_NODE_SCHEMA} from "./schema";
 
 export interface ConditionNodeConfig extends BaseNodeConfig {
     leftValue: string;
@@ -29,5 +30,7 @@ export const conditionNode = createNode<ConditionNodeConfig>({
             rightValue: "",
             ...getBaseConfig("Binary Logical Fork"),
         },
-    }
+    },
+
+    schema: CONDITION_NODE_SCHEMA
 });

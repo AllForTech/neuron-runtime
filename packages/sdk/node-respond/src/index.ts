@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {RESPOND_NODE_SCHEMA} from "./schema";
 
 export interface RespondNodeConfig extends BaseNodeConfig {
     statusCode: number | string;
@@ -41,5 +42,7 @@ export const respondNode = createNode<RespondNodeConfig>({
             attachContext: false,
             ...getBaseConfig("Terminal Response"),
         },
-    }
+    },
+
+    schema: RESPOND_NODE_SCHEMA
 });

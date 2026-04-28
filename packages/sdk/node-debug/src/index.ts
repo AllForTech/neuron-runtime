@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {DEBUG_NODE_SCHEMA} from "./schema";
 
 export interface DebugNodeConfig extends BaseNodeConfig {
     message: string;
@@ -24,5 +25,7 @@ export const debugNode = createNode<DebugNodeConfig>({
             message: "Debugging execution state...",
             ...getBaseConfig("Data Inspector"),
         },
-    }
+    },
+
+    schema: DEBUG_NODE_SCHEMA
 });

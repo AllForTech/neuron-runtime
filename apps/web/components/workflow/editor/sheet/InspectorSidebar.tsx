@@ -39,13 +39,13 @@ export function NodeInspectorSheet({ node, open, onOpenChange }: NodeInspectorSh
     const { workflowEditorDispatch, nodeCatalog } = useWorkflowEditor();
 
     // 1. Get the definition/schema for the node type
-    // const nodeDef = useMemo(() =>
-    //         nodeCatalog.find(n => n.type === node?.type),
-    //     [node, nodeCatalog]);
+    const nodeDef = useMemo(() =>
+            nodeCatalog.find(n => n.type === node?.type),
+        [node, nodeCatalog]);
 
     // 2. Initialize the state hook
     const { values, updateValue, setValues } = useNodeConfigState({
-        initialValues: testValue || {},
+        initialValues: node?.data?.config || {},
         onChange: (newConfig) => {
             if (!node) return;
 
@@ -63,10 +63,12 @@ export function NodeInspectorSheet({ node, open, onOpenChange }: NodeInspectorSh
     // 3. EFFECT: Reset the internal form values whenever the 'node' prop changes
     // This prevents the config of the previous node from showing up in the new one
     useEffect(() => {
-        if (node?.data?.config) {
-            setValues(node?.data?.config);
+        if (JSON.stringify(node?.data?.config) !== JSON.stringify(values)) {
+            if (node?.data?.config) {
+                setValues(node?.data?.config);
+            }
         }
-    }, [node?.id, setValues]);
+    }, [node.id, nodeDef, setValues]);
 
     if (!node) return null;
 
@@ -82,7 +84,7 @@ export function NodeInspectorSheet({ node, open, onOpenChange }: NodeInspectorSh
                     <div className="p-6 pb-24">
                         {/* Render the schema-driven fields */}
                         <NodeConfigRenderer
-                            schema={MOCK_CONFIG_SCHEMA}
+                            schema={nodeDef.schema}
                             values={values}
                             onChange={updateValue}
                         />

@@ -63,7 +63,7 @@ export function NodeTemplateSheet({
                     </div>
 
                     <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-                        <ScrollArea className="w-[400px] sm:w-[500px] lg:w-[550px] whitespace-nowrap">
+                        <ScrollArea className="w-[400px] sm:w-[450px] lg:w-[500px] whitespace-nowrap">
                             <TabsList className="bg-transparent h-auto p-0 gap-2">
                                 {CATEGORIES.map((cat) => (
                                     <TabsTrigger

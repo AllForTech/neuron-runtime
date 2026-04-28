@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {HTTP_REQUEST_NODE_SCHEMA} from "./schema";
 
 
 export interface HttpNodeConfig extends BaseNodeConfig {
@@ -36,5 +37,7 @@ export const httpNode = createNode<HttpNodeConfig>({
             body: {},
             ...getBaseConfig("External API Communication"),
         },
-    }
+    },
+
+    schema: HTTP_REQUEST_NODE_SCHEMA
 });

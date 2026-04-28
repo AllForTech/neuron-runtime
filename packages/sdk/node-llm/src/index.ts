@@ -1,5 +1,6 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
+import {LLM_NODE_SCHEMA} from "./schema";
 
 export interface LLMNodeConfig extends BaseNodeConfig {
     provider: string;
@@ -39,5 +40,7 @@ export const llmNode = createNode<LLMNodeConfig>({
             jsonMode: true,
             ...getBaseConfig("AI Content Engine"),
         },
-    }
+    },
+
+    schema: LLM_NODE_SCHEMA
 });
