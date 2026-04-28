@@ -1,7 +1,7 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import { HttpNodeConfig } from "./index.js";
 
-export const executor: NodeExecutor = async ({
+export const httpNodeExecutor: NodeExecutor = async ({
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
     const { url, method, headers = {}, body } = config as HttpNodeConfig;

@@ -4,8 +4,9 @@ import {
     createWorkflow, deleteWorkflow,
     getWorkflowGraph,
     getWorkflowsByUser, saveWorkflowGraph
+    // @ts-ignore
 } from "@neuron/db";
-import {executeWorkflow} from "../engine/execution";
+import {executeWorkflow} from "@/engine/execution";
 import {getGlobalVariables, saveGlobalVariables} from "@neuron/db";
 import {createExecution, getExecutionsByWorkflow, updateExecutionStatus} from "@neuron/db";
 import {AuthRequest} from "./execution.controller";
@@ -333,6 +334,14 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
         workflowId,
         userId,
     })
+
+    if (!execution) {
+        return res.status(500).json({
+            success: false,
+            error: "Execution Error",
+            message: "Fail to create execution.",
+        });
+    }
 
     executeWorkflow({ executionId: execution.id, workflowId, graph, userId }, req)
         .then(async finalContext => {

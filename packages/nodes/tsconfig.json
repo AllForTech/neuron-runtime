@@ -6,7 +6,9 @@
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,
-    "lib": ["ES2015", "es2021"]
+    "lib": ["ES2015", "es2021"],
+    "module": "preserve",
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

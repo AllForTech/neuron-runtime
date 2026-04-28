@@ -2,7 +2,6 @@
 
 import { cn } from '@/lib/utils';
 import {
-  ChevronRight,
   Zap,
   Search,
   FileCode2,

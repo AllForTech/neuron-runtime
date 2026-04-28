@@ -6,7 +6,7 @@ import { generateText, Output } from "ai";
 
 const defaultModel = "gemini-2.5-flash" as const;
 
-export const executor: NodeExecutor = async ({
+export const llmNodeExecutor: NodeExecutor = async ({
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
 

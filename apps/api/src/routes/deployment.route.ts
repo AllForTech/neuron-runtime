@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {executeDeployedWorkflowController} from "../controllers/deploy.workflow.controller";
+import {executeDeployedWorkflowController} from "@/controllers/deploy.workflow.controller";
 
 const router = Router();
 

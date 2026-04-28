@@ -5,7 +5,9 @@
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "moduleResolution": "bundler",
+    "lib": ["ES2015"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

@@ -1,7 +1,7 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import { DecisionNodeConfig } from "../index.js";
 
-export const executor: NodeExecutor = async ({
+export const decisionNodeExecutor: NodeExecutor = async ({
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
 

@@ -21,7 +21,8 @@ import { DecisionNodeHandlesRenderer } from '@/components/workflow/editor/nodes/
 import { DynamicNodeToolbar } from '@/components/workflow/editor/nodes/toolbar/DynamicNodeToolbar';
 import { useValidation } from '@/hooks/useValidation';
 import { nodeRegistry } from '@/registry/nodeRegistry';
-import {NODE_KIND} from "@neuron/shared";
+import {NODE_KIND, NodeType} from "@neuron/shared";
+import {ExecutionHandlesRenderer} from "@/components/workflow/editor/nodes/ExecutionHandlesRenderer";
 
 export default function DynamicNode(node: NodeProps) {
     const { id, selected, data, type } = node;
@@ -29,6 +30,9 @@ export default function DynamicNode(node: NodeProps) {
     const { editorState, workflowEditorDispatch, setSheetOpen, setSelectedNode } =
         useWorkflowEditor();
     const { getNodeErrors } = useValidation();
+
+    const shouldUseExecutionHandles =
+        !['Logic.Condition', 'Logic.Decision'].includes(node.type);
 
     const nodeDef = nodeRegistry[type as keyof typeof nodeRegistry];
     const Icon: any = nodeDef?.icon || Cpu;
@@ -99,28 +103,22 @@ export default function DynamicNode(node: NodeProps) {
                         }}
                     />
 
+                    {/* LEFT INPUT HANDLE (always exists) */}
                     <NodeHandle
-                        className={cn('-left-[35px]!')}
+                        className="-left-[35px]!"
                         node={node}
                         type="target"
                         position={Position.Left}
                     />
 
-                    <NodeHandle
-                        className={cn(
-                            '-right-[35px]!',
-                            node?.type === NODE_KIND.LOGIC_CONDITION && 'hidden',
-                            node?.type === NODE_KIND.LOGIC_DECISION && 'hidden',
-                            node.type === NODE_KIND.UTILITY_DEBUG && 'hidden',
-                            node.type === NODE_KIND.UTILITY_CONTEXT && 'hidden'
-                        )}
-                        node={node}
-                        type="source"
-                        position={Position.Right}
-                    />
-
-                    {node?.type === NODE_KIND.LOGIC_DECISION && (
+                    {/* RIGHT OUTPUT HANDLES - CONTROL FLOW */}
+                    {node.type === NODE_KIND.LOGIC_DECISION && (
                         <DecisionNodeHandlesRenderer node={node} />
+                    )}
+
+                    {/* RIGHT OUTPUT HANDLES - EXECUTION FLOW */}
+                    {shouldUseExecutionHandles && (
+                        <ExecutionHandlesRenderer node={node} />
                     )}
 
                     <Card

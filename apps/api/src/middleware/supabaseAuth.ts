@@ -1,4 +1,4 @@
-import {getUserFromRequest} from "../services/supabase/supabase.services";
+import {getUserFromRequest} from "@/services/supabase/supabase.services";
 
 export async function authenticate(req: any, res: any, next: any) {
     try {

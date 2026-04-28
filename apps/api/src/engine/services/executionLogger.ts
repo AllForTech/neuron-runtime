@@ -55,7 +55,7 @@ export async function logNodeExecutionStart({
             status: "running"
         });
 
-        return log.id;
+        return log!.id;
     }catch (e) {
         console.log("[Neuron]: ", e);
         throw e;
@@ -83,7 +83,7 @@ export async function logNodeExecutionEnd({
             finishedAt: new Date()
         } as any;
 
-        const { dispatch } = workflowRuntimeBroadcast(workflowId)
+        const { dispatch } = workflowRuntimeBroadcast(workflowId as string);
 
         await dispatch(RuntimeActionType.ADD_LOG, {
             id: logId,

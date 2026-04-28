@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 
 export interface TriggerNodeConfig extends BaseNodeConfig {
@@ -36,7 +35,5 @@ export const triggerNode = createNode<TriggerNodeConfig>({
             triggerType: "manual",
             ...getBaseConfig("Workflow Entry Point"),
         },
-    },
-
-    executor
+    }
 });

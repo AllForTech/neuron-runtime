@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 export interface OutputNodeConfig extends BaseNodeConfig {
     label: string;
@@ -49,7 +48,5 @@ export const outputNode = createNode<OutputNodeConfig>({
             includeMetadata: true,
             ...getBaseConfig("Final Presentation Layer"),
         },
-    },
-
-    executor
+    }
 });

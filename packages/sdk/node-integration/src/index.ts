@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 export interface IntegrationNodeConfig extends BaseNodeConfig {
     connectionId: string;
@@ -35,7 +34,5 @@ export const integrationNode = createNode<IntegrationNodeConfig>({
             parameters: {},
             ...getBaseConfig("Third-Party Connector"),
         },
-    },
-
-    executor
+    }
 });

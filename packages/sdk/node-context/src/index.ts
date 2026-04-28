@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 export interface ContextNodeConfig extends BaseNodeConfig {
     label: string;
@@ -29,7 +28,5 @@ export const contextNode = createNode<ContextNodeConfig>({
             fields: {},
             ...getBaseConfig("Execution Memory Store"),
         },
-    },
-
-    executor
+    }
 });

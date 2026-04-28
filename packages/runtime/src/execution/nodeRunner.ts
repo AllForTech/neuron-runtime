@@ -1,44 +1,93 @@
 import { WorkflowNode } from "@neuron/db";
-import { nodeRegistry } from "@neuron/nodes";
-import { NodeExecutionResult } from "../types/index.js";
-import { BaseNodeConfig, NodeType } from "@neuron/shared";
-import { createExecutionResult } from "../utils/index.js";
+import { nodeExecutors } from "@neuron/nodes/server";
+import { BaseNodeConfig, NodeExecutor, NodeType } from "@neuron/shared";
+import { createExecutionResult, normalizeExecutionPolicy,  delay, runWithTimeout  } from "../utils";
+import { ExecutionSignal } from "@neuron/shared";
 
 export class NodeRunner {
-    private registry: any = null;
-    constructor(
+    private readonly registry: Record<NodeType, NodeExecutor>;
 
-    ) {
-        this.registry = nodeRegistry;
+    constructor() {
+        this.registry = nodeExecutors;
     }
 
     public async run(
         node: WorkflowNode,
         resolvedConfig: Record<string, any>
-    ): Promise<NodeExecutionResult> {
+    ) {
         const startTime = performance.now();
+        const policy = normalizeExecutionPolicy(node.config as BaseNodeConfig);
 
-        try {
-            const hasNode = this.registry.has(node.type as NodeType);
+        const executor = this.registry[node.type as NodeType];
 
-            if (!hasNode) {
-                throw new Error(`[Runtime] Error: Node type ${node.type} not found in Node Registry.`);
-            }
-            const definition = this.registry.get(node.type as NodeType);
-
-            // 2. Execute via SDK Definition
-            const result = await definition.executor({
-                nodeType: node.type as NodeType,
-                config: node.config as BaseNodeConfig,
-                input: resolvedConfig,
-            });
-
-            return createExecutionResult('success', result.output, startTime);
-        } catch (err: any) {
-            return createExecutionResult('failed', null, startTime, {
-                message: err.message,
-                code: 'NODE_RUN_ERROR',
-            });
+        if (!executor) {
+            return {
+                result: createExecutionResult("failed", null, startTime, {
+                    message: `Executor not found for ${node.type}`,
+                    code: "EXECUTOR_NOT_FOUND"
+                }),
+                signal: "error" as ExecutionSignal,
+                attempts: 0
+            };
         }
+
+        let lastError: any;
+        let attempts = 0;
+
+        for (let i = 0; i < policy.retryAttempts; i++) {
+            attempts++;
+
+            try {
+                const execution = await runWithTimeout(
+                    () =>
+                        executor({
+                            nodeType: node.type as NodeType,
+                            config: node.config as BaseNodeConfig,
+                            input: resolvedConfig
+                        }),
+                    policy.timeoutMs
+                );
+
+                return {
+                    result: createExecutionResult("success", execution.output, startTime),
+                    signal: "success" as ExecutionSignal,
+                    attempts
+                };
+
+            } catch (err: any) {
+                lastError = err;
+
+                // Timeout detection
+                if (err.message === "Execution timeout") {
+                    return {
+                        result: createExecutionResult("timeout", null, startTime, {
+                            message: err.message,
+                            code: "TIMEOUT"
+                        }),
+                        signal: "timeout" as ExecutionSignal,
+                        attempts
+                    };
+                }
+
+                // Retry logic
+                if (attempts < policy.retryAttempts) {
+                    const delayMs =
+                        policy.retryStrategy === "exponential"
+                            ? policy.retryDelayMs * Math.pow(2, attempts - 1)
+                            : policy.retryDelayMs;
+
+                    await delay(delayMs);
+                }
+            }
+        }
+
+        return {
+            result: createExecutionResult("failed", null, startTime, {
+                message: lastError?.message || "Execution failed",
+                code: "RETRY_EXHAUSTED"
+            }),
+            signal: "retry_exhausted" as ExecutionSignal,
+            attempts
+        };
     }
 }

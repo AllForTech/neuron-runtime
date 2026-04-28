@@ -12,6 +12,7 @@ import { WorkflowEditorActionType } from '@/constants';
 import { ContextMenuWrapper } from '@/components/workflow/editor/ContextMenuWrapper';
 import { NodeStatusIndicator } from '@/components/workflow/editor/nodes/NodeStatusIndicator';
 import { DynamicNodeToolbar } from '@/components/workflow/editor/nodes/toolbar/DynamicNodeToolbar';
+import {ExecutionHandlesRenderer} from "@/components/workflow/editor/nodes/ExecutionHandlesRenderer";
 
 export default function TriggerNode(node: NodeProps) {
   const { id, selected, data } = node;
@@ -66,12 +67,13 @@ export default function TriggerNode(node: NodeProps) {
           />
 
           {/* Source Handle Only */}
-          <NodeHandle
-            className="-right-[35px]! border-2 border-neutral-950 bg-neutral-400"
-            node={node}
-            type="source"
-            position={Position.Right}
-          />
+          {/*<NodeHandle*/}
+          {/*  className="-right-[35px]! border-2 border-neutral-950 bg-neutral-400"*/}
+          {/*  node={node}*/}
+          {/*  type="source"*/}
+          {/*  position={Position.Right}*/}
+          {/*/>*/}
+            <ExecutionHandlesRenderer node={node} />
 
           {/* Logic & Layout: Nested Cards but Circular */}
           <Card

@@ -6,7 +6,7 @@ export * from "./globalVariables.js";
 export * from "./errors.js";
 export * from "./sdk.js";
 export * from "./vault.js";
-// export * from "./executor";
+export * from "./executor";
 
 export enum RuntimeActionType {
     SET_NODE_STATUS = 'SET_NODE_STATUS',

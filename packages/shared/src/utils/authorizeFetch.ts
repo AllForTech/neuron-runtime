@@ -17,7 +17,7 @@ export async function authorizedFetch<T>(
     });
 
     // 1. Parse the JSON once
-    const data = await response.json().catch(() => null);
+    const data: any = await response.json().catch(() => null);
 
     if (!response.ok) {
         // 2. If it's a 500, log it to the console so you can see it on Zorin OS

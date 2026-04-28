@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 export interface DebugNodeConfig extends BaseNodeConfig {
     message: string;
@@ -25,7 +24,5 @@ export const debugNode = createNode<DebugNodeConfig>({
             message: "Debugging execution state...",
             ...getBaseConfig("Data Inspector"),
         },
-    },
-
-    executor
+    }
 });

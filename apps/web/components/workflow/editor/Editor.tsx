@@ -50,29 +50,8 @@ import { EditorRightMenu } from '@/components/workflow/editor/menu/EditorRightMe
 import { EditorBottomMenu } from '@/components/workflow/editor/menu/EditorBottomMenu';
 import { WorkflowInspector } from '@/components/workflow/editor/WorkflowInspector';
 import {DndProvider, DroppableZone} from "@neuron/ui";
-import {isNodeType, NodeType} from "@neuron/shared";
-
-// --------------------------------------------
-// Component
-// --------------------------------------------
-
-const nodeTypes = {
-  trigger: TriggerNode,
-  httpNode: DynamicNode,
-  debug: DynamicNode,
-  condition: DynamicNode,
-  transform: DynamicNode,
-  llmNode: DynamicNode,
-  decisionNode: DynamicNode,
-  integrationNode: DynamicNode,
-  outputNode: DynamicNode,
-  respondNode: DynamicNode,
-  contextNode: DynamicNode,
-};
-
-// const edgeTypes = {
-//     workflowEdge: WorkflowEdge,
-// }
+import {isNodeType, NODE_KIND, NodeType} from "@neuron/shared";
+import {NodeInspectorSheet} from "@/components/workflow/editor/sheet/InspectorSidebar";
 
 const snapGrid: [number, number] = [80, 80];
 
@@ -89,18 +68,31 @@ export function Editor() {
     setIsSheetOpen,
     sheetOpen,
     setSheetOpen,
+      nodeCatalog,
     isWorkflowLoading,
     isDeployWorkflowDialogOpen,
     setIsDeployWorkflowDialogOpen,
   } = useWorkflowEditor();
 
   const [open, setOpen] = useState(false);
-  // -------------------------------
-  // ReactFlow UI State
-  // -------------------------------
 
   const [graphNodes, setGraphNodes, onNodesChange] = useNodesState([]);
   const [graphEdges, setGraphEdges, onEdgesChange] = useEdgesState([]);
+
+    const nodeTypes = useMemo(() => {
+        if (!nodeCatalog) return {};
+
+        return Object.fromEntries(
+            nodeCatalog.map((node) => {
+                const type = node.type;
+                const component = type.startsWith('Trigger.')
+                    ? TriggerNode
+                    : DynamicNode;
+
+                return [type, component];
+            })
+        );
+    }, [nodeCatalog]);
 
   useOnSelectionChange({
     onChange: ({ nodes: selectedNodes }) => {
@@ -299,102 +291,106 @@ export function Editor() {
                   <ExecutionHistorySheet />
 
                   {selectedNode && sheetOpen && (
-                      <>
-                          {/* Entry Points */}
-                          {isNodeType.trigger(selectedNode.type as NodeType) && (
-                              <TriggerNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {/* Networking */}
-                          {isNodeType.http(selectedNode.type as NodeType) && (
-                              <HttpRequestNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {isNodeType.respond(selectedNode.type as NodeType) && (
-                              <RespondNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {/* Intelligence */}
-                          {isNodeType.llm(selectedNode.type as NodeType) && (
-                              <LLMNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {/* Logic & Routing */}
-                          {isNodeType.condition(selectedNode.type as NodeType) && (
-                              <ConditionNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {isNodeType.decision(selectedNode.type as NodeType) && (
-                              <DecisionNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {/* Integrations */}
-                          {isNodeType.integration(selectedNode.type as NodeType) && (
-                              <IntegrationNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {/* Utilities */}
-                          {isNodeType.transform(selectedNode.type as NodeType) && (
-                              <TransformNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {isNodeType.context(selectedNode.type as NodeType) && (
-                              <ContextNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {isNodeType.debug(selectedNode.type as NodeType) && (
-                              <DebugNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-
-                          {isNodeType.output(selectedNode.type as NodeType) && (
-                              <OutputNodeConfigSheet
-                                  node={selectedNode}
-                                  open={sheetOpen}
-                                  onOpen={setSheetOpen}
-                              />
-                          )}
-                      </>
+                      <NodeInspectorSheet node={selectedNode} open={sheetOpen} onOpenChange={setSheetOpen}/>
                   )}
+
+                  {/*{selectedNode && sheetOpen && (*/}
+                  {/*    <>*/}
+                  {/*        /!* Entry Points *!/*/}
+                  {/*        {isNodeType.trigger(selectedNode.type as NodeType) && (*/}
+                  {/*            <TriggerNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        /!* Networking *!/*/}
+                  {/*        {isNodeType.http(selectedNode.type as NodeType) && (*/}
+                  {/*            <HttpRequestNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        {isNodeType.respond(selectedNode.type as NodeType) && (*/}
+                  {/*            <RespondNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        /!* Intelligence *!/*/}
+                  {/*        {isNodeType.llm(selectedNode.type as NodeType) && (*/}
+                  {/*            <LLMNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        /!* Logic & Routing *!/*/}
+                  {/*        {isNodeType.condition(selectedNode.type as NodeType) && (*/}
+                  {/*            <ConditionNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        {isNodeType.decision(selectedNode.type as NodeType) && (*/}
+                  {/*            <DecisionNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        /!* Integrations *!/*/}
+                  {/*        {isNodeType.integration(selectedNode.type as NodeType) && (*/}
+                  {/*            <IntegrationNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        /!* Utilities *!/*/}
+                  {/*        {isNodeType.transform(selectedNode.type as NodeType) && (*/}
+                  {/*            <TransformNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        {isNodeType.context(selectedNode.type as NodeType) && (*/}
+                  {/*            <ContextNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        {isNodeType.debug(selectedNode.type as NodeType) && (*/}
+                  {/*            <DebugNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+
+                  {/*        {isNodeType.output(selectedNode.type as NodeType) && (*/}
+                  {/*            <OutputNodeConfigSheet*/}
+                  {/*                node={selectedNode}*/}
+                  {/*                open={sheetOpen}*/}
+                  {/*                onOpen={setSheetOpen}*/}
+                  {/*            />*/}
+                  {/*        )}*/}
+                  {/*    </>*/}
+                  {/*)}*/}
 
                   <ExecutionTrace
                       className={'h-full! w-[700px]! p-2.5!'}

@@ -1,10 +1,7 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./executor.js";
 
-/**
- * Configuration for making standardized REST API calls.
- */
+
 export interface HttpNodeConfig extends BaseNodeConfig {
     url: string;
     method: "GET" | "POST" | "PUT" | "DELETE";
@@ -39,7 +36,5 @@ export const httpNode = createNode<HttpNodeConfig>({
             body: {},
             ...getBaseConfig("External API Communication"),
         },
-    },
-
-    executor
+    }
 });

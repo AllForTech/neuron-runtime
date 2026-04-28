@@ -22,7 +22,7 @@ export function EditorTopMenu() {
             Sequence
           </p>
           <p className="text-xs font-medium text-white">
-            {editorState.workflow?.name || 'New Engine'}
+            {editorState.workflow?.name || 'Untitled'}
           </p>
         </div>
 

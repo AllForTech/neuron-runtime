@@ -1,6 +1,6 @@
 import {NodeExecutorContext} from "@neuron/shared";
 
-export const executor = async ({
+export const debugNodeExecutor = async ({
                                    nodeType,
                                    config,
                                    input,

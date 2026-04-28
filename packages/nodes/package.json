@@ -5,22 +5,19 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
     "./client": {
-      "types": "./dist/client/index.d.ts",
-      "import": "./dist/client/index.js"
+      "import": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
     },
     "./server": {
-      "types": "./dist/server/index.d.ts",
-      "import": "./dist/server/index.js"
+      "import": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
     }
   },
+
   "scripts": {
-    "build": "tsup src/index.ts src/client/index.ts src/server/index.ts --format esm --dts --clean",
-    "dev": "tsup src/index.ts src/client/index.ts src/server/index.ts --format esm --dts --watch --onSuccess 'echo \"Nodes Synced\"'"
+    "build": "tsup src/client/index.ts src/server/index.ts --format esm --dts --clean",
+    "dev": "tsup src/client/index.ts src/server/index.ts --format esm --dts --watch"
   },
   "dependencies": {
     "@neuron/node-condition": "workspace:*",

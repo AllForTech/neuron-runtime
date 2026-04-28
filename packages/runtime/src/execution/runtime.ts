@@ -1,8 +1,25 @@
-import { getGlobalVariables, VaultService, WorkflowEdge, WorkflowNode, workflowBroadcast } from "@neuron/db";
-import { ExecuteWorkflowType, NodeExecutionResult } from "../types/index.js";
-import { NodeRunner } from "./nodeRunner.js";
-import {WorkflowEditorActionType, createContextEntry, logger} from "@neuron/shared";
-import {resolveConfig} from "../utils/index.js";
+import {
+    getGlobalVariables,
+    VaultService,
+    WorkflowEdge,
+    WorkflowNode,
+    workflowBroadcast
+} from "@neuron/db";
+
+import { ExecuteWorkflowType } from "../types";
+import { NodeRunner } from "./nodeRunner";
+
+import {
+    WorkflowEditorActionType,
+    createContextEntry,
+    logger,
+    BaseNodeConfig,
+    NodeType,
+    ExecutionSignal
+} from "@neuron/shared";
+
+import { resolveConfig } from "../utils";
+import { getEdgeTargets } from "../utils/branching";
 
 export class Runtime {
     private readonly workflowId: string;
@@ -11,8 +28,12 @@ export class Runtime {
     private readonly nodes: WorkflowNode[];
     private readonly edges: WorkflowEdge[];
 
-    private completed = new Set<string>();
+    private executed = new Set<string>();
+    private success = new Set<string>();
+    private failed = new Set<string>();
+
     private running = new Set<string>();
+
     private incoming: Record<string, string[]> = {};
     private outgoing: Record<string, string[]> = {};
     private nodeMap: Record<string, WorkflowNode> = {};
@@ -22,6 +43,7 @@ export class Runtime {
     private globalVariables: Record<string, string> = {};
 
     public finalResponse: any = null;
+
     private readonly vault: VaultService;
     private readonly dispatch: any;
 
@@ -37,28 +59,31 @@ export class Runtime {
         this.dispatch = dispatch;
     }
 
-    /**
-     * Prepares graph adjacency maps and global state for execution.
-     */
     public async initialize(): Promise<void> {
         try {
             const dbVariables = await getGlobalVariables(this.workflowId);
+
             if (dbVariables) {
-                dbVariables.forEach(v => this.globalVariables[v.key] = v.value as string);
+                for (const v of dbVariables) {
+                    this.globalVariables[v.key] = v.value as string;
+                }
             }
 
             for (const node of this.nodes) {
                 this.nodeMap[node.id] = node;
                 this.incoming[node.id] = [];
                 this.outgoing[node.id] = [];
-                if (node.type.includes("contextNode")) this.contextNode.isPresent = true;
+
+                if (node.type.includes("Utility.Context")) {
+                    this.contextNode.isPresent = true;
+                }
             }
 
             for (const edge of this.edges) {
-                if (this.nodeMap[edge.source] && this.nodeMap[edge.target]) {
-                    this.incoming[edge.target]?.push(edge.source);
-                    this.outgoing[edge.source]?.push(edge.target);
-                }
+                if (!this.nodeMap[edge.source] || !this.nodeMap[edge.target]) continue;
+
+                this.incoming[edge.target].push(edge.source);
+                this.outgoing[edge.source].push(edge.target);
             }
 
             logger.debug("Runtime", "Graph initialized", { nodeCount: this.nodes.length });
@@ -68,20 +93,17 @@ export class Runtime {
         }
     }
 
-    /**
-     * Orchestrates the full workflow execution starting from root nodes.
-     */
     public async execute() {
         await this.initialize();
 
-        // Professional info log for start of execution
         logger.info("Runtime", "Workflow execution started", {
             workflowId: this.workflowId,
             executorId: this.executorId
         });
 
         const startNodes = this.nodes.filter(n => this.incoming[n.id]?.length === 0);
-        await Promise.all(startNodes.map(node => this.runNode(node.id)));
+
+        await Promise.all(startNodes.map(n => this.runNode(n.id)));
 
         logger.info("Runtime", "Workflow execution completed", {
             workflowId: this.workflowId,
@@ -95,27 +117,19 @@ export class Runtime {
         };
     }
 
-    /**
-     * Executes a single node via the NodeRunner and manages state transitions.
-     */
     private async runNode(nodeId: string): Promise<void> {
-        if (this.completed.has(nodeId) || this.running.has(nodeId)) return;
+        if (this.executed.has(nodeId) || this.running.has(nodeId)) return;
 
         const node = this.nodeMap[nodeId];
-
-        if (!node){
-            throw new Error( "Unknown Node Error: Node id " + nodeId );
-        }
+        if (!node) throw new Error(`Unknown Node Error: ${nodeId}`);
 
         this.running.add(nodeId);
 
         await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, { nodeId });
 
-        logger.info("Runtime", `Attempting to resolve config for ${node?.type} node - ${node?.id}`);
-
         try {
             const resolvedConfig = await resolveConfig(
-                node?.config,
+                node.config,
                 this.nodesContext,
                 {
                     variables: this.globalVariables,
@@ -123,17 +137,26 @@ export class Runtime {
                 }
             );
 
-            // Log detailed node activity
-            logger.debug("Runtime", `Executing node: ${node.type}`, { nodeId });
-
             const runner = new NodeRunner();
-            const result: NodeExecutionResult = await runner.run(node, resolvedConfig);
-
-            if (result.status === 'failed') {
-                throw new Error(result.error?.message || "Unknown Node Error");
-            }
+            const { result, signal } = await runner.run(node, resolvedConfig);
 
             const output = result.data;
+
+            const policy = node.config as BaseNodeConfig;
+
+            if (signal !== "success") {
+                await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
+                    nodeId,
+                    error: result.error?.message
+                });
+
+                if (policy?.executionConfig?.errorHandling?.continueOnError === false) {
+                    this.failed.add(nodeId);
+                    this.executed.add(nodeId);
+                    this.running.delete(nodeId);
+                    return;
+                }
+            }
 
             if (output?.__isTerminal) {
                 this.finalResponse = {
@@ -143,41 +166,67 @@ export class Runtime {
                 };
             }
 
-            if (this.contextNode.isPresent) {
-                this.contextNode[nodeId] = createContextEntry(node, output, Number(result.metrics.timestamp));
+            if (this.contextNode.isPresent && signal === "success") {
+                this.contextNode[nodeId] = createContextEntry(node, output, Date.now());
             }
 
             this.nodesContext[nodeId] = output;
-            this.completed.add(nodeId);
 
-            await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_SUCCESS, { nodeId, output });
-            await this.triggerNext(nodeId, output);
+            this.executed.add(nodeId);
+
+            if (signal === "success") {
+                this.success.add(nodeId);
+            } else {
+                this.failed.add(nodeId);
+            }
+
+            await this.dispatch(
+                signal === "success"
+                    ? WorkflowEditorActionType.NODE_EXECUTION_SUCCESS
+                    : WorkflowEditorActionType.NODE_EXECUTION_ERROR,
+                { nodeId, output }
+            );
+
+            await this.triggerNext(nodeId, output, signal);
 
         } catch (e: any) {
-            // Log the error with full context and the Error object
             logger.error("Runtime", `Node execution failed: ${nodeId}`, e, {
                 nodeType: node.type,
                 workflowId: this.workflowId
             });
 
-            await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, { nodeId, error: e.message });
+            this.failed.add(nodeId);
+
+            await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
+                nodeId,
+                error: e.message
+            });
         } finally {
             this.running.delete(nodeId);
         }
     }
 
-    /**
-     * Identifies and triggers subsequent nodes whose dependencies have been met.
-     */
-    private async triggerNext(nodeId: string, output: any) {
-        const nextIds = this.outgoing[nodeId] || [];
+    private async triggerNext(nodeId: string, output: any, signal: ExecutionSignal) {
+        const node = this.nodeMap[nodeId];
+        const policy = node.config as BaseNodeConfig;
 
-        const readyNodes = nextIds.filter(id =>
-            this.incoming[id]?.every(parentId => this.completed.has(parentId)));
-
-        if (readyNodes.length > 0) {
-            logger.debug("Runtime", `Triggering ${readyNodes.length} downstream nodes`, { fromNode: nodeId });
+        if (signal !== "success" && policy?.executionConfig?.errorHandling?.fallbackNodeId) {
+            const fallback = policy.executionConfig.errorHandling.fallbackNodeId;
+            await this.runNode(fallback);
+            return;
         }
+
+        const nextNodeIds = getEdgeTargets(
+            node.type as NodeType,
+            nodeId,
+            this.edges,
+            output,
+            signal
+        );
+
+        const readyNodes = nextNodeIds.filter(id =>
+            this.incoming[id]?.every(parent => this.executed.has(parent))
+        );
 
         await Promise.all(readyNodes.map(id => this.runNode(id)));
     }

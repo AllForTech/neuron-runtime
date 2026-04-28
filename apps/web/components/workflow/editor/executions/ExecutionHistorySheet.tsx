@@ -41,7 +41,7 @@ export function ExecutionHistorySheet() {
       open={isExecutionsSheetOpen}
       onOpenChange={setIsExecutionsSheetOpen}
       title="Execution History"
-      description="View past runs and detailed node-level execution logs."
+      // description="View past runs and detailed node-level execution logs."
       showContextSettings={false}
       className={'w-[800px]! p-0!'}
     >
@@ -74,7 +74,7 @@ export function ExecutionHistorySheet() {
                 {sortedExecutions.map((execution) => (
                   <ExecutionCard
                     key={execution.id}
-                    execution={execution}
+                    execution={execution as any}
                     onClick={() => handleExecutionClick(execution.id)}
                   />
                 ))}

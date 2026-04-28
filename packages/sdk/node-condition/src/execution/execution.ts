@@ -1,11 +1,11 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import { ConditionNodeConfig } from "../index.js";
 
-export const executor: NodeExecutor = async ({
+export const conditionNodeExecutor: NodeExecutor = async ({
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
     const { leftValue, operator, rightValue } = config as ConditionNodeConfig;
-    let result = false;
+    let result: boolean;
 
     switch (operator) {
         case "==":

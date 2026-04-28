@@ -4,7 +4,12 @@ import { PanelWrapper } from '@/components/workflow/editor/Panel/PanelWrapper';
 import { TooltipButton } from '@/components/workflow/ToolTipButton';
 
 export function EditorLeftMenu() {
-  const { setIsSheetOpen, setIsEditorPanelOpen } = useWorkflowEditor();
+  const {
+      setIsSheetOpen,
+      setIsEditorPanelOpen,
+      setSelectedNode,
+      setSelectedHandle,
+  } = useWorkflowEditor();
 
   return (
     <PanelWrapper position="top-left" width="w-auto" className="mt-24 ml-2!">
@@ -12,7 +17,11 @@ export function EditorLeftMenu() {
         <TooltipButton
           icon={Plus}
           label="Add Node"
-          onClick={() => setIsSheetOpen(true)}
+          onClick={() => {
+              setSelectedNode(null);
+              setSelectedHandle(null);
+              setIsSheetOpen(true)
+          }}
         />
         <TooltipButton
           icon={Layers}

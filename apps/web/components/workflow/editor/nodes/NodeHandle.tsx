@@ -38,7 +38,6 @@ export function NodeHandle({
           e.stopPropagation();
           setIsSheetOpen(true);
           setSelectedNode(nodePropsToReactflowNode(node));
-          console.log('From Decision node handle logic: ', id, node);
           setSelectedHandle(id);
         }}
       />

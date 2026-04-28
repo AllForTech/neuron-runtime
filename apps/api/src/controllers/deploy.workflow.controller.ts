@@ -7,7 +7,7 @@ import {
 } from "@neuron/db";
 import {supabase} from "@neuron/auth";
 import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "@neuron/db";
-import {executeWorkflow} from "../engine/execution";
+import {executeWorkflow} from "@/engine/execution";
 
 
 export const deployWorkflowController = async (req: any, res: any) => {
@@ -158,19 +158,27 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
         // Sync to execution table
         const execution = await createExecution({
-            workflowId: deployment.workflowId,
-            userId: deployment.userId,
+            workflowId: deployment.workflowId as string,
+            userId: deployment.userId  as string,
         })
+
+        if (!execution) {
+            return res.status(500).json({
+                success: false,
+                error: "Execution Error",
+                message: "Fail to create execution.",
+            });
+        }
 
         // await neuronEngine.run(deployment.nodes, deployment.edges);
         executeWorkflow({
             executionId: execution.id,
-            workflowId: deployment.workflowId,
+            workflowId: deployment.workflowId as string,
             graph: {
                 nodes: deployment.nodes as WorkflowNode[],
                 edges: deployment.edges as WorkflowEdge[],
             },
-            userId: deployment.userId,
+            userId: deployment.userId  as string,
         }, req)
             .then(async (finalContext) => {
                 console.log(`Workflow ${deployment.workflowId} finished.`);
@@ -179,7 +187,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 await updateExecutionStatus({
                     executionId: execution.id,
                     status: "success",
-                    userId: deployment.userId,
+                    userId: deployment.userId as string,
                     result: finalContext.response,
                 }, deployment.workflowId)
 
@@ -206,7 +214,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
                 await updateExecutionStatus({
                     executionId: execution.id,
                     status: "failed",
-                    userId: deployment.userId,
+                    userId: deployment.userId as string,
                     result: err?.message ?? err,
                 }, deployment.workflowId)
 

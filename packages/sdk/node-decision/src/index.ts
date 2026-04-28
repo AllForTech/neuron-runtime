@@ -1,6 +1,5 @@
 import { createNode } from "@neuron/nodes-sdk";
 import { BaseNodeConfig, getBaseConfig } from "@neuron/shared";
-import { executor } from "./execution/index.js";
 
 interface DecisionRule {
     id: string;
@@ -40,7 +39,5 @@ export const decisionNode = createNode<DecisionNodeConfig>({
             includeDefault: true,
             ...getBaseConfig("Advanced Multi-Path Router"),
         },
-    },
-
-    executor
+    }
 });

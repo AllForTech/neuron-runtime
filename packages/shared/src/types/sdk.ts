@@ -19,8 +19,6 @@ export type ExecutorOutput = {
 export interface NodeDefinition<TConfig = any> {
     type: NodeType;
 
-    executor: NodeExecutor;
-
     template: {
         key: string;
         label: string;

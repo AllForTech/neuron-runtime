@@ -1,94 +1,98 @@
 'use client';
 
 import React from 'react';
-import { Info, Plus } from 'lucide-react';
+import { Info, Plus, ChevronRight } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DraggableItem } from "@neuron/ui";
 import * as Icons from 'lucide-react';
+import { cn } from "@/lib/utils";
 
-const getIcon = (iconName: string) => {
-    const IconComponent = (Icons as any)[iconName];
-    return IconComponent || Icons.Layers2;
-};
-
-export function NodeTemplateCard({
-                                     template,
-                                     onSelect
-                                 }: {
-    template: any;
-    onSelect: () => void
-}) {
-    // Resolve string icon name to Component
+export function NodeTemplateCard({ template, onSelect }: { template: any; onSelect: () => void }) {
     const IconComponent = (Icons as any)[template.icon] || Icons.Layers2;
 
     return (
-        <DraggableItem id={template.key} data={{ template }}>
-            <div className="group relative">
-                <button
+        /* Ensure the draggable container doesn't clip its children */
+        <DraggableItem className="w-full overflow-visible!" id={template.key} data={{ template }}>
+            <div className="group flex flex-col gap-2 transition-transform duration-300 active:scale-95">
+                {/* Elevation Layer (The Card) */}
+                <div
                     onClick={onSelect}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300 text-left"
+                    className={cn(
+                        "relative flex items-center gap-4 p-4 cursor-pointer rounded-[20px]",
+                        "bg-[#0A0A0A] border border-white/[0.06]",
+                        "hover:border-white/20 hover:bg-[#111111]",
+                        "transition-all duration-300 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+                    )}
                 >
-                    {/* Icon Container: Flips colors on group hover */}
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-500">
-                        <IconComponent size={18} strokeWidth={1.5} />
+                    {/* Icon - Using the primary theme contrast */}
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/[0.03] border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-500">
+                        <IconComponent size={20} strokeWidth={1.5} />
                     </div>
 
-                    {/* Text Content */}
-                    <div className="flex-1 min-w-0 pr-6">
-                        <h4 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
+                    <div className="flex-1 min-w-0">
+                        <h4 className="text-[14px] font-medium text-white/90 tracking-tight">
                             {template.label}
                         </h4>
-                        <div className="flex items-center gap-2">
-               <span className="text-[10px] font-medium text-neutral-600 uppercase tracking-tight">
-                 {template.category}
-               </span>
-                            <span className="h-1 w-1 rounded-full bg-neutral-800" />
-                            <p className="text-[10px] text-neutral-500 truncate font-mono">
-                                {template.type}
-                            </p>
+                        <p className="text-[11px] text-neutral-500 line-clamp-1 mt-0.5">
+                            {template.description || "Component for specialized automation."}
+                        </p>
+                    </div>
+
+                    {/* Subtle Action Indicator */}
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                        <Plus size={14} className="text-neutral-500 group-hover:text-white" />
+                    </div>
+
+                    {/* Popover / Info */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                    }}
+                                    className="p-1.5 text-neutral-600 hover:text-white"
+                                >
+                                    <Info size={14} />
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                side="right"
+                                sideOffset={20}
+                                className="w-64 p-4 bg-[#0F0F0F] border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl"
+                            >
+                                <div className="space-y-2">
+                                    <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">Details</span>
+                                    <p className="text-[12px] text-neutral-400 leading-relaxed">
+                                        {template.description}
+                                    </p>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                {/* Meta Layer (The Specs) - Modern separated feel */}
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                            <div className={cn(
+                                "h-1 w-1 rounded-full",
+                                template.category === 'Trigger' ? "bg-amber-400" : "bg-white/40"
+                            )} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-600">
+                                {template.category}
+                            </span>
                         </div>
                     </div>
 
-                    <Plus className="h-4 w-4 text-neutral-700 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                </button>
-
-                {/* Info Popover: Floating UI */}
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Prevents triggering node selection
-                                    e.preventDefault();  // Prevents drag start
-                                }}
-                                className="p-2 text-neutral-600 hover:text-white transition-colors rounded-full hover:bg-white/5"
-                            >
-                                <Info size={14} />
-                            </button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                            side="left"
-                            align="center"
-                            sideOffset={15}
-                            className="w-72 p-5 bg-[#0A0A0A] border-white/10 rounded-2xl backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-200"
-                        >
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="h-1 w-1 rounded-full bg-white" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                     Documentation
-                   </span>
-                                </div>
-                                <p className="text-xs leading-relaxed text-neutral-400 font-medium">
-                                    {template.description}
-                                </p>
-                                {/* Visual Indicator of Output Type */}
-                                <div className="pt-2 border-t border-white/5">
-                                    <span className="text-[9px] text-neutral-600 uppercase font-bold">Returns: Object</span>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[9px] font-mono text-neutral-500">
+                            {template.type}
+                        </span>
+                        <ChevronRight size={10} className="text-neutral-700" />
+                    </div>
                 </div>
             </div>
         </DraggableItem>

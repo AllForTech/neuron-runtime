@@ -1,7 +1,7 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput, validateAgainstSchema } from "@neuron/shared";
 import { OutputNodeConfig } from "../index.js";
 
-export const executor: NodeExecutor = async ({
+export const outputNodeExecutor: NodeExecutor = async ({
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
     const {

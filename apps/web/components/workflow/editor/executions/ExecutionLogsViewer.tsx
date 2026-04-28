@@ -1,7 +1,7 @@
 'use client';
 
-import { memo, useEffect, useMemo, useState } from 'react';
-import { Activity, Database } from 'lucide-react';
+import { memo, useMemo } from 'react';
+import { Activity } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { ExecutionHeader } from '@/components/workflow/editor/executions/ExecutionHeader';
@@ -41,7 +41,7 @@ function ExecutionLogs({
                 Sequence Steps
               </span>
             </div>
-            <LogTimeline logs={runtimeState.logs} />
+            <LogTimeline logs={runtimeState.logs as any} />
           </div>
         </div>
       </ScrollArea>

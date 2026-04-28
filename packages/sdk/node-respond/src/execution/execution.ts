@@ -1,7 +1,7 @@
 import {NodeExecutor, NodeExecutorContext} from "@neuron/shared";
 import {RespondNodeConfig} from "../index.js";
 
-export const executor: NodeExecutor = async ({
+export const respondNodeExecutor: NodeExecutor = async ({
                                    nodeType,
                                    config,
                                    input,

@@ -1,5 +1,8 @@
 import {IVaultResolver, logger} from "@neuron/shared";
-import {ExecutionError, ExecutionMetrics, NodeExecutionResult} from "../types/index.js";
+import {ExecutionError, ExecutionMetrics, NodeExecutionResult} from "../types";
+
+export * from "./executionHelpers";
+export * from "./executionPolicy";
 
 const TEMPLATE_REGEX = /{{\s*([\w.-]+)\s*}}/g;
 const BLOCKED_KEYS = new Set(["__proto__", "constructor", "prototype"]);

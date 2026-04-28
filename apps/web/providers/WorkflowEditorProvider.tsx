@@ -12,6 +12,7 @@ import React, {
 import { useParams } from 'next/navigation';
 // import { WorkflowEditorAction } from '@/types/index';
 import type {
+    NodeDefinition,
     NodeType,
     WorkflowDefinition,
     WorkflowEdge,
@@ -39,6 +40,7 @@ import {
     workflows as workflowClient,
     executions as executionsClient
 } from "@neuron/client";
+import { nodeCatalog } from '@neuron/nodes/client';
 
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
@@ -68,7 +70,7 @@ export type WorkflowEditorContextType = {
     setIsExecutionsSheetOpen: (vlue: boolean) => void;
     isWorkflowInspectorOpen: boolean;
     setIsWorkflowInspectorOpen: (vlue: boolean) => void;
-    handleSelectTemplate: (template: NodeTemplate, node?: Node) => void;
+    handleSelectTemplate: (template: NodeDefinition, node?: Node) => void;
     saveWorkflowGraph: () => void;
     handleRunWorkflow: () => void;
     deployWorkflow: (data: { private: boolean; secretKey: string }) => void;
@@ -83,6 +85,7 @@ export type WorkflowEditorContextType = {
     setLogs: (logs: ExecutionLog[]) => void;
     isLogsLoading: boolean;
     setIsLogsLoading: (val: boolean) => void;
+    nodeCatalog: NodeDefinition[];
 };
 
 export interface IWorkflowEditorState {
@@ -150,6 +153,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     const isSaving = useRef(false);
     const pendingSave = useRef(false);
+    const isLoadingRef = useRef(false);
 
     const localDraft = useLiveQuery(() => db.drafts.get(workflowId), [workflowId]);
 
@@ -270,6 +274,9 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     /** Loads the workflow graph, executions, and deployment status */
     const loadWorkflow = async () => {
+        if (isLoadingRef.current) return;
+        isLoadingRef.current = true;
+
         try {
             setIsWorkflowLoading(true);
             const token = await getSession();
@@ -300,11 +307,13 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             console.error(e.message);
         } finally {
             setIsWorkflowLoading(false);
+            isLoadingRef.current = false;
         }
     };
 
     /** Persists the current Dexie draft to the cloud database */
     const saveWorkflowGraph = async () => {
+        if (!editorState.graph.nodes || isLoadingRef.current) return;
         if (isSaving.current) {
             pendingSave.current = true;
             return;
@@ -344,28 +353,38 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     };
 
     /** Handles node template selection and canvas placement */
-    const handleSelectTemplate = (template: NodeTemplate, node?: Node) => {
+    const handleSelectTemplate = ({type, template}: NodeDefinition, connectingNode?: Node) => {
         const newNodeId = crypto.randomUUID();
+
+        // 1. Calculate position
+        const position = connectingNode
+            ? { x: connectingNode.position.x + 250, y: connectingNode.position.y + 100 }
+            : { x: 200, y: 300 };
+
         const newNode: WorkflowNode = {
             id: newNodeId,
-            type: template.type as NodeType,
-            position: { x: node ? node.position.x + 300 : 200, y: node ? node.position.y + 300 : 300 },
-            config: template.defaultConfig as any,
+            type: type as NodeType,
+            position,
+            config: template.defaultConfig,
         };
 
         workflowEditorDispatch({ type: WorkflowEditorActionType.ADD_NODE, payload: newNode });
         addNodes(toReactFlowNode(newNode));
 
-        setTimeout(() => {
-            fitView({ nodes: [{ id: newNodeId }], duration: 600, maxZoom: 1 });
-        }, 50);
-
-        if (selectedNode) {
-            const newEdge = { id: crypto.randomUUID(), source: selectedNode.id, target: newNodeId, sourceHandle: selectedHandle, targetHandle: newNodeId, type: 'default' };
+        if (connectingNode) {
+            const newEdge = {
+                id: crypto.randomUUID(),
+                source: connectingNode.id,
+                target: newNodeId,
+                sourceHandle: selectedHandle,
+                targetHandle: connectingNode?.id ?? null,
+                type: 'default'
+            };
             workflowEditorDispatch({ type: WorkflowEditorActionType.ADD_EDGE, payload: newEdge });
             addEdges(newEdge);
         }
 
+        setSelectedNode(null);
         setSelectedHandle(null);
         setIsSheetOpen(false);
     };
@@ -470,6 +489,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     };
 
     useEffect(() => {
+        if (isLoadingRef.current || isWorkflowLoading) return;
         if (!workflowId || !editorState.graph || !editorState.isDirty) return;
         const persistLocally = async () => {
             await db.drafts.put({
@@ -484,6 +504,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     }, [editorState.graph, editorState.globalVariables, workflowId, editorState.isDirty]);
 
     useEffect(() => {
+        if (isLoadingRef.current || isWorkflowLoading) return;
         if (!localDraft || localDraft.synced) return;
         if (saveTimeout.current) clearTimeout(saveTimeout.current);
         saveTimeout.current = setTimeout(() => {
@@ -510,7 +531,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 handleSelectTemplate, saveWorkflowGraph, handleRunWorkflow, fitNode,
                 isDeploying, deployWorkflow, deleteDeployment,
                 rfNodes, rfEdges, getExecutionLogs,
-                logs, setLogs, isLogsLoading, setIsLogsLoading,
+                logs, setLogs, isLogsLoading, setIsLogsLoading, nodeCatalog,
             }}
         >
             {children}

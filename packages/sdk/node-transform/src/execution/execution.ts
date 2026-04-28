@@ -8,7 +8,7 @@ function normalizeTransformCode(code: string) {
     return `return (${trimmed})`;
 }
 
-export const executor: NodeExecutor = async ({
+export const transformNodeExecutor: NodeExecutor = async ({
                                                  config,
                                                  input,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => { // Explicitly define return type
