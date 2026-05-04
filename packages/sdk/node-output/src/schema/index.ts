@@ -11,6 +11,15 @@ export const OUTPUT_NODE_SCHEMA: NodeConfigSchema = {
             layout: "column",
             fields: [
                 {
+                    id: "label",
+                    type: "text",
+                    path: "label",
+                    label: "Output Label",
+                    placeholder: "e.g., Success Response",
+                    required: true,
+                    description: "A friendly name to identify this output."
+                },
+                {
                     id: "template",
                     type: "template",
                     path: "template",

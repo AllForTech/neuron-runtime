@@ -36,25 +36,14 @@ export const RESPOND_NODE_SCHEMA: NodeConfigSchema = {
             fields: [
                 {
                     id: "headers",
-                    type: "object",
+                    type: "keyvalue",
+                    valueType: "template",
                     path: "headers",
                     label: "Response Headers",
-                    fields: [
-                        {
-                            id: "header-key",
-                            type: "text",
-                            path: "key",
-                            label: "Header Name",
-                            placeholder: "Content-Type"
-                        },
-                        {
-                            id: "header-value",
-                            type: "template",
-                            path: "value",
-                            label: "Value",
-                            placeholder: "application/json"
-                        }
-                    ]
+                    placeholder: {
+                        key: "Content-Type",
+                        value: "application/json"
+                    }
                 }
             ]
         },

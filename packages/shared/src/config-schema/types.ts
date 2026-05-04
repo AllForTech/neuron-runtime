@@ -13,7 +13,10 @@ export interface BaseConfigField {
     label?: string;
     description?: string;
 
-    placeholder?: string;
+    placeholder?: {
+        key?: string;
+        value?: string;
+    } | string;
 
     required?: boolean;
     disabled?: boolean;
@@ -33,8 +36,17 @@ export interface BaseConfigField {
 
 export interface TextFieldSchema
     extends BaseConfigField {
-    type: "text" | "textarea" | "secret" | "code" | "json";
+    type: "text" | "textarea" | "secret";
+}
 
+export interface CodeFieldSchema
+    extends BaseConfigField {
+    type: "code";
+}
+
+export interface JsonFieldSchema
+    extends BaseConfigField {
+    type: "json";
 }
 
 export interface TemplateFieldSchema extends BaseConfigField {
@@ -92,6 +104,13 @@ export interface ArrayFieldSchema
     defaultItem?: Record<string, any>;
 }
 
+export interface KeyValueFieldSchema
+    extends BaseConfigField {
+    type: "keyvalue";
+
+    valueType?: "text" | "template";
+}
+
 export interface DialogFieldSchema
     extends BaseConfigField {
     type: "dialog";
@@ -103,10 +122,13 @@ export interface DialogFieldSchema
 
 export type ConfigField =
     | TextFieldSchema
+    | CodeFieldSchema
+    | JsonFieldSchema
     | NumberFieldSchema
     | SwitchFieldSchema
     | SelectFieldSchema
     | ObjectFieldSchema
     | ArrayFieldSchema
+    | KeyValueFieldSchema
     | DialogFieldSchema
     | TemplateFieldSchema;

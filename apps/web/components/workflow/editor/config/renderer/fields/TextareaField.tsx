@@ -1,30 +1,20 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { AlignLeft, CornerDownRight } from 'lucide-react';
+import { AlignLeft } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { FieldWrapper } from '../FieldWrapper';
 import { TextFieldSchema } from "@neuron/shared";
 import { getValueAtPath } from "@/lib/config/path";
 import { cn } from "@/lib/utils";
 
-/**
- * TextareaField
- * A sophisticated multi-line input optimized for long-form content.
- * Features a subtle monospace font for technical data and a tactile
- * resizing handle appearance.
- */
-export function TextareaField({
-                                  field,
-                                  values,
-                                  onChange,
-                              }: {
+export function TextareaField({ field, values, onChange }: {
     field: TextFieldSchema;
     values: Record<string, any>;
     onChange: (path: string, value: string) => void;
 }) {
-    const value = getValueAtPath(values, field.path, field.defaultValue);
+    // Fallback to empty string to keep the component controlled
+    const value = getValueAtPath(values, field.path, field.defaultValue) ?? '';
 
     return (
         <FieldWrapper
@@ -32,44 +22,44 @@ export function TextareaField({
             description={field.description}
             required={field.required}
         >
-            <div className="group relative flex flex-col">
-                {/* Header Icon Anchor */}
-                <div className="absolute top-3 left-3 flex items-center justify-center text-neutral-500 group-focus-within:text-white transition-colors pointer-events-none">
-                    <AlignLeft size={12} strokeWidth={2.5} />
+            <div className={cn(
+                "group relative w-full flex flex-col transition-opacity",
+                field.disabled && "opacity-50 cursor-not-allowed"
+            )}>
+                {/* 1. THE RAIL ICON */}
+                <div className="absolute top-2.5 left-3 flex items-center justify-center text-neutral-600 transition-colors duration-200 group-focus-within:text-neutral-200 pointer-events-none">
+                    <AlignLeft size={12} strokeWidth={2} />
                 </div>
 
+                {/* 2. THE INPUT SURFACE */}
                 <Textarea
-                    value={value ?? ''}
+                    value={value}
                     placeholder={field.placeholder || "Enter content..."}
                     disabled={field.disabled}
                     spellCheck={false}
                     className={cn(
-                        "min-h-[100px] w-full resize-y rounded-xl border-white/[0.05] bg-white/[0.02] pl-9 pr-4 py-2.5 text-[13px] font-mono leading-relaxed text-white/90 ring-offset-transparent transition-all placeholder:font-sans placeholder:text-neutral-600 focus-visible:border-white/20 focus-visible:bg-white/[0.04] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-30",
-                        "scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+                        "min-h-[80px] w-full resize-none rounded-md border-white/[0.04] bg-neutral-900/50 pl-9 pr-3 py-2",
+                        "text-[12px] font-mono leading-relaxed text-neutral-200 transition-all",
+                        "placeholder:text-neutral-700 focus-visible:border-white/10 focus-visible:bg-neutral-900 focus-visible:ring-0",
+                        "scrollbar-none shadow-inner"
                     )}
                     onChange={(e) => onChange(field.path, e.target.value)}
                 />
 
-                {/* Aesthetic Resize Corner Decoration */}
-                <div className="absolute bottom-1.5 right-1.5 pointer-events-none text-white/5 group-focus-within:text-white/20 transition-colors">
-                    <CornerDownRight size={10} />
+                {/* 3. METADATA RAIL */}
+                <div className="flex items-center justify-between mt-1.5 px-0.5">
+                    <div className="text-[9px] font-mono text-neutral-800 uppercase tracking-widest">
+                        Plaintext
+                    </div>
+                    <span className="text-[9px] font-mono text-neutral-700 tabular-nums tracking-tight">
+                        {value.length.toLocaleString()} chars
+                    </span>
                 </div>
 
-                {/* Sub-label for Character Count or Status (Optional) */}
-                {value && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute bottom-[-18px] right-1 flex items-center gap-1.5 px-1"
-                    >
-                        <span className="text-[9px] font-mono text-neutral-600 uppercase tracking-tighter">
-                            Length: {value.length}
-                        </span>
-                    </motion.div>
+                {/* 4. FOCUS INDICATOR BAR */}
+                {!field.disabled && (
+                    <div className="absolute left-0 top-3 h-0 w-[1.5px] bg-white/40 transition-all duration-300 group-focus-within:h-4" />
                 )}
-
-                {/* Ambient Glow */}
-                <div className="absolute inset-0 -z-10 rounded-xl bg-white/5 opacity-0 blur-2xl transition-opacity group-focus-within:opacity-10" />
             </div>
         </FieldWrapper>
     );

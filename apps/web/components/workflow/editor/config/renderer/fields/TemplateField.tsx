@@ -31,6 +31,7 @@ export function TemplateField({ field, values, onChange }: any) {
                 placeholder={field.placeholder}
                 disabled={field.disabled}
                 onChange={(val) => onChange(field.path, val)}
+                className={"max-h-[150px] h-full"}
             />
         </FieldWrapper>
     );

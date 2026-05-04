@@ -8,7 +8,7 @@ export const TRANSFORM_NODE_SCHEMA: NodeConfigSchema = {
             id: "transform-settings",
             title: "Data Transformation",
             description: "Write custom TypeScript/JavaScript code to manipulate data within the workflow.",
-            layout: "column",
+            layout: "dialog",
             fields: [
                 {
                     id: "code",

@@ -10,6 +10,9 @@ import { SwitchField } from "./fields/SwitchField";
 import { SelectField } from "./fields/SelectField";
 import { ObjectField } from "./fields/ObjectField";
 import { ArrayField } from "./fields/ArrayField";
+import { KeyValueField } from "./fields/KeyValueField";
+import { CodeField } from "./fields/CodeField";
+import { JsonField } from "./fields/JsonField";
 import { isFieldHidden } from "@/lib/config/path";
 import {TemplateField} from "@/components/workflow/editor/config/renderer/fields/TemplateField";
 
@@ -31,13 +34,13 @@ export function ConfigFieldRenderer({
             case "text":
             case "textarea":
             case "secret":
-            case "code":
-            case "json":
                 return <TextField field={field} values={values} onChange={onChange} />;
+            case "code":
+                return <CodeField field={field} values={values} onChange={onChange} />;
+            case "json":
+                return <JsonField field={field} values={values} onChange={onChange} />;
             case "template":
-                return (
-                    <TemplateField field={field} values={values} onChange={onChange}/>
-                );
+                return <TemplateField field={field} values={values} onChange={onChange} />;
             case "number":
                 return <NumberField field={field} values={values} onChange={onChange} />;
             case "switch":
@@ -49,6 +52,8 @@ export function ConfigFieldRenderer({
                 return <ObjectField field={field} values={values} onChange={onChange} />;
             case "array":
                 return <ArrayField field={field} values={values} onChange={onChange} />;
+            case "keyvalue":
+                return <KeyValueField field={field} values={values} onChange={onChange} />;
             default:
                 return null;
         }

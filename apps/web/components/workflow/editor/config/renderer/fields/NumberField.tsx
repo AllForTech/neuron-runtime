@@ -1,36 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Binary, ChevronUp, ChevronDown } from 'lucide-react';
+import { Binary, ChevronUp, ChevronDown, Hash } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { FieldWrapper } from '../FieldWrapper';
 import { NumberFieldSchema } from "@neuron/shared";
 import { getValueAtPath } from "@/lib/config/path";
+import { cn } from "@/lib/utils";
 
-interface NumberFieldProps {
+export function NumberField({ field, values, onChange }: {
     field: NumberFieldSchema;
     values: Record<string, any>;
     onChange: (path: string, value: number | undefined) => void;
-}
-
-export function NumberField({
-                                field,
-                                values,
-                                onChange,
-                            }: NumberFieldProps) {
+}) {
+    const [isFocused, setIsFocused] = useState(false);
     const value = getValueAtPath(values, field.path, field.defaultValue);
 
-    const increment = () => {
+    const handleStep = (direction: number) => {
         const current = value ?? 0;
-        const next = current + (field.step || 1);
+        const next = current + (direction * (field.step || 1));
         if (field.max !== undefined && next > field.max) return;
-        onChange(field.path, next);
-    };
-
-    const decrement = () => {
-        const current = value ?? 0;
-        const next = current - (field.step || 1);
         if (field.min !== undefined && next < field.min) return;
         onChange(field.path, next);
     };
@@ -41,49 +31,74 @@ export function NumberField({
             description={field.description}
             required={field.required}
         >
-            <div className="group relative flex items-center">
-                {/* Visual Anchor Icon */}
-                <div className="absolute left-3 flex items-center justify-center text-neutral-500 transition-colors group-focus-within:text-white">
-                    <Binary size={12} strokeWidth={2.5} />
-                </div>
-
-                <Input
-                    type="number"
-                    value={value ?? ''}
-                    placeholder={field.placeholder}
-                    disabled={field.disabled}
-                    min={field.min}
-                    max={field.max}
-                    step={field.step}
-                    className="h-10 w-full rounded-xl border-white/[0.05] bg-white/[0.02] pl-9 pr-12 text-[13px] font-medium tracking-tight text-white/90 ring-offset-transparent transition-all placeholder:text-neutral-600 focus-visible:border-white/20 focus-visible:bg-white/[0.04] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-30"
-                    onChange={(e) => {
-                        const val = e.target.value === '' ? undefined : Number(e.target.value);
-                        onChange(field.path, val);
+            <div className="relative w-full">
+                {/* Glass container */}
+                <motion.div 
+                    animate={{
+                        boxShadow: isFocused 
+                            ? "0 0 0 1px rgba(255,255,255,0.08), 0 0 20px -8px rgba(255,255,255,0.1)" 
+                            : "0 0 0 1px rgba(255,255,255,0.03)"
                     }}
-                />
-
-                {/* Custom Tactile Steppers */}
-                {!field.disabled && (
-                    <div className="absolute right-1.5 flex h-[calc(100%-12px)] flex-col gap-0.5 border-l border-white/5 pl-1.5">
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            onClick={increment}
-                            className="flex flex-1 items-center justify-center rounded-md px-1 text-neutral-500 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                            <ChevronUp size={10} strokeWidth={3} />
-                        </motion.button>
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            onClick={decrement}
-                            className="flex flex-1 items-center justify-center rounded-md px-1 text-neutral-500 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                            <ChevronDown size={10} strokeWidth={3} />
-                        </motion.button>
+                    className={cn(
+                        "relative flex items-center rounded-xl border transition-all duration-300 overflow-hidden",
+                        isFocused 
+                            ? "bg-white/[0.04] border-white/[0.1]" 
+                            : "bg-white/[0.015] border-white/[0.04] hover:bg-white/[0.02] hover:border-white/[0.06]"
+                    )}
+                >
+                    {/* Icon */}
+                    <div className={cn(
+                        "relative z-10 flex items-center justify-center ml-3 transition-all duration-200",
+                        isFocused ? "text-white" : "text-neutral-600"
+                    )}>
+                        <Hash size={12} strokeWidth={1.5} />
                     </div>
-                )}
 
-                {/* Focus Glow Background */}
-                <div className="absolute inset-0 -z-10 rounded-xl bg-white/5 opacity-0 blur-xl transition-opacity group-focus-within:opacity-20" />
+                    <Input
+                        type="number"
+                        value={value ?? ''}
+                        placeholder={field.placeholder || "0"}
+                        disabled={field.disabled}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        className={cn(
+                            "relative z-10 w-full bg-transparent border-none pl-3 pr-16 py-2.5 text-[12px] transition-all",
+                            "text-neutral-200 placeholder:text-neutral-700",
+                            "focus-visible:ring-0 focus-visible:ring-offset-0",
+                            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        )}
+                        onChange={(e) => {
+                            const val = e.target.value === '' ? undefined : Number(e.target.value);
+                            onChange(field.path, val);
+                        }}
+                    />
+
+                    {/* Integrated steppers */}
+                    {!field.disabled && (
+                        <div className="relative z-10 flex items-center mr-1">
+                            <button
+                                type="button"
+                                onClick={() => handleStep(1)}
+                                className={cn(
+                                    "flex items-center justify-center w-6 h-6 rounded-md transition-all",
+                                    "text-neutral-600 hover:text-white hover:bg-white/[0.08]"
+                                )}
+                            >
+                                <ChevronUp size={11} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleStep(-1)}
+                                className={cn(
+                                    "flex items-center justify-center w-6 h-6 rounded-md transition-all",
+                                    "text-neutral-600 hover:text-white hover:bg-white/[0.08]"
+                                )}
+                            >
+                                <ChevronDown size={11} />
+                            </button>
+                        </div>
+                    )}
+                </motion.div>
             </div>
         </FieldWrapper>
     );

@@ -2,95 +2,129 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, LayoutGrid, List } from 'lucide-react';
-import { NodeConfigSection } from "@neuron/shared";
+import { ChevronRight, Settings, Zap, Sparkles } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { getLayoutClass } from "./Layout";
 import { ConfigFieldRenderer } from "./ConfigFieldRenderer";
+import { DialogSectionRenderer } from "./sections/DialogSectionRenderer";
 
-interface ConfigSectionRendererProps {
-    section: NodeConfigSection;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void;
-}
-
-export function ConfigSectionRenderer({
-                                          section,
-                                          values,
-                                          onChange
-                                      }: ConfigSectionRendererProps) {
+export function ConfigSectionRenderer({ section, values, onChange }: any) {
     const [isCollapsed, setIsCollapsed] = useState(section.defaultCollapsed ?? false);
-
     const isCollapsible = section.collapsible !== false;
-    const Icon = section.layout === 'grid' ? LayoutGrid : List;
+
+    // Handle dialog layout specially
+    if (section.layout === "dialog") {
+        return (
+            <DialogSectionRenderer
+                section={section}
+                values={values}
+                onChange={onChange}
+            />
+        );
+    }
+
+    // Icon based on section type
+    const getSectionIcon = () => {
+        const id = section.id?.toLowerCase() || '';
+        if (id.includes('meta') || id.includes('general')) return Settings;
+        if (id.includes('execution') || id.includes('performance')) return Zap;
+        return Settings;
+    };
+    
+    const Icon = getSectionIcon();
 
     return (
-        <section className="group/section flex flex-col gap-4">
-            <div
-                className={cn(
-                    "flex items-center justify-between transition-opacity duration-300",
-                    isCollapsible ? "cursor-pointer" : "pointer-events-none"
-                )}
-                onClick={() => isCollapsible && setIsCollapsed(!isCollapsed)}
-            >
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <div className="flex h-5 w-5 items-center justify-center rounded-md bg-white/[0.03] border border-white/5 shadow-inner">
-                            <Icon size={10} className="text-neutral-500" />
-                        </div>
-                        {section.title && (
-                            <h3 className="text-[13px] font-bold tracking-tight text-white/90">
+        <div className="relative flex flex-col w-full">
+            {/* Glass container */}
+            <div className={cn(
+                "relative rounded-2xl border border-white/[0.04] bg-white/[0.02] backdrop-blur-sm transition-all duration-300",
+                "hover:border-white/[0.08] hover:bg-white/[0.03]"
+            )}>
+                {/* Subtle inner glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-neutral-950/30 pointer-events-none" />
+                
+                {/* Header */}
+                <button
+                    onClick={() => isCollapsible && setIsCollapsed(!isCollapsed)}
+                    className={cn(
+                        "relative flex items-center gap-3 w-full p-4 transition-all",
+                        !isCollapsible && "pointer-events-none"
+                    )}
+                >
+                    {/* Icon badge */}
+                    <div className={cn(
+                        "flex items-center justify-center w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] transition-all duration-300",
+                        isCollapsed ? "text-neutral-500" : "text-white shadow-[0_0_12px_-4px_rgba(255,255,255,0.15)]"
+                    )}>
+                        <Icon size={13} strokeWidth={1.5} />
+                    </div>
+                    
+                    {/* Title and description */}
+                    <div className="flex flex-col items-start text-left flex-1">
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-[11px] font-semibold tracking-wide text-neutral-300">
                                 {section.title}
                             </h3>
+                            {section.required && (
+                                <span className="text-[8px] font-bold text-red-400/60">REQUIRED</span>
+                            )}
+                        </div>
+                        {section.description && !isCollapsed && (
+                            <p className="text-[10px] text-neutral-600 mt-0.5 line-clamp-1">{section.description}</p>
                         )}
                     </div>
-                    {section.description && (
-                        <p className="text-[11px] leading-relaxed text-neutral-500 max-w-[90%]">
-                            {section.description}
-                        </p>
+                    
+                    {/* Collapse indicator */}
+                    {isCollapsible && (
+                        <motion.div 
+                            animate={{ rotate: isCollapsed ? 0 : 90 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center justify-center"
+                        >
+                            <ChevronRight size={14} className="text-neutral-600" />
+                        </motion.div>
                     )}
-                </div>
+                    
+                    {/* Divider line */}
+                    <div className="absolute bottom-0 left-4 right-4 h-px bg-white/[0.03]" />
+                </button>
 
-                {isCollapsible && (
-                    <motion.div
-                        animate={{ rotate: isCollapsed ? -90 : 0 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.02] border border-white/5 opacity-0 group-hover/section:opacity-100 transition-opacity"
-                    >
-                        <ChevronDown size={14} className="text-neutral-500" />
-                    </motion.div>
-                )}
-            </div>
-
-            <AnimatePresence initial={false}>
-                {!isCollapsed && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                        className="overflow-hidden"
-                    >
-                        <div className={cn(
-                            "relative rounded-2xl border border-white/[0.04] bg-white/[0.01] p-5 shadow-2xl",
-                            getLayoutClass(section.layout)
-                        )}>
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none rounded-2xl" />
-
-                            <div className="relative z-10 flex flex-col gap-6">
-                                {section.fields.map((field) => (
-                                    <ConfigFieldRenderer
-                                        key={field.path}
-                                        field={field}
-                                        values={values}
-                                        onChange={onChange}
-                                    />
+                {/* Content */}
+                <AnimatePresence>
+                    {!isCollapsed && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative px-4 pb-5"
+                        >
+                            <div className={cn(
+                                "grid gap-y-4",
+                                section.layout === "grid" && "grid-cols-2 gap-x-3",
+                                section.layout === "row" && "flex flex-row flex-wrap gap-3",
+                                section.layout === "column" || !section.layout && "flex flex-col gap-4"
+                            )}>
+                                {section.fields.map((field: any, idx: number) => (
+                                    <motion.div
+                                        key={field.path || field.id}
+                                        initial={{ opacity: 0, x: -4 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.02 }}
+                                        className="w-full"
+                                    >
+                                        <ConfigFieldRenderer
+                                            field={field}
+                                            values={values}
+                                            onChange={onChange}
+                                        />
+                                    </motion.div>
                                 ))}
                             </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </section>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
     );
 }

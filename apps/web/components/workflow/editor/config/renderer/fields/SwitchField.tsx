@@ -2,18 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ToggleRight, ToggleLeft } from 'lucide-react';
+import { ToggleRight, ToggleLeft, CheckCircle, Circle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { SwitchFieldSchema } from "@neuron/shared";
 import { getValueAtPath } from "@/lib/config/path";
 import { cn } from "@/lib/utils";
 
-/**
- * SwitchField
- * A sleek, high-contrast toggle component.
- * Designed to feel like a hardware instrument with tactile feedback
- * and state-dependent iconography.
- */
 export function SwitchField({ field, values, onChange }: {
     field: SwitchFieldSchema;
     values: Record<string, any>;
@@ -25,33 +19,42 @@ export function SwitchField({ field, values, onChange }: {
         <motion.div
             initial={false}
             animate={{
-                backgroundColor: value ? "rgba(255, 255, 255, 0.03)" : "rgba(255, 255, 255, 0.01)"
+                backgroundColor: value ? "rgba(255, 255, 255, 0.025)" : "rgba(255, 255, 255, 0.01)"
             }}
             className={cn(
-                "group relative flex items-center justify-between rounded-xl border border-white/[0.04] p-3 transition-all duration-300 hover:border-white/10",
-                value && "border-white/[0.08] shadow-[0_0_20px_-12px_rgba(255,255,255,0.2)]"
+                "group relative flex items-center justify-between rounded-xl border p-3.5 transition-all duration-300",
+                value 
+                    ? "border-white/[0.1] shadow-[0_0_20px_-8px_rgba(255,255,255,0.08)]" 
+                    : "border-white/[0.03] hover:border-white/[0.06]"
             )}
         >
-            <div className="z-10 flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                    {/* Status Icon Indicator */}
-                    <div className={cn(
-                        "transition-colors duration-300",
-                        value ? "text-white" : "text-neutral-600"
-                    )}>
-                        {value ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
-                    </div>
-
-                    <label className="text-[12px] font-bold tracking-tight text-white/90">
-                        {field.label}
-                    </label>
+            {/* Inner glow effect */}
+            <div className={cn(
+                "absolute inset-0 rounded-xl bg-gradient-to-r pointer-events-none transition-opacity duration-300",
+                value ? "from-white/[0.04] via-transparent to-white/[0.02] opacity-100" : "opacity-0"
+            )} />
+            
+            <div className="relative z-10 flex items-center gap-3">
+                {/* Status Icon */}
+                <div className={cn(
+                    "flex items-center justify-center w-6 h-6 rounded-md transition-all duration-300",
+                    value 
+                        ? "bg-white/[0.08] text-white" 
+                        : "bg-white/[0.03] text-neutral-600 group-hover:text-neutral-500"
+                )}>
+                    {value ? <CheckCircle size={12} strokeWidth={2} /> : <Circle size={12} strokeWidth={1.5} />}
                 </div>
 
-                {field.description && (
-                    <p className="pl-5 text-[10px] leading-relaxed text-neutral-500 transition-colors group-hover:text-neutral-400">
-                        {field.description}
-                    </p>
-                )}
+                <div className="flex flex-col gap-0.5">
+                    <label className="text-[12px] font-medium tracking-tight text-neutral-300 group-hover:text-white transition-colors">
+                        {field.label}
+                    </label>
+                    {field.description && (
+                        <p className="text-[10px] leading-relaxed text-neutral-600 group-hover:text-neutral-500 transition-colors">
+                            {field.description}
+                        </p>
+                    )}
+                </div>
             </div>
 
             <div className="relative z-10 flex items-center">
@@ -65,11 +68,6 @@ export function SwitchField({ field, values, onChange }: {
                     )}
                 />
             </div>
-
-            {/* Background Glow for active state */}
-            {value && (
-                <div className="absolute inset-0 z-0 bg-gradient-to-r from-white/[0.02] to-transparent pointer-events-none rounded-xl" />
-            )}
         </motion.div>
     );
 }

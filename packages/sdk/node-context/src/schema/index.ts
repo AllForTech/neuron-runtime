@@ -11,6 +11,14 @@ export const CONTEXT_NODE_SCHEMA: NodeConfigSchema = {
             layout: "column",
             fields: [
                 {
+                    id: "label",
+                    type: "text",
+                    path: "label",
+                    label: "Context Name",
+                    placeholder: "e.g., User Data Store",
+                    description: "A friendly name to identify this context."
+                },
+                {
                     id: "fields",
                     type: "object",
                     path: "fields",

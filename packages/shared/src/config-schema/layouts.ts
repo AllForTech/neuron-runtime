@@ -1,4 +1,5 @@
 export type ConfigLayoutType =
     | "column"
     | "row"
-    | "grid";
+    | "grid"
+    | "dialog";

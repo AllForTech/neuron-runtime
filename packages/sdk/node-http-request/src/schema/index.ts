@@ -41,25 +41,14 @@ export const HTTP_REQUEST_NODE_SCHEMA: NodeConfigSchema = {
             fields: [
                 {
                     id: "headers",
-                    type: "object",
+                    type: "keyvalue",
+                    valueType: "template",
                     path: "headers",
                     label: "Request Headers",
-                    fields: [
-                        {
-                            id: "header-key",
-                            type: "text",
-                            path: "key",
-                            label: "Key",
-                            placeholder: "Content-Type"
-                        },
-                        {
-                            id: "header-value",
-                            type: "template",
-                            path: "value",
-                            label: "Value",
-                            placeholder: "application/json"
-                        }
-                    ]
+                    placeholder: {
+                        key: "Content-Type",
+                        value: "application/json"
+                    }
                 }
             ]
         },

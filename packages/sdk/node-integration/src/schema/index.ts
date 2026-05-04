@@ -71,24 +71,14 @@ export const INTEGRATION_NODE_SCHEMA: NodeConfigSchema = {
             fields: [
                 {
                     id: "parameters",
-                    type: "object",
+                    type: "keyvalue",
+                    valueType: "template",
                     path: "parameters",
                     label: "Input Parameters",
-                    fields: [
-                        {
-                            id: "param-key",
-                            type: "text",
-                            path: "key",
-                            label: "Parameter Name"
-                        },
-                        {
-                            id: "param-value",
-                            type: "template",
-                            path: "value",
-                            label: "Value",
-                            placeholder: "Enter value or {{variable}}"
-                        }
-                    ]
+                    placeholder: {
+                        key: "channel",
+                        value: "#general"
+                    }
                 }
             ]
         },

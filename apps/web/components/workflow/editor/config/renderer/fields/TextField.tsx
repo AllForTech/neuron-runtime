@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Type, Lock, Fingerprint } from 'lucide-react';
+import { Eye, EyeOff, Type, Lock, Fingerprint, Hash } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { FieldWrapper } from '../FieldWrapper';
 import { TextFieldSchema } from "@neuron/shared";
@@ -10,29 +10,22 @@ import { getValueAtPath } from "@/lib/config/path";
 import { cn } from "@/lib/utils";
 import { TextareaField } from './TextareaField';
 
-/**
- * TextField
- * A high-performance input component that adapts based on the field type.
- * Includes specialized handling for secrets (passwords) with a toggle visibility
- * feature and distinctive visual cues for different data intents.
- */
 export function TextField({ field, values, onChange }: {
     field: TextFieldSchema;
     values: Record<string, any>;
     onChange: (path: string, value: string) => void;
 }) {
     const [showSecret, setShowSecret] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
     const value = getValueAtPath(values, field.path, field.defaultValue ?? "");
 
-    // Delegate to TextareaField if type is textarea
     if (field.type === "textarea") {
         return <TextareaField field={field} values={values} onChange={onChange} />;
     }
 
     const isSecret = field.type === "secret";
-
-    // Choose icon based on field intent
-    const Icon = isSecret ? Lock : (field.path.includes('id') || field.path.includes('key') ? Fingerprint : Type);
+    const Icon = isSecret ? Lock : (field.path.includes('id') || field.path.includes('key') ? Fingerprint : (field.path.includes('uuid') ? Hash : Type));
 
     return (
         <FieldWrapper
@@ -40,47 +33,72 @@ export function TextField({ field, values, onChange }: {
             description={field.description}
             required={field.required}
         >
-            <div className="group relative flex items-center">
-                {/* Visual Type Indicator */}
-                <div className="absolute left-3.5 flex items-center justify-center text-neutral-500 transition-colors group-focus-within:text-white pointer-events-none">
-                    <Icon size={12} strokeWidth={2.5} />
-                </div>
-
-                <Input
-                    type={isSecret && !showSecret ? "password" : "text"}
-                    value={value}
-                    placeholder={field.placeholder || "Enter value..."}
-                    disabled={field.disabled}
-                    spellCheck={false}
+            <div className="relative h-full w-full">
+                {/* Glass input container */}
+                <motion.div 
+                    animate={{
+                        boxShadow: isFocused 
+                            ? "0 0 0 1px rgba(255,255,255,0.08), 0 0 20px -8px rgba(255,255,255,0.1)" 
+                            : "0 0 0 1px rgba(255,255,255,0.03)"
+                    }}
                     className={cn(
-                        "h-10 w-full rounded-xl border-white/[0.05] bg-white/[0.02] pl-10 pr-10 text-[13px] font-medium tracking-tight text-white/90 ring-offset-transparent transition-all placeholder:text-neutral-600 focus-visible:border-white/20 focus-visible:bg-white/[0.04] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-30",
-                        isSecret && !showSecret && "font-mono tracking-widest text-[10px]"
+                        "relative flex items-center rounded-xl border transition-all duration-300 overflow-hidden",
+                        isFocused 
+                            ? "bg-white/[0.04] border-white/[0.1]" 
+                            : "bg-white/[0.015] border-white/[0.06] hover:bg-white/[0.02] hover:border-white/[0.06]"
                     )}
-                    onChange={(e) => onChange(field.path, e.target.value)}
-                />
+                >
+                    {/* Subtle gradient overlay */}
+                    <div className={cn(
+                        "absolute inset-0 bg-gradient-to-r from-white/[0.02] via-transparent to-white/[0.01] pointer-events-none opacity-0 transition-opacity",
+                        isFocused && "opacity-100"
+                    )} />
+                    
+                    {/* Icon */}
+                    <div className={cn(
+                        "relative z-10 flex items-center justify-center ml-3 transition-all duration-200",
+                        isFocused ? "text-white" : "text-neutral-600"
+                    )}>
+                        <Icon size={12} strokeWidth={1.5} />
+                    </div>
 
-                {/* Secret Visibility Toggle */}
-                <AnimatePresence>
-                    {isSecret && (
-                        <motion.button
-                            type="button"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => setShowSecret(!showSecret)}
-                            className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-md text-neutral-500 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                            {showSecret ? <EyeOff size={12} /> : <Eye size={12} />}
-                        </motion.button>
-                    )}
-                </AnimatePresence>
+                    <Input
+                        ref={inputRef}
+                        type={isSecret && !showSecret ? "password" : "text"}
+                        value={value}
+                        placeholder={field.placeholder || "Enter value..."}
+                        disabled={field.disabled}
+                        spellCheck={false}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        className={cn(
+                            "relative z-10 w-full h-full bg-transparent border-none pl-3 pr-10 py-2.5 text-[12px] transition-all",
+                            "text-neutral-200 placeholder:text-neutral-700",
+                            "focus-visible:ring-0 focus-visible:ring-offset-0",
+                            isSecret && !showSecret && "font-mono tracking-[0.2em] text-[11px]"
+                        )}
+                        onChange={(e) => onChange(field.path, e.target.value)}
+                    />
 
-                {/* Status Bar (Active Glow) */}
-                <div className="absolute -left-[1px] top-1/4 h-1/2 w-[2px] rounded-full bg-white opacity-0 transition-all duration-300 group-focus-within:opacity-100" />
-
-                {/* Ambient Depth Glow */}
-                <div className="absolute inset-0 -z-10 rounded-xl bg-white/5 opacity-0 blur-xl transition-opacity group-focus-within:opacity-20" />
+                    {/* Secret toggle */}
+                    <AnimatePresence>
+                        {isSecret && (
+                            <motion.button
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                type="button"
+                                onClick={() => setShowSecret(!showSecret)}
+                                className={cn(
+                                    "relative z-10 flex items-center justify-center mr-2 p-1.5 rounded-lg transition-all",
+                                    "text-neutral-600 hover:text-neutral-300 hover:bg-white/[0.04]"
+                                )}
+                            >
+                                {showSecret ? <EyeOff size={12} /> : <Eye size={12} />}
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
             </div>
         </FieldWrapper>
     );

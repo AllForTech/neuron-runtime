@@ -1,11 +1,7 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import {
-    getValueAtPath,
-    removeValueByPath,
-    setValueAtPath,
-} from '@/lib/config/path';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import { getValueAtPath, removeValueByPath, setValueAtPath } from '@/lib/config/path';
 
 interface UseNodeConfigStateProps<T> {
     initialValues: T;
@@ -18,60 +14,38 @@ export function useNodeConfigState<T extends Record<string, any>>({
                                                                   }: UseNodeConfigStateProps<T>) {
     const [values, setValues] = useState<T>(initialValues);
 
-    const updateValue = useCallback(
-        (path: string, value: any) => {
-            setValues((prev) => {
-                const next = setValueAtPath(prev, path, value);
+    // Track if this is the first render to avoid firing onChange on mount
+    const isFirstMount = useRef(true);
 
-                onChange?.(next);
+    // Side effect: Notify the parent ONLY after local state has updated
+    useEffect(() => {
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+        onChange?.(values);
+    }, [values, onChange]);
 
-                return next;
-            });
-        },
-        [onChange]
-    );
+    const updateValue = useCallback((path: string, value: any) => {
+        setValues((prev) => setValueAtPath({ ...prev }, path, value));
+    }, []);
 
-    const removeValue = useCallback(
-        (path: string) => {
-            setValues((prev) => {
-                const next = removeValueByPath(prev, path);
+    const removeValue = useCallback((path: string) => {
+        setValues((prev) => removeValueByPath({ ...prev }, path));
+    }, []);
 
-                onChange?.(next);
+    const getValue = useCallback(<TValue = any>(path: string): TValue | undefined => {
+        return getValueAtPath<TValue>(values, path);
+    }, [values]);
 
-                return next;
-            });
-        },
-        [onChange]
-    );
+    const reset = useCallback(() => setValues(initialValues), [initialValues]);
 
-    const getValue = useCallback(
-        <TValue = any>(path: string): TValue | undefined => {
-            return getValueAtPath<TValue>(values, path);
-        },
-        [values]
-    );
-
-    const reset = useCallback(() => {
-        setValues(initialValues);
-    }, [initialValues]);
-
-    return useMemo(
-        () => ({
-            values,
-
-            getValue,
-            updateValue,
-            removeValue,
-
-            reset,
-            setValues,
-        }),
-        [
-            values,
-            getValue,
-            updateValue,
-            removeValue,
-            reset,
-        ]
-    );
+    return useMemo(() => ({
+        values,
+        getValue,
+        updateValue,
+        removeValue,
+        reset,
+        setValues,
+    }), [values, getValue, updateValue, removeValue, reset]);
 }
