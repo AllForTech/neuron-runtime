@@ -23,13 +23,13 @@ export function TooltipButton({
       <button
         onClick={onClick}
         className={cn(
-          'flex h-8 w-full items-center justify-center rounded-xl p-1 transition-all duration-200',
+          'flex h-5 w-full items-center justify-center rounded-xl p-1 transition-all duration-200',
           'text-neutral-400 hover:bg-white/10 hover:text-white active:scale-90',
           'border border-transparent hover:border-white/10',
           className
         )}
       >
-        <Icon size={18} strokeWidth={1.5} />
+        <Icon size={14} strokeWidth={1.5} />
       </button>
 
       {/* Premium Tooltip Label */}
@@ -37,7 +37,7 @@ export function TooltipButton({
         className={cn(
           'pointer-events-none absolute z-50 hidden transition-all duration-300 group-hover:block',
           'rounded-lg border border-white/10 bg-neutral-900/90 px-3 py-1.5 shadow-2xl backdrop-blur-md',
-          'text-[10px] font-bold tracking-[0.15em] whitespace-nowrap text-white uppercase',
+          'text-[9px] font-bold tracking-[0.15em] whitespace-nowrap text-white uppercase',
           side === 'right' ? 'left-14' : 'right-14'
         )}
       >

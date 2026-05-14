@@ -56,7 +56,7 @@ export function UpstreamNodePicker({
     <Command
       id={'hide-scrollbar'}
       className={cn(
-        'animate-in fade-in zoom-in-95 w-72 overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 p-0.5 shadow-2xl transition-all duration-100',
+        'animate-in fade-in zoom-in-95 w-72 overflow-hidden rounded-md border border-neutral-800 bg-neutral-900! p-0.5 shadow-2xl transition-all duration-100',
         className
       )}
     >
@@ -198,7 +198,7 @@ export function UpstreamNodePicker({
           className="group flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[10px] text-neutral-400 transition-all hover:bg-neutral-800 hover:text-white"
         >
           <div className="flex items-center gap-2">
-            <Plus className="h-3 w-3 text-neutral-600 group-hover:text-blue-400" />
+            <Plus className="h-3 w-3 text-neutral-600 group-hover:text-white/90" />
             <span>Add external data source...</span>
           </div>
           <ExternalLink className="h-2.5 w-2.5 opacity-0 group-hover:opacity-100" />

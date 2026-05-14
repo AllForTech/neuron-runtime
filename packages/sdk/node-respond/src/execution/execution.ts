@@ -1,4 +1,4 @@
-import {NodeExecutor, NodeExecutorContext} from "@neuron/shared";
+import {NodeExecutor, NodeExecutorContext, transformToObject} from "@neuron/shared";
 import {RespondNodeConfig} from "../index.js";
 
 export const respondNodeExecutor: NodeExecutor = async ({
@@ -9,6 +9,8 @@ export const respondNodeExecutor: NodeExecutor = async ({
 
     const { statusCode, body, headers } = config as RespondNodeConfig;
 
+    const formattedHeaders = transformToObject(headers, { isHeader: true });
+
     console.log("Respond Node Config received:", config);
 
     return {
@@ -18,7 +20,7 @@ export const respondNodeExecutor: NodeExecutor = async ({
             status: Number(statusCode) || 200,
             headers: {
                 "Content-Type": "application/json",
-                ...headers
+                ...formattedHeaders
             },
             body: body
         }

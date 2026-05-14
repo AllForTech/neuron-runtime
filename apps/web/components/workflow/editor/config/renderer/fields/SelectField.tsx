@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Check, MousePointerClick, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -49,16 +49,16 @@ export function SelectField({
                         )}
                     >
                         <div className="flex items-center gap-2.5 overflow-hidden">
-                            <MousePointerClick size={11} className="shrink-0 text-neutral-600 group-hover:text-neutral-400 transition-colors" />
+                            {/*<ChevronDown size={11} className="shrink-0 text-neutral-600 group-hover:text-neutral-400 transition-colors" />*/}
                             <SelectValue 
-                                placeholder={field.placeholder || "Select option..."}
+                                placeholder={field.placeholder as string || "Select option..."}
                                 className="text-neutral-400"
                             />
                         </div>
-                        <ChevronDown 
-                            size={12} 
-                            className="ml-auto text-neutral-600 group-hover:text-neutral-400 transition-colors" 
-                        />
+                        {/*<ChevronDown */}
+                        {/*    size={12} */}
+                        {/*    className="ml-auto text-neutral-600 group-hover:text-neutral-400 transition-colors" */}
+                        {/*/>*/}
                     </SelectTrigger>
 
                     <SelectContent

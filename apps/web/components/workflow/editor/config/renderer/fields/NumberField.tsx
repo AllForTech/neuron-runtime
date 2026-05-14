@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Binary, ChevronUp, ChevronDown, Hash } from 'lucide-react';
+import { Hash, ChevronUp, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { FieldWrapper } from '../FieldWrapper';
 import { NumberFieldSchema } from "@neuron/shared";
@@ -57,7 +57,7 @@ export function NumberField({ field, values, onChange }: {
                     <Input
                         type="number"
                         value={value ?? ''}
-                        placeholder={field.placeholder || "0"}
+                        placeholder={field.placeholder as string || "0"}
                         disabled={field.disabled}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}

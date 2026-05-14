@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export function FieldWrapper({ label, description, required, children, className }: any) {
     return (
-        <div className={cn("flex flex-col overflow-visible gap-2 w-full group", className)}>
+        <div className={cn("flex flex-col overflow-hidden gap-2 w-full group", className)}>
             {(label || description) && (
                 <div className="flex flex-col gap-1 pl-0.5">
                     {label && (
@@ -22,7 +22,7 @@ export function FieldWrapper({ label, description, required, children, className
                     )}
                 </div>
             )}
-            <div className="w-full">
+            <div className="w-full overflow-hidden">
                 {children}
             </div>
         </div>

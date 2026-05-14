@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { TemplateTextarea } from '@/components/workflow/editor/TemplateTextarea';
 import { FieldWrapper } from '../FieldWrapper';
 import { getAvailableUpstreamNodes } from '@/lib/utils';
@@ -9,7 +9,6 @@ import {useWorkflowEditor} from "@/hooks/workflow/useWorkflowEditor";
 export function TemplateField({ field, values, onChange }: any) {
     const { editorState: { graph: { nodes, edges }}, selectedNode } = useWorkflowEditor();
 
-    // 1. Calculate accessible variables based on the currently selected node
     const availableVariables = useMemo(() => {
         if (!selectedNode || !nodes[selectedNode.id]) return [];
 
@@ -31,7 +30,7 @@ export function TemplateField({ field, values, onChange }: any) {
                 placeholder={field.placeholder}
                 disabled={field.disabled}
                 onChange={(val) => onChange(field.path, val)}
-                className={"max-h-[150px] h-full"}
+                className={"min-h-[120px] h-full"}
             />
         </FieldWrapper>
     );

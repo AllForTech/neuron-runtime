@@ -6,11 +6,10 @@ import { NodeHandle } from './NodeHandle';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_OUTPUTS = [
-    { id: 'success', label: 'Success', color: 'bg-green-500' },
-    { id: 'error', label: 'Error', color: 'bg-red-500' },
-    { id: 'timeout', label: 'Timeout', color: 'bg-yellow-500' },
-    { id: 'retry_exhausted', label: 'Retry Failed', color: 'bg-orange-500' },
-    { id: 'skipped', label: 'Skipped', color: 'bg-gray-500' },
+    { id: 'success', label: 'Success' },
+    { id: 'error', label: 'Error' },
+    { id: 'timeout', label: 'Timeout' },
+    { id: 'retry_exhausted', label: 'Retry Failed' },
 ];
 
 interface Props {
@@ -22,49 +21,34 @@ export function ExecutionHandlesRenderer({ node, enabled }: Props) {
     const active = enabled || DEFAULT_OUTPUTS.map(o => o.id);
 
     return (
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex flex-col justify-between py-3">
-            {/* SUCCESS (top primary output) */}
-            <div className="pointer-events-auto">
-                <NodeHandle
-                    node={node}
-                    type="source"
-                    position={Position.Right}
-                    id="success"
-                    className={cn('bg-green-500 hover:bg-green-400')}
-                />
-            </div>
-
-            {/* OTHER OUTPUTS */}
-            <div className="flex flex-col gap-3 pointer-events-auto">
-                {DEFAULT_OUTPUTS.filter(o => o.id !== 'success' && active.includes(o.id)).map(out => (
-                    <div key={out.id} className="flex items-center gap-2">
-                        <NodeHandle
-                            node={node}
-                            type="source"
-                            position={Position.Right}
-                            id={out.id}
-                            className={cn(out.color, 'opacity-80 hover:opacity-100')}
-                        />
-
-                        <span className="text-[9px] text-neutral-400 uppercase">
-              {out.label}
-            </span>
-                    </div>
-                ))}
-            </div>
-
-            {/* ADD BUTTON (future expansion UI only) */}
-            <div className="pointer-events-auto mt-3 flex justify-end">
-                <button
-                    className="text-[10px] text-neutral-500 hover:text-white"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('open output selector');
-                    }}
+        <div className={cn(
+            "absolute -right-7.5 inset-y-0 flex flex-col justify-center gap-6 py-4",
+            "group-hover:scale-110 delay-700 transition-all duration-300 ease-in-out translate-x-[-4px] group-hover:translate-x-0",
+            "pointer-events-none"
+        )}>
+            {DEFAULT_OUTPUTS.filter(o => active.includes(o.id)).map((out) => (
+                <div
+                    key={out.id}
+                    className="pointer-events-auto relative flex items-center justify-center group/handle"
                 >
-                    + output
-                </button>
-            </div>
+                    <span className={cn(
+                        "absolute left-[300%] whitespace-nowrap rounded-md bg-neutral-900 border border-white/15 px-2 py-1",
+                        "text-[10px] font-bold uppercase tracking-tighter text-neutral-300 shadow-2xl",
+                        "opacity-0 scale-95 group-hover/handle:opacity-100 group-hover/handle:scale-100 transition-all duration-150"
+                    )}>
+                        {out.label}
+                    </span>
+                    
+                    <NodeHandle
+                        node={node}
+                        type="source"
+                        position={Position.Right}
+                        id={out.id}
+                    />
+
+                    <div className="absolute right-2 w-4.5 h-[2px] bg-neutral-500 -z-10" />
+                </div>
+            ))}
         </div>
     );
 }

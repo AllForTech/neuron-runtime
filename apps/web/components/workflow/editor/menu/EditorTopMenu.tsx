@@ -16,7 +16,7 @@ export function EditorTopMenu() {
 
   return (
     <PanelWrapper position="top-center" width="w-auto" className="mt-6">
-      <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-neutral-900/50 p-1 shadow-2xl backdrop-blur-xl">
+      <div className="flex items-center gap-3 rounded-lg max-h-[35px] border border-white/5 bg-neutral-900/50 p-1 shadow-2xl backdrop-blur-xl">
         <div className="border-r border-white/10 px-4">
           <p className="text-[8px] font-bold tracking-widest text-neutral-500 uppercase">
             Sequence
@@ -31,9 +31,9 @@ export function EditorTopMenu() {
             onClick={handleRunWorkflow}
             disabled={isRunning}
             variant="ghost"
-            className="h-full gap-2 rounded-xl px-4 text-xs font-semibold text-neutral-300 transition-all hover:text-white"
+            className="h-full gap-2 rounded-lg px-4 text-xs font-semibold text-neutral-300 transition-all hover:text-white"
           >
-            <Play size={14} className={isRunning ? 'animate-pulse' : ''} />
+            <Play size={12} className={isRunning ? 'animate-pulse' : ''} />
             Execute
           </Button>
           <Button
@@ -44,7 +44,7 @@ export function EditorTopMenu() {
               !isValid && 'opacity-50 grayscale'
             )}
           >
-            <Rocket size={14} />
+            <Rocket size={12} />
             {isValid ? 'Deploy' : 'Fix Errors to Deploy'}
           </Button>
         </div>

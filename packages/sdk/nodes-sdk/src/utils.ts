@@ -10,7 +10,7 @@ export function buildSharedNodeSchema(): NodeConfigSection[] {
             id: "shared-meta",
             title: "General Information",
             description: "Identify this node within your workflow canvas.",
-            layout: "grid",
+            layout: "column",
             collapsible: true,
             fields: [
                 {
@@ -112,7 +112,7 @@ export function buildSharedNodeSchema(): NodeConfigSection[] {
             description: "How this node interacts with global context.",
             collapsible: true,
             defaultCollapsed: true,
-            layout: "grid",
+            layout: "column",
             fields: [
                 {
                     id: "persistToContext",
@@ -122,7 +122,7 @@ export function buildSharedNodeSchema(): NodeConfigSection[] {
                 },
                 {
                     id: "contextNodeId",
-                    type: "text",
+                    type: "template",
                     path: "contextNodeId",
                     label: "Target Context Node ID",
                     placeholder: "UUID",
@@ -138,7 +138,7 @@ export function buildSharedNodeSchema(): NodeConfigSection[] {
                 },
                 {
                     id: "outputSchema",
-                    type: "text",
+                    type: "template",
                     path: "outputSchema",
                     label: "Output Schema Reference",
                     placeholder: "v1/schema"

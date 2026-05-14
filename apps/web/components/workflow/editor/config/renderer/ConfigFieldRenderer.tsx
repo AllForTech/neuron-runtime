@@ -29,36 +29,6 @@ export function ConfigFieldRenderer({
                                     }: ConfigFieldRendererProps) {
     const isHidden = isFieldHidden(field.hidden, values);
 
-    const renderField = () => {
-        switch (field.type) {
-            case "text":
-            case "textarea":
-            case "secret":
-                return <TextField field={field} values={values} onChange={onChange} />;
-            case "code":
-                return <CodeField field={field} values={values} onChange={onChange} />;
-            case "json":
-                return <JsonField field={field} values={values} onChange={onChange} />;
-            case "template":
-                return <TemplateField field={field} values={values} onChange={onChange} />;
-            case "number":
-                return <NumberField field={field} values={values} onChange={onChange} />;
-            case "switch":
-                return <SwitchField field={field} values={values} onChange={onChange} />;
-            case "select":
-            case "multiselect":
-                return <SelectField field={field} values={values} onChange={onChange} />;
-            case "object":
-                return <ObjectField field={field} values={values} onChange={onChange} />;
-            case "array":
-                return <ArrayField field={field} values={values} onChange={onChange} />;
-            case "keyvalue":
-                return <KeyValueField field={field} values={values} onChange={onChange} />;
-            default:
-                return null;
-        }
-    };
-
     return (
         <AnimatePresence mode="wait">
             {!isHidden && (
@@ -75,7 +45,36 @@ export function ConfigFieldRenderer({
                     }}
                     className="relative w-full"
                 >
-                    {renderField()}
+                    {(field.type === "text" || field.type === "textarea" || field.type === "secret") && (
+                        <TextField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "code" && (
+                        <CodeField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "json" && (
+                        <JsonField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "template" && (
+                        <TemplateField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "number" && (
+                        <NumberField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "switch" && (
+                        <SwitchField field={field} values={values} onChange={onChange} />
+                    )}
+                    {(field.type === "select" || field.type === "multiselect") && (
+                        <SelectField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "object" && (
+                        <ObjectField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "array" && (
+                        <ArrayField field={field} values={values} onChange={onChange} />
+                    )}
+                    {field.type === "keyvalue" && (
+                        <KeyValueField field={field} values={values} onChange={onChange} />
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>

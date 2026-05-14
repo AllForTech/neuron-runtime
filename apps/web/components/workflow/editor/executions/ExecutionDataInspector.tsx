@@ -5,58 +5,60 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JsonRenderer } from '@/components/JsonRenederer';
 
 export function ExecutionDataInspector({ selectedLog }: { selectedLog: any }) {
+  const hasError = selectedLog?.error;
+
   return (
     <Tabs defaultValue="output" className="w-full">
-      <TabsList className="mb-4 w-fit border border-neutral-800 bg-neutral-900 p-0.5">
+      <TabsList className="mb-3 w-fit border border-white/10 bg-white/[0.02] p-0.5">
         <TabsTrigger
           value="input"
-          className="px-4 py-1.5 text-[10px] tracking-widest uppercase data-[state=active]:bg-white/10"
+          className="px-3 py-1.5 text-[10px] data-[state=active]:bg-white/10 data-[state=active]:text-primary"
         >
-          <Box className="mr-2 h-3 w-3" /> Input
+          <Box className="mr-1.5 h-3 w-3" /> Input
         </TabsTrigger>
         <TabsTrigger
           value="output"
-          className="px-4 py-1.5 text-[10px] tracking-widest uppercase data-[state=active]:bg-white/10"
+          className="px-3 py-1.5 text-[10px] data-[state=active]:bg-white/10 data-[state=active]:text-primary"
         >
-          <Database className="mr-2 h-3 w-3 text-emerald-500" /> Output
+          <Database className="mr-1.5 h-3 w-3 text-emerald-500" /> Output
         </TabsTrigger>
-        {selectedLog.error && (
+        {hasError && (
           <TabsTrigger
             value="error"
-            className="px-4 py-1.5 text-[10px] tracking-widest text-red-400 uppercase"
+            className="px-3 py-1.5 text-[10px] text-red-400 data-[state=active]:bg-red-500/10"
           >
-            <AlertCircle className="mr-2 h-3 w-3" /> Error
+            <AlertCircle className="mr-1.5 h-3 w-3" /> Error
           </TabsTrigger>
         )}
       </TabsList>
 
       <TabsContent value="input" className="mt-0">
-        <div className="overflow-hidden rounded-xl">
+        <div className="rounded-lg border border-white/5 bg-neutral-950/50 p-2">
           <JsonRenderer
             data={selectedLog.input || {}}
-            maxHeight="max-h-[300px]"
-            className="no-scrollbar m-0! max-h-[500px] min-h-[150px] max-w-full overflow-x-auto border-0! bg-transparent! text-[11px]"
+            maxHeight="max-h-[200px]"
+            className="max-h-[200px] text-[11px]"
           />
         </div>
       </TabsContent>
 
       <TabsContent value="output" className="mt-0">
-        <div className="overflow-hidden rounded-xl border border-white/5 bg-neutral-950 p-2">
+        <div className="rounded-lg border border-white/5 bg-neutral-950/50 p-2">
           <JsonRenderer
             data={selectedLog.output || {}}
-            maxHeight="max-h-[300px]"
-            className="no-scrollbar h-fit! max-h-[500px] max-w-full overflow-x-auto text-[11px]"
+            maxHeight="max-h-[200px]"
+            className="max-h-[200px] text-[11px]"
           />
         </div>
       </TabsContent>
 
-      {selectedLog.error && (
+      {hasError && (
         <TabsContent value="error" className="mt-0">
-          <div className="rounded-xl border border-red-500/15 bg-red-500/5 p-4 font-mono text-[11px] leading-relaxed text-red-400">
+          <div className="rounded-lg border border-red-500/15 bg-red-500/5 p-3 text-[11px] text-red-400">
             <JsonRenderer
               data={selectedLog?.error || {}}
-              maxHeight="max-h-[300px]"
-              className="no-scrollbar h-fit max-h-[500px]! max-w-full overflow-x-auto text-[11px]"
+              maxHeight="max-h-[200px]"
+              className="max-h-[200px]"
             />
           </div>
         </TabsContent>

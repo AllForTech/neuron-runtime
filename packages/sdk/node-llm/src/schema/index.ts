@@ -49,10 +49,27 @@ export const LLM_NODE_SCHEMA: NodeConfigSchema = {
             ]
         },
         {
+            id: "output-schema",
+            title: "Output Schema",
+            description: "Define the output schema of the Ai respond.",
+            layout: "dialog",
+            hidden: (values) => values.jsonMode === true,
+            fields: [
+                {
+                    id: "outputSchema",
+                    type: "template",
+                    path: "outputSchema",
+                    label: "Respond Schema",
+                    placeholder: "Use json or zod schema",
+                    description: "Provide an output schema for the Ai respond.",
+                }
+            ]
+        },
+        {
             id: "prompt-settings",
             title: "Prompts",
             description: "Define the personality and instructions for the AI.",
-            layout: "column",
+            layout: "dialog",
             fields: [
                 {
                     id: "systemPrompt",

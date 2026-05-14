@@ -145,17 +145,23 @@ export function TemplateTextarea({
         placeholder={placeholder}
         className={cn(
           'w-full ' +
-            ' min-h-[30px] ' +
-            ' resize-none ' +
-            ' rounded-md ' +
+            ' min-h-[120px] ' +
+            ' resize-y ' +
+            ' rounded-lg ' +
             ' border ' +
-            ' border-neutral-800 ' +
-            ' bg-neutral-950 ' +
-            ' px-2 ' +
-            ' py-1 ' +
+            ' border-white/[0.06] ' +
+            ' bg-white/[0.02] ' +
+            ' px-3 ' +
+            ' py-2 ' +
             ' text-xs ' +
-            ' text-neutral-200 ' +
-            ' outline-none',
+            ' text-neutral-300 ' +
+            ' placeholder:text-neutral-600 ' +
+            ' outline-none ' +
+            ' focus:ring-1 ' +
+            ' focus:ring-white/[0.08] ' +
+            ' focus:border-white/[0.12] ' +
+            ' transition-all ' +
+            ' duration-200',
           className
         )}
       />

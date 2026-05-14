@@ -10,7 +10,6 @@ import React, {
     useState,
 } from 'react';
 import { useParams } from 'next/navigation';
-// import { WorkflowEditorAction } from '@/types/index';
 import type {
     NodeDefinition,
     NodeType,
@@ -19,7 +18,8 @@ import type {
     WorkflowNode,
 } from '@neuron/shared';
 import { DeployedWorkflow, Execution, ExecutionLog, Workflow as WorkflowType } from "@neuron/db";
-import { NodeTemplate, WorkflowEditorActionType } from '@/constants';
+import { WorkflowEditorActionType, defaultEditorUIState, editorUIReducer } from '@/constants';
+import type { EditorUIAction, EditorUIState, PanelId } from '@/constants/editor-panel';
 import { Edge, Node, useReactFlow } from 'reactflow';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -42,11 +42,15 @@ import {
 } from "@neuron/client";
 import { nodeCatalog } from '@neuron/nodes/client';
 
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'retrying';
+
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
     workflowEditorDispatch: (WorkflowEditorAction: any) => void;
     runtimeState: RuntimeState;
     runtimeDispatch: (RuntimeAction: RuntimeAction) => void;
+    editorUIState: EditorUIState;
+    editorUIDispatch: (action: EditorUIAction) => void;
     selectedNode: Node | null | undefined;
     setSelectedNode: (selectedNode: Node | null | undefined) => void;
     isSheetOpen: boolean;
@@ -64,6 +68,8 @@ export type WorkflowEditorContextType = {
     isWorkflowLoading: boolean;
     setIsWorkflowLoading: (isWorkflowLoading: boolean) => void;
     isWorkflowSaving: boolean;
+    saveStatus: SaveStatus;
+    retryCount: number;
     isRunning: boolean;
     isDeploying: boolean;
     isExecutionsSheetOpen: boolean;
@@ -86,6 +92,7 @@ export type WorkflowEditorContextType = {
     isLogsLoading: boolean;
     setIsLogsLoading: (val: boolean) => void;
     nodeCatalog: NodeDefinition[];
+    onRunComplete: () => void;
 };
 
 export interface IWorkflowEditorState {
@@ -125,13 +132,19 @@ export const initialRuntimeState: RuntimeState = {
 
 export const WorkflowEditorContext = createContext<WorkflowEditorContextType | null>(null);
 
+const RETRY_DELAY_MS = [1000, 3000, 7000, 15000, 30000];
+
 export function WorkflowEditorProvider({ children }: { children: React.ReactNode }) {
     const workflowId = useParams().workflowId as string;
     const { fitView, addNodes, addEdges } = useReactFlow();
     const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+    const retryTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const [isWorkflowLoading, setIsWorkflowLoading] = useState(false);
     const [isWorkflowSaving, setIsWorkflowSaving] = useState(false);
+    const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+    const [retryCount, setRetryCount] = useState(0);
+
     const [isRunning, setIsRunning] = useState(false);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [sheetOpen, setSheetOpen] = useState(false);
@@ -145,6 +158,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     const [editorState, workflowEditorDispatch] = useReducer(workflowEditorReducer, initialState);
     const [runtimeState, runtimeDispatch] = useReducer(runtimeReducer, initialRuntimeState);
+    const [editorUIState, editorUIDispatch] = useReducer(editorUIReducer, defaultEditorUIState);
 
     const [selectedNode, setSelectedNode] = useState<Node | null | undefined>();
     const [selectedHandle, setSelectedHandle] = useState<string | null>(null);
@@ -166,7 +180,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.ADD_NODE:
                 return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.payload.id]: action.payload } }, isDirty: true };
             case WorkflowEditorActionType.UPDATE_NODE:
-                return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.id]: { ...state.graph.nodes[action.id], config: { ...state.graph.nodes[action.id].config, ...action.payload } } } }, isDirty: true };
+                return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.id]: { ...state.graph.nodes[action.id], config: { ...action.payload } } } }, isDirty: true };
             case WorkflowEditorActionType.UPDATE_NODE_POSITION: {
                 const node = state.graph.nodes[action.id];
                 if (!node) return state;
@@ -237,13 +251,17 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     }
 
-    const rfNodesData = useMemo(() => {
-        return Object.values(editorState.graph.nodes).map((node) => toReactFlowNode(node));
-    }, [editorState.graph.nodes]);
-
     const rfNodes = useMemo(() => {
-        return rfNodesData.map((node) => ({ ...node, selected: selectedNode?.id === node.id }));
-    }, [rfNodesData, selectedNode?.id]);
+        return Object.values(editorState.graph.nodes).map((node) => {
+            const isSelected = selectedNode?.id === node.id;
+            const rfNode = toReactFlowNode(node);
+            return {
+                ...rfNode,
+                selected: isSelected,
+                data: { ...rfNode.data, label: node.type }
+            };
+        });
+    }, [editorState.graph.nodes, selectedNode?.id]);
 
     const rfEdges = useMemo(() => {
         return Object.values(editorState.graph.edges).map((edge) => {
@@ -253,8 +271,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 type: 'default',
                 animated: isActive,
                 style: {
-                    stroke: isActive ? '#ffffff' : '#3f3f46',
-                    strokeWidth: isActive ? 3 : 2,
+                    stroke: isActive ? '#ffffff' : '#c8c8c8',
+                    strokeWidth: isActive ? 5 : 4,
                     transition: 'stroke 0.4s ease, stroke-width 0.4s ease',
                     opacity: 1,
                 },
@@ -264,7 +282,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     useWorkflowRealtime(workflowId, workflowEditorDispatch, runtimeDispatch);
 
-    /** Fetches the current Supabase session token */
     const getSession = useCallback(async () => {
         const supabase = createClient();
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -272,7 +289,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         return session.access_token;
     }, []);
 
-    /** Loads the workflow graph, executions, and deployment status */
     const loadWorkflow = async () => {
         if (isLoadingRef.current) return;
         isLoadingRef.current = true;
@@ -311,19 +327,29 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
-    /** Persists the current Dexie draft to the cloud database */
-    const saveWorkflowGraph = async () => {
+    const saveWorkflowGraph = async (attempt = 0) => {
         if (!editorState.graph.nodes || isLoadingRef.current) return;
-        if (isSaving.current) {
+
+        if (isSaving.current && attempt === 0) {
             pendingSave.current = true;
             return;
         }
+
         isSaving.current = true;
+        setRetryCount(attempt);
+
         try {
+            setSaveStatus(attempt > 0 ? 'retrying' : 'saving');
             setIsWorkflowSaving(true);
+
             const token = await getSession();
             const localDraft = await db.drafts.get(workflowId);
-            if (!localDraft) return;
+            if (!localDraft) {
+                setSaveStatus('idle');
+                setIsWorkflowSaving(false);
+                isSaving.current = false;
+                return;
+            }
 
             const payload = {
                 graph: {
@@ -334,31 +360,47 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             };
 
             const [_, error] = await workflowClient.saveGraph(workflowId, token, payload);
+
             if (error) throw error;
 
             await db.drafts.update(workflowId, { synced: true, updatedAt: Date.now() });
             workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_DIRTY_STATE, state: false });
-            toast.success('Changes synced to cloud', { id: 'sync-toast' });
+
+            setSaveStatus('saved');
+            setRetryCount(0);
+
+            setTimeout(() => setSaveStatus('idle'), 3000);
+
         } catch (e: any) {
-            console.error('Sync failed:', e.message);
-            toast.error('Cloud sync failed. Working offline.');
+            console.error(`Save attempt ${attempt + 1} failed:`, e.message);
+
+            if (attempt < RETRY_DELAY_MS.length) {
+                setSaveStatus('retrying');
+                retryTimeout.current = setTimeout(() => {
+                    saveWorkflowGraph(attempt + 1);
+                }, RETRY_DELAY_MS[attempt]);
+            } else {
+                setSaveStatus('error');
+                toast.error('Cloud sync failed after multiple attempts. Working offline.');
+            }
         } finally {
             setIsWorkflowSaving(false);
-            isSaving.current = false;
-            if (pendingSave.current) {
+            if (attempt === 0 || attempt === RETRY_DELAY_MS.length || saveStatus === 'saved') {
+                isSaving.current = false;
+            }
+
+            if (pendingSave.current && !isSaving.current) {
                 pendingSave.current = false;
-                setTimeout(() => saveWorkflowGraph(), 1000);
+                saveWorkflowGraph(0);
             }
         }
     };
 
-    /** Handles node template selection and canvas placement */
     const handleSelectTemplate = ({type, template}: NodeDefinition, connectingNode?: Node) => {
         const newNodeId = crypto.randomUUID();
 
-        // 1. Calculate position
         const position = connectingNode
-            ? { x: connectingNode.position.x + 250, y: connectingNode.position.y + 100 }
+            ? { x: connectingNode.position.x + 500, y: connectingNode.position.y + 300 }
             : { x: 200, y: 300 };
 
         const newNode: WorkflowNode = {
@@ -377,7 +419,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 source: connectingNode.id,
                 target: newNodeId,
                 sourceHandle: selectedHandle,
-                targetHandle: connectingNode?.id ?? null,
+                targetHandle: newNodeId ?? null,
                 type: 'default'
             };
             workflowEditorDispatch({ type: WorkflowEditorActionType.ADD_EDGE, payload: newEdge });
@@ -389,7 +431,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         setIsSheetOpen(false);
     };
 
-    /** Triggers a workflow execution on the backend */
     const handleRunWorkflow = async () => {
         workflowEditorDispatch({ type: WorkflowEditorActionType.RESET_NODE_STATUS });
         try {
@@ -406,7 +447,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
-    /** Fetches the current deployment configuration for the workflow */
     const loadDeployment = async () => {
         try {
             const token = await getSession();
@@ -423,7 +463,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
-    /** Deploys the workflow to the production environment */
     const deployWorkflow = async (data: { private: boolean; secretKey: string }) => {
         const nodes = Object.values(editorState.graph.nodes);
         if (nodes.length === 0) return;
@@ -447,7 +486,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
-    /** Terminates and deletes the active deployment */
     const deleteDeployment = async () => {
         try {
             const token = await getSession();
@@ -460,7 +498,6 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
-    /** Fetches logs for a specific execution ID */
     const getExecutionLogs = useCallback(async (executionId: string) => {
         try {
             setIsLogsLoading(true);
@@ -483,9 +520,13 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     }, [getSession]);
 
-    /** Smoothly zooms into a specific node on the canvas */
     const fitNode = (node: WorkflowNode) => {
         fitView({ nodes: [{ id: node.id }], duration: 800, padding: 0.05, maxZoom: 1.1 });
+    };
+
+    const onRunComplete = () => {
+        // Automatically pop open the debugger sidebar
+        editorUIDispatch({ type: 'OPEN_PANEL', panelId: 'execution-trace' });
     };
 
     useEffect(() => {
@@ -508,9 +549,12 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         if (!localDraft || localDraft.synced) return;
         if (saveTimeout.current) clearTimeout(saveTimeout.current);
         saveTimeout.current = setTimeout(() => {
-            saveWorkflowGraph();
+            saveWorkflowGraph(0);
         }, 3000);
-        return () => { if (saveTimeout.current) clearTimeout(saveTimeout.current); };
+        return () => {
+            if (saveTimeout.current) clearTimeout(saveTimeout.current);
+            if (retryTimeout.current) clearTimeout(retryTimeout.current);
+        };
     }, [localDraft]);
 
     useEffect(() => {
@@ -521,10 +565,12 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         <WorkflowEditorContext.Provider
             value={{
                 editorState, workflowEditorDispatch, runtimeState, runtimeDispatch,
+                editorUIState, editorUIDispatch, onRunComplete,
                 selectedNode, setSelectedNode, selectedHandle, setSelectedHandle,
                 isSheetOpen, setIsSheetOpen, isGlobalVariableSheetOpen, setIsGlobalVariableSheetOpen,
                 isEditorPanelOpen, setIsEditorPanelOpen, isDeployWorkflowDialogOpen, setIsDeployWorkflowDialogOpen,
                 isWorkflowLoading, setIsWorkflowLoading, isWorkflowSaving,
+                saveStatus, retryCount,
                 sheetOpen, setSheetOpen, openConfigSheet, setOpenConfigSheet,
                 isRunning, isExecutionsSheetOpen, setIsExecutionsSheetOpen,
                 isWorkflowInspectorOpen, setIsWorkflowInspectorOpen,

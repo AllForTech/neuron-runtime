@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Brackets, Box } from 'lucide-react';
+import { Box } from 'lucide-react';
 import { ObjectFieldSchema } from "@neuron/shared";
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
 import { getLayoutClass } from "../Layout";
@@ -38,9 +38,9 @@ export function ObjectField({ field, values, onChange }: {
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-neutral-950/20 pointer-events-none rounded-xl" />
                 
                 <div className={cn("relative grid gap-y-3", getLayoutClass(field.layout))}>
-                    {field.fields.map((subField) => (
+                    {field.fields.map((subField, index) => (
                         <ConfigFieldRenderer
-                            key={subField.path}
+                            key={`${subField.path}-${index}`}
                             field={subField}
                             values={values}
                             onChange={onChange}

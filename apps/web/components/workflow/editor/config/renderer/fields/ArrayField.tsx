@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, ListFilter, Layers } from "lucide-react";
 import { ArrayFieldSchema } from "@neuron/shared";

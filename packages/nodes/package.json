@@ -16,8 +16,7 @@
   },
 
   "scripts": {
-    "build": "tsup src/client/index.ts src/server/index.ts --format esm --dts --clean",
-    "dev": "tsup src/client/index.ts src/server/index.ts --format esm --dts --watch"
+    "build": "tsup src/client/index.ts src/server/index.ts --format esm --dts --clean"
   },
   "dependencies": {
     "@neuron/node-condition": "workspace:*",

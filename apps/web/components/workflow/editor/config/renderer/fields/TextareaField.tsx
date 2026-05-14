@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { AlignLeft } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { FieldWrapper } from '../FieldWrapper';
@@ -13,7 +13,6 @@ export function TextareaField({ field, values, onChange }: {
     values: Record<string, any>;
     onChange: (path: string, value: string) => void;
 }) {
-    // Fallback to empty string to keep the component controlled
     const value = getValueAtPath(values, field.path, field.defaultValue) ?? '';
 
     return (
@@ -34,7 +33,7 @@ export function TextareaField({ field, values, onChange }: {
                 {/* 2. THE INPUT SURFACE */}
                 <Textarea
                     value={value}
-                    placeholder={field.placeholder || "Enter content..."}
+                    placeholder={field.placeholder as string || "Enter content..."}
                     disabled={field.disabled}
                     spellCheck={false}
                     className={cn(

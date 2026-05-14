@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { getValueAtPath, removeValueByPath, setValueAtPath } from '@/lib/config/path';
 
 interface UseNodeConfigStateProps<T> {
@@ -12,33 +12,57 @@ export function useNodeConfigState<T extends Record<string, any>>({
                                                                       initialValues,
                                                                       onChange,
                                                                   }: UseNodeConfigStateProps<T>) {
-    const [values, setValues] = useState<T>(initialValues);
+    const [values, setLocalValues] = useState<T>(initialValues);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Track if this is the first render to avoid firing onChange on mount
-    const isFirstMount = useRef(true);
-
-    // Side effect: Notify the parent ONLY after local state has updated
     useEffect(() => {
-        if (isFirstMount.current) {
-            isFirstMount.current = false;
-            return;
+        setLocalValues(initialValues);
+        // Clear any pending debounced updates from the previous node
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
         }
-        onChange?.(values);
-    }, [values, onChange]);
+    }, [initialValues]);
 
-    const updateValue = useCallback((path: string, value: any) => {
-        setValues((prev) => setValueAtPath({ ...prev }, path, value));
+    const onChangeRef = useRef(onChange);
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    }, [onChange]);
+
+    const setValues = useCallback((newValues: T) => {
+        setLocalValues(newValues);
     }, []);
 
+    const updateValue = useCallback((path: string, value: any) => {
+        setLocalValues((prev) => {
+            const next = setValueAtPath({ ...prev }, path, value);
+
+            // Handle the debounce
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => {
+                // Use the ref to call the latest version of handleConfigChange
+                onChangeRef.current?.(next);
+            }, 150);
+
+            return next;
+        });
+    }, []); // Empty dependencies = perfectly stable function
+
     const removeValue = useCallback((path: string) => {
-        setValues((prev) => removeValueByPath({ ...prev }, path));
+        setLocalValues((prev) => {
+            const next = removeValueByPath({ ...prev }, path);
+            onChangeRef.current?.(next);
+            return next;
+        });
     }, []);
 
     const getValue = useCallback(<TValue = any>(path: string): TValue | undefined => {
         return getValueAtPath<TValue>(values, path);
     }, [values]);
 
-    const reset = useCallback(() => setValues(initialValues), [initialValues]);
+    const reset = useCallback(() => {
+        setLocalValues(initialValues);
+        onChangeRef.current?.(initialValues);
+    }, [initialValues]);
 
     return useMemo(() => ({
         values,
@@ -47,5 +71,5 @@ export function useNodeConfigState<T extends Record<string, any>>({
         removeValue,
         reset,
         setValues,
-    }), [values, getValue, updateValue, removeValue, reset]);
+    }), [values, getValue, updateValue, removeValue, reset, setValues]);
 }

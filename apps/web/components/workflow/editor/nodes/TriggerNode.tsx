@@ -67,13 +67,13 @@ export default function TriggerNode(node: NodeProps) {
           />
 
           {/* Source Handle Only */}
-          {/*<NodeHandle*/}
-          {/*  className="-right-[35px]! border-2 border-neutral-950 bg-neutral-400"*/}
-          {/*  node={node}*/}
-          {/*  type="source"*/}
-          {/*  position={Position.Right}*/}
-          {/*/>*/}
-            <ExecutionHandlesRenderer node={node} />
+          <NodeHandle
+            className="-right-[35px]! border-2 border-neutral-950 bg-neutral-400"
+            node={node}
+            type="source"
+            position={Position.Right}
+          />
+          {/*  <ExecutionHandlesRenderer node={node} />*/}
 
           {/* Logic & Layout: Nested Cards but Circular */}
           <Card

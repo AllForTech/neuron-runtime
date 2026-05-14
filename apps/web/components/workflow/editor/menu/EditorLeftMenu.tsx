@@ -1,34 +1,31 @@
 import { Plus, Layers } from 'lucide-react';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
-import { PanelWrapper } from '@/components/workflow/editor/Panel/PanelWrapper';
 import { TooltipButton } from '@/components/workflow/ToolTipButton';
 
 export function EditorLeftMenu() {
   const {
-      setIsSheetOpen,
-      setIsEditorPanelOpen,
       setSelectedNode,
       setSelectedHandle,
+      editorUIDispatch,
   } = useWorkflowEditor();
 
   return (
-    <PanelWrapper position="top-left" width="w-auto" className="mt-24 ml-2!">
-      <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-neutral-900/50 p-1 shadow-2xl backdrop-blur-xl">
-        <TooltipButton
-          icon={Plus}
-          label="Add Node"
-          onClick={() => {
-              setSelectedNode(null);
-              setSelectedHandle(null);
-              setIsSheetOpen(true)
-          }}
-        />
-        <TooltipButton
-          icon={Layers}
-          label="Layer Inspector"
-          onClick={() => setIsEditorPanelOpen(true)}
-        />
+      <div className="flex flex-col items-center gap-4 py-4 w-[30px]">
+          <TooltipButton
+              icon={Plus}
+              label="Add"
+              onClick={() => {
+                  setSelectedNode(null);
+                  setSelectedHandle(null);
+
+                  editorUIDispatch({ type: 'OPEN_PANEL', panelId: 'node-library' })
+              }}
+          />
+          <TooltipButton
+              icon={Layers}
+              label="Library"
+              onClick={() => editorUIDispatch({ type: 'OPEN_PANEL', panelId: 'graph-navigator' })}
+          />
       </div>
-    </PanelWrapper>
   );
 }

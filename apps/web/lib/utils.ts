@@ -17,6 +17,11 @@ import crypto from 'crypto';
 import { WorkflowNodeError } from '@/providers/ValidationContext';
 import {NewWorkflow, Workflow} from "@neuron/db";
 
+export interface HeaderPair {
+    key: string;
+    value: string;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -361,4 +366,31 @@ export const getNodeValidationStyles = (
   return cn(
     'border-amber-500/40 bg-amber-500/15 shadow-[0_0_15px_rgba(245,158,11,0.05)]'
   );
+};
+
+
+/**
+ * UI (Array) -> Config (Object)
+ * [{key: 'Content-Type', value: 'json'}] => {'Content-Type': 'json'}
+ */
+export const headerArrayToObject = (arr: HeaderPair[]): Record<string, string> => {
+    if (!Array.isArray(arr)) return {};
+    return arr.reduce((acc, curr) => {
+        if (curr.key.trim()) {
+            acc[curr.key] = curr.value;
+        }
+        return acc;
+    }, {} as Record<string, string>);
+};
+
+/**
+ * Config (Object) -> UI (Array)
+ * {'Content-Type': 'json'} => [{key: 'Content-Type', value: 'json'}]
+ */
+export const headerObjectToArray = (obj: Record<string, string>): HeaderPair[] => {
+    if (!obj || typeof obj !== 'object') return [];
+    return Object.entries(obj).map(([key, value]) => ({
+        key,
+        value: String(value),
+    }));
 };

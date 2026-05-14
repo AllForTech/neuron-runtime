@@ -18,40 +18,19 @@ import {
   useOnSelectionChange,
 } from 'reactflow';
 import { debounce } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // @ts-ignore
 import 'reactflow/dist/style.css';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { WorkflowEditorActionType } from '@/constants';
 import { EmptyGraphMenu } from '@/components/workflow/editor/EmptyGraphContextMenu';
-import { NodeTemplateSheet } from '@/components/workflow/editor/sheet/templates/NodeTemplateSheet';
 import DynamicNode from '@/components/workflow/editor/nodes/DynamicNode';
-import { HttpRequestNodeConfigSheet } from '@/components/workflow/editor/sheet/HttpNodeConfigSheet';
-import { DebugNodeConfigSheet } from '@/components/workflow/editor/sheet/DebugNodeSheet';
-import { TriggerNodeConfigSheet } from '@/components/workflow/editor/sheet/TriggerNodeSheet';
-import { ConditionNodeConfigSheet } from '@/components/workflow/editor/sheet/ConditionNodeConfigSheet';
-import { TransformNodeConfigSheet } from '@/components/workflow/editor/sheet/TransformNodeConfigSheet';
-import { NodesInspector } from '@/components/workflow/editor/sheet/NodesInspector';
-import { LLMNodeConfigSheet } from '@/components/workflow/editor/sheet/LlmConfigSheet';
-import { ExecutionTrace } from '@/components/workflow/editor/ExecutionTrace';
-import { DecisionNodeConfigSheet } from './sheet/DecisionNodeConfigSheet';
-import { IntegrationNodeConfigSheet } from '@/components/workflow/editor/sheet/IntegrationNodeConfigSheet';
-import { GlobalVariablesSheet } from '@/components/workflow/editor/sheet/GlobalVariableSheet';
 import { EditorLoader } from '@/components/workflow/editor/EditorLoader';
-import { OutputNodeConfigSheet } from '@/components/workflow/editor/sheet/OutputNodeConfigSheet';
 import { DeployWorkflowPanel } from '@/components/workflow/editor/dialog/DeployWorkflowDialog';
-import { RespondNodeConfigSheet } from '@/components/workflow/editor/sheet/RespondNodeConfigSheet';
-import { ContextNodeConfigSheet } from '@/components/workflow/editor/sheet/ContextNodeConfigSheet';
 import TriggerNode from '@/components/workflow/editor/nodes/TriggerNode';
-import { ExecutionHistorySheet } from '@/components/workflow/editor/executions/ExecutionHistorySheet';
-import { EditorTopMenu } from '@/components/workflow/editor/menu/EditorTopMenu';
-import { EditorLeftMenu } from '@/components/workflow/editor/menu/EditorLeftMenu';
-import { EditorRightMenu } from '@/components/workflow/editor/menu/EditorRightMenu';
-import { EditorBottomMenu } from '@/components/workflow/editor/menu/EditorBottomMenu';
-import { WorkflowInspector } from '@/components/workflow/editor/WorkflowInspector';
 import {DndProvider, DroppableZone} from "@neuron/ui";
-import {isNodeType, NODE_KIND, NodeType} from "@neuron/shared";
-import {NodeInspectorSheet} from "@/components/workflow/editor/sheet/InspectorSidebar";
+import {EditorLayout} from "@/components/workflow/editor/layout/EditorLayout";
+import { EditorTopMenu } from "./menu/EditorTopMenu";
 
 const snapGrid: [number, number] = [80, 80];
 
@@ -62,22 +41,20 @@ export function Editor() {
     rfNodes,
     rfEdges,
     setSelectedNode,
-    handleSelectTemplate,
     selectedNode,
-    isSheetOpen,
     setIsSheetOpen,
     sheetOpen,
-    setSheetOpen,
       nodeCatalog,
     isWorkflowLoading,
     isDeployWorkflowDialogOpen,
     setIsDeployWorkflowDialogOpen,
+      editorUIDispatch,
   } = useWorkflowEditor();
-
-  const [open, setOpen] = useState(false);
 
   const [graphNodes, setGraphNodes, onNodesChange] = useNodesState([]);
   const [graphEdges, setGraphEdges, onEdgesChange] = useEdgesState([]);
+
+    const lastSelectedId = useRef<string | null>(null);
 
     const nodeTypes = useMemo(() => {
         if (!nodeCatalog) return {};
@@ -96,11 +73,24 @@ export function Editor() {
 
   useOnSelectionChange({
     onChange: ({ nodes: selectedNodes }) => {
-      if (!selectedNodes || selectedNodes.length === 0) {
-        setSelectedNode(null);
-        return;
-      }
-      setSelectedNode(selectedNodes[0]);
+        const nextNode = selectedNodes?.[0] || null;
+        const nextId = nextNode?.id || null;
+
+        if (nextId !== lastSelectedId.current) {
+            lastSelectedId.current = nextId;
+
+
+            setSelectedNode(null);
+            setSelectedNode(nextNode);
+
+            // if (nextId) {
+            //     editorUIDispatch({
+            //         type: 'SET_ACTIVE_PANEL',
+            //         panelId: 'node-config',
+            //         position: 'right'
+            //     });
+            // }
+        }
     },
   });
 
@@ -210,13 +200,14 @@ export function Editor() {
   );
 
   const handleNodeDoubleClick = (event, node: Node) => {
-    setSelectedNode(node);
-    setSheetOpen(true);
+    // if (selectedNode?.id === node.id) return;
+      setSelectedNode(node);
+      editorUIDispatch({ type: 'SET_ACTIVE_PANEL', panelId: 'node-config', position: 'right' });
   };
 
   // Handle Add new Node
   const handleAddNode = () => {
-    setIsSheetOpen(true);
+      editorUIDispatch({ type: 'SET_ACTIVE_PANEL', panelId: 'node-library', position: 'right' });
   };
 
   const handleDnd = (templateId: string, targetId: string, nodeTemplate: any) => {
@@ -234,170 +225,49 @@ export function Editor() {
   return (
       <DndProvider onMove={handleDnd}>
           <DroppableZone className={"screen"} id={null}>
-              <ReactFlow
-                  className={'container-full'}
-                  nodes={graphNodes}
-                  edges={graphEdges}
-                  nodeTypes={nodeTypes}
-                  onNodesChange={handleNodesChange}
-                  onEdgesChange={handleEdgesChange}
-                  onNodeDragStop={onNodeDragStop}
-                  onConnect={onConnect}
-                  onNodeDoubleClick={handleNodeDoubleClick}
-                  fitView
-                  snapToGrid={true}
-                  snapGrid={snapGrid}
-                  minZoom={0.12}
-                  maxZoom={2}
-              >
-                  <Background
-                      color={'#121212'}
-                      gap={80}
-                      variant={BackgroundVariant.Cross}
-                      size={18}
-                  />
+             <EditorLayout>
+                 <ReactFlow
+                     className={'container-full'}
+                     nodes={graphNodes}
+                     edges={graphEdges}
+                     nodeTypes={nodeTypes}
+                     onNodesChange={handleNodesChange}
+                     onEdgesChange={handleEdgesChange}
+                     onNodeDragStop={onNodeDragStop}
+                     onConnect={onConnect}
+                     onNodeDoubleClick={handleNodeDoubleClick}
+                     fitView
+                     snapToGrid={true}
+                     snapGrid={snapGrid}
+                     minZoom={0.12}
+                     maxZoom={5}
+                 >
+                     <Background
+                         color={'#121212'}
+                         gap={80}
+                         variant={BackgroundVariant.Cross}
+                         size={18}
+                     />
 
-                  <EditorTopMenu />
-                  <EditorLeftMenu />
-                  <EditorRightMenu />
-                  <EditorBottomMenu />
+                     <EditorTopMenu />
 
-                  <NodesInspector />
-                  <WorkflowInspector />
+                     {graphNodes.length === 0 && (
+                         <Panel
+                             position="top-center"
+                             className={'container-fit canter top-[40%]!'}
+                         >
+                             <EmptyGraphMenu onAddNode={handleAddNode} />
+                         </Panel>
+                     )}
 
-                  {graphNodes.length === 0 && (
-                      <Panel
-                          position="top-center"
-                          className={'container-fit canter top-[40%]!'}
-                      >
-                          <EmptyGraphMenu onAddNode={handleAddNode} />
-                      </Panel>
-                  )}
+                     <DeployWorkflowPanel
+                         isOpen={isDeployWorkflowDialogOpen}
+                         onOpenChange={setIsDeployWorkflowDialogOpen}
+                         workflowName={editorState.workflow?.name}
+                     />
 
-                  <NodeTemplateSheet
-                      open={isSheetOpen}
-                      onOpenChange={setIsSheetOpen}
-                      onSelectTemplate={handleSelectTemplate}
-                  />
-
-                  <GlobalVariablesSheet />
-
-                  <DeployWorkflowPanel
-                      isOpen={isDeployWorkflowDialogOpen}
-                      onOpenChange={setIsDeployWorkflowDialogOpen}
-                      workflowName={editorState.workflow?.name}
-                  />
-
-                  <ExecutionHistorySheet />
-
-                  {selectedNode && sheetOpen && (
-                      <NodeInspectorSheet node={selectedNode} open={sheetOpen} onOpenChange={setSheetOpen}/>
-                  )}
-
-                  {/*{selectedNode && sheetOpen && (*/}
-                  {/*    <>*/}
-                  {/*        /!* Entry Points *!/*/}
-                  {/*        {isNodeType.trigger(selectedNode.type as NodeType) && (*/}
-                  {/*            <TriggerNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        /!* Networking *!/*/}
-                  {/*        {isNodeType.http(selectedNode.type as NodeType) && (*/}
-                  {/*            <HttpRequestNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        {isNodeType.respond(selectedNode.type as NodeType) && (*/}
-                  {/*            <RespondNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        /!* Intelligence *!/*/}
-                  {/*        {isNodeType.llm(selectedNode.type as NodeType) && (*/}
-                  {/*            <LLMNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        /!* Logic & Routing *!/*/}
-                  {/*        {isNodeType.condition(selectedNode.type as NodeType) && (*/}
-                  {/*            <ConditionNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        {isNodeType.decision(selectedNode.type as NodeType) && (*/}
-                  {/*            <DecisionNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        /!* Integrations *!/*/}
-                  {/*        {isNodeType.integration(selectedNode.type as NodeType) && (*/}
-                  {/*            <IntegrationNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        /!* Utilities *!/*/}
-                  {/*        {isNodeType.transform(selectedNode.type as NodeType) && (*/}
-                  {/*            <TransformNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        {isNodeType.context(selectedNode.type as NodeType) && (*/}
-                  {/*            <ContextNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        {isNodeType.debug(selectedNode.type as NodeType) && (*/}
-                  {/*            <DebugNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-
-                  {/*        {isNodeType.output(selectedNode.type as NodeType) && (*/}
-                  {/*            <OutputNodeConfigSheet*/}
-                  {/*                node={selectedNode}*/}
-                  {/*                open={sheetOpen}*/}
-                  {/*                onOpen={setSheetOpen}*/}
-                  {/*            />*/}
-                  {/*        )}*/}
-                  {/*    </>*/}
-                  {/*)}*/}
-
-                  <ExecutionTrace
-                      className={'h-full! w-[700px]! p-2.5!'}
-                      open={open}
-                      onOpenChange={setOpen}
-                  />
-              </ReactFlow>
+                 </ReactFlow>
+             </EditorLayout>
           </DroppableZone>
       </DndProvider>
   );

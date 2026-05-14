@@ -4,7 +4,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfigSectionRenderer } from "./ConfigSectionRenderer";
 import { Layers2, Zap, Settings, ChevronRight } from 'lucide-react';
-import {nanoid} from "nanoid";
 
 export function NodeConfigRenderer({ schema, values, onChange }: any) {
     return (
@@ -43,7 +42,7 @@ export function NodeConfigRenderer({ schema, values, onChange }: any) {
                 <AnimatePresence mode="popLayout">
                     {schema.sections.map((section: any, index: number) => (
                         <motion.div
-                            key={`${section.id}-${nanoid()}`}
+                            key={`${section.id}-${index}`}
                             layout
                             initial={{ opacity: 0, y: 12, scale: 0.98 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}

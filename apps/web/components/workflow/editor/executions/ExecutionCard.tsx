@@ -48,22 +48,19 @@ function ExecutionCard({
     <button
       onClick={onClick}
       className={cn(
-        'group flex w-full items-center justify-between rounded-xl border border-neutral-800/50 bg-neutral-900/20 p-4 text-left transition-all hover:border-neutral-700 hover:bg-neutral-900/40',
-        currentExecId === execution.id && 'border-neutral-700 bg-neutral-900/40'
+        'group flex w-full items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 text-left transition-all hover:bg-white/[0.04] hover:border-white/10',
+        currentExecId === execution.id && 'border-white/10 bg-white/[0.04]'
       )}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className={cn('rounded-lg border border-white/5 p-2', config.bg)}>
-          <Icon className={cn('h-4 w-4', config.color)} />
+          <Icon className={cn('h-3.5 w-3.5', config.color)} />
         </div>
         <div>
-          <h4 className="mb-0.5 text-sm font-medium text-white">
-            Execution{' '}
-            <span className="ml-1 font-mono text-xs text-neutral-500">
-              #{execution.id.slice(0, 8)}
-            </span>
-          </h4>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs font-medium text-primary">
+            #{execution.id.slice(0, 8)}
+          </p>
+          <p className="text-[10px] text-neutral-500">
             {formatDistanceToNow(new Date(execution.startedAt), {
               addSuffix: true,
             })}
@@ -71,9 +68,9 @@ function ExecutionCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {execution.finishedAt && (
-          <span className="font-mono text-[10px] text-neutral-500">
+          <span className="text-[10px] text-neutral-600">
             {Math.round(
               (new Date(execution.finishedAt).getTime() -
                 new Date(execution.startedAt).getTime()) /
@@ -82,7 +79,7 @@ function ExecutionCard({
             s
           </span>
         )}
-        <ChevronRight className="h-4 w-4 text-neutral-700 transition-colors group-hover:text-white" />
+        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 transition-colors group-hover:text-neutral-400" />
       </div>
     </button>
   );

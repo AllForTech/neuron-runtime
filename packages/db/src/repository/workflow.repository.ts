@@ -6,9 +6,9 @@ import {
     WorkflowNode,
     WorkflowEdge,
     WorkflowVersion
-} from "../types/index.js";
+} from "../types";
 import {and, desc, eq, sql} from "drizzle-orm";
-import {workflowEdges, workflowNodes, workflows, workflowVersions} from "../schemas/index.js";
+import {workflowEdges, workflowNodes, workflows, workflowVersions} from "../schemas";
 import {convertEdgeToDBSchema, convertNodeToDBSchema} from "@neuron/shared";
 
 export async function createWorkflow(

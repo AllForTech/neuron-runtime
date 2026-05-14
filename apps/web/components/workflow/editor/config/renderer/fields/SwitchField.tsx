@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { ToggleRight, ToggleLeft, CheckCircle, Circle } from 'lucide-react';
+import { CheckCircle, Circle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { SwitchFieldSchema } from "@neuron/shared";
 import { getValueAtPath } from "@/lib/config/path";

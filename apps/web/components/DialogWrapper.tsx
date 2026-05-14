@@ -48,7 +48,7 @@ export const DialogWrapper = ({
         className={cn(
           "max-h-[85dvh] w-[600px] rounded-2xl border border-white/[0.08] bg-[#0A0A0A]/95 backdrop-blur-2xl p-0 overflow-hidden shadow-2xl",
           "[&_[data-state=open]]:animate-in [&_[data-state=open]]:fade-in-95 [&_[data-state=open]]:zoom-in-95",
-          "[&_[data-state=closed]]:animate-out [&_[data_state=closed]]:fade-out-95 [&_[data_state=closed]]:zoom-out-95",
+          "[&_[data-state=closed]]:animate-out [&_[data-state=closed]]:fade-out-95 [&_[data-state=closed]]:zoom-out-95",
           className
         )}
       >

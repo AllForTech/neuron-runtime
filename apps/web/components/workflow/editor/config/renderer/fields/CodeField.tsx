@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
@@ -12,7 +12,7 @@ import { tags as t } from '@lezer/highlight';
 import { FieldWrapper } from '../FieldWrapper';
 import { getValueAtPath } from "@/lib/config/path";
 import { cn } from "@/lib/utils";
-import { Code, Braces, Play } from 'lucide-react';
+import { Code } from 'lucide-react';
 import {CodeFieldSchema} from "@neuron/shared";
 
 interface CodeFieldProps {
@@ -108,11 +108,8 @@ export function CodeField({ field, values, onChange }: CodeFieldProps) {
         >
             <div className="group relative">
                 {/* Header with icon */}
-                <div className="absolute left-3 top-2.5 z-10 flex items-center gap-2">
-                    <Code size={12} className="text-purple-400" />
-                    <span className="text-[9px] font-medium uppercase tracking-wider text-neutral-500">
-                        Script
-                    </span>
+                <div className="absolute left-2.5 top-2 z-10 flex items-center gap-2">
+                    <Code size={10} className="text-purple-400" />
                 </div>
 
                 {/* Editor */}
@@ -131,7 +128,7 @@ export function CodeField({ field, values, onChange }: CodeFieldProps) {
                 </div>
 
                 {/* Focus indicator */}
-                <div className="absolute inset-0 rounded-xl ring-1 ring-transparent group-focus-within:ring-purple-500/20 pointer-events-none transition-all" />
+                <div className="absolute inset-0 rounded-xl ring-1 ring-transparent group-focus-within:ring-neutral-700/20 pointer-events-none transition-all" />
             </div>
         </FieldWrapper>
     );

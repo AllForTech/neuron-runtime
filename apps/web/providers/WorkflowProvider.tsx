@@ -159,10 +159,6 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    useEffect(() => {
-        if (session?.access_token) fetchWorkflows();
-    }, [session?.access_token, fetchWorkflows]);
-
     return (
         <WorkflowContext.Provider
             value={{

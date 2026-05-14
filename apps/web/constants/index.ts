@@ -24,7 +24,8 @@ import {
 import { NodeType } from "@neuron/shared";
 import { SectionType } from '@/components/layout/hero/HeroSection';
 
-export * from './nodeTemplate';
+export * from './editor-panel';
+export * from './panel-registry';
 
 export const neuronSteps = [
   {

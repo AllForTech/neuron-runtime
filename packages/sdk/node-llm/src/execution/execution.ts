@@ -16,7 +16,9 @@ export const llmNodeExecutor: NodeExecutor = async ({
         temperature,
         apiKey,
         jsonMode,
-        outputSchema
+        outputSchema,
+        provider,
+        model
     } = config as LLMNodeConfig;
 
     if (!apiKey || apiKey.includes("{{")) {

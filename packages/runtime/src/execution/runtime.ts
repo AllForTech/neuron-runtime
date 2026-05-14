@@ -1,25 +1,16 @@
 import {
-    getGlobalVariables,
-    VaultService,
-    WorkflowEdge,
-    WorkflowNode,
-    workflowBroadcast
-} from "@neuron/db";
-
-import { ExecuteWorkflowType } from "../types";
-import { NodeRunner } from "./nodeRunner";
-
-import {
-    WorkflowEditorActionType,
-    createContextEntry,
-    logger,
     BaseNodeConfig,
+    createContextEntry,
+    ExecutionSignal,
+    logger,
     NodeType,
-    ExecutionSignal
+    WorkflowEditorActionType
 } from "@neuron/shared";
-
-import { resolveConfig } from "../utils";
-import { getEdgeTargets } from "../utils/branching";
+import {NodeRunner} from "./nodeRunner";
+import {resolveConfig} from "../utils";
+import {getGlobalVariables, VaultService, workflowBroadcast, WorkflowEdge, WorkflowNode} from "@neuron/db";
+import {ExecuteWorkflowType} from "../types";
+import {getEdgeTargets} from "../utils/branching";
 
 export class Runtime {
     private readonly workflowId: string;
@@ -31,7 +22,6 @@ export class Runtime {
     private executed = new Set<string>();
     private success = new Set<string>();
     private failed = new Set<string>();
-
     private running = new Set<string>();
 
     private incoming: Record<string, string[]> = {};
@@ -81,7 +71,6 @@ export class Runtime {
 
             for (const edge of this.edges) {
                 if (!this.nodeMap[edge.source] || !this.nodeMap[edge.target]) continue;
-
                 this.incoming[edge.target].push(edge.source);
                 this.outgoing[edge.source].push(edge.target);
             }
@@ -102,7 +91,6 @@ export class Runtime {
         });
 
         const startNodes = this.nodes.filter(n => this.incoming[n.id]?.length === 0);
-
         await Promise.all(startNodes.map(n => this.runNode(n.id)));
 
         logger.info("Runtime", "Workflow execution completed", {
@@ -124,7 +112,6 @@ export class Runtime {
         if (!node) throw new Error(`Unknown Node Error: ${nodeId}`);
 
         this.running.add(nodeId);
-
         await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, { nodeId });
 
         try {
@@ -141,7 +128,6 @@ export class Runtime {
             const { result, signal } = await runner.run(node, resolvedConfig);
 
             const output = result.data;
-
             const policy = node.config as BaseNodeConfig;
 
             if (signal !== "success") {
@@ -150,11 +136,11 @@ export class Runtime {
                     error: result.error?.message
                 });
 
-                if (policy?.executionConfig?.errorHandling?.continueOnError === false) {
-                    this.failed.add(nodeId);
-                    this.executed.add(nodeId);
-                    this.running.delete(nodeId);
-                    return;
+                this.failed.add(nodeId);
+            } else {
+                this.success.add(nodeId);
+                if (this.contextNode.isPresent) {
+                    this.contextNode[nodeId] = createContextEntry(node, output, Date.now());
                 }
             }
 
@@ -166,28 +152,22 @@ export class Runtime {
                 };
             }
 
-            if (this.contextNode.isPresent && signal === "success") {
-                this.contextNode[nodeId] = createContextEntry(node, output, Date.now());
-            }
-
             this.nodesContext[nodeId] = output;
-
             this.executed.add(nodeId);
-
-            if (signal === "success") {
-                this.success.add(nodeId);
-            } else {
-                this.failed.add(nodeId);
-            }
 
             await this.dispatch(
                 signal === "success"
                     ? WorkflowEditorActionType.NODE_EXECUTION_SUCCESS
                     : WorkflowEditorActionType.NODE_EXECUTION_ERROR,
-                { nodeId, output }
+                { nodeId, [signal === 'success' ? "output" : "error"]: output }
             );
 
+            // Allow Error/Timeout routes to trigger even if continueOnError is false
             await this.triggerNext(nodeId, output, signal);
+
+            if (signal !== "success" && policy?.executionConfig?.errorHandling?.continueOnError === false) {
+                return;
+            }
 
         } catch (e: any) {
             logger.error("Runtime", `Node execution failed: ${nodeId}`, e, {
@@ -196,7 +176,6 @@ export class Runtime {
             });
 
             this.failed.add(nodeId);
-
             await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
                 nodeId,
                 error: e.message
@@ -211,8 +190,7 @@ export class Runtime {
         const policy = node.config as BaseNodeConfig;
 
         if (signal !== "success" && policy?.executionConfig?.errorHandling?.fallbackNodeId) {
-            const fallback = policy.executionConfig.errorHandling.fallbackNodeId;
-            await this.runNode(fallback);
+            await this.runNode(policy.executionConfig.errorHandling.fallbackNodeId);
             return;
         }
 
@@ -224,9 +202,18 @@ export class Runtime {
             signal
         );
 
-        const readyNodes = nextNodeIds.filter(id =>
-            this.incoming[id]?.every(parent => this.executed.has(parent))
-        );
+        console.log('------------------------------------------------------------------------------')
+        console.log(`>>>>>>>>>>>>>>> Next Node: ${nextNodeIds.join(",")} and signal: ${signal} <<<<<<<<<<<<<<<`);
+        console.log('------------------------------------------------------------------------------')
+
+
+        const readyNodes = nextNodeIds.filter(id => {
+            // Error, Timeout, and Retry Failed routes trigger immediately
+            if (signal !== "success") return true;
+
+            // Success route waits for all incoming parents to be executed
+            return this.incoming[id]?.every(parent => this.executed.has(parent));
+        });
 
         await Promise.all(readyNodes.map(id => this.runNode(id)));
     }

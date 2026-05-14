@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { json } from '@codemirror/lang-json';
@@ -11,7 +11,7 @@ import { tags as t } from '@lezer/highlight';
 import { FieldWrapper } from '../FieldWrapper';
 import { getValueAtPath } from "@/lib/config/path";
 import { cn } from "@/lib/utils";
-import { Braces, AlertCircle } from 'lucide-react';
+import { Braces } from 'lucide-react';
 import {JsonFieldSchema} from "@neuron/shared";
 
 interface JsonFieldProps {

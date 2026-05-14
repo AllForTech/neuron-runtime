@@ -176,6 +176,10 @@
   .mask-fade-bottom {
     mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
   }
+
+    .ease-neuron {
+        transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    }
 }
 
 @keyframes neuralFlow {
@@ -187,8 +191,17 @@
   }
 }
 
+@keyframes pulse-soft {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.15; transform: scale(1.05); }
+}
+
+@keyframes scan {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
+}
+
 .animate-neural-flow {
-  /* This ensures the browser knows to treat the path as a motion coordinate */
   offset-path: path(
     'M 60 40 C 60 120, 290 120, 290 200 S 60 280, 60 360 S 290 440, 290 520 S 60 600, 60 640'
   );

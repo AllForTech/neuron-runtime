@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useWorkflows } from "@/hooks/workflow/useWorkflows";
@@ -36,43 +36,45 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     const [isLoading, setIsLoading] = useState(false);
     const { user, session } = useAuth();
 
+    const isInitialized = useRef(false);
+
     const token = session?.access_token;
 
     const loadWorkspaces = useCallback(async () => {
         if (!token) return;
 
         setIsLoading(true);
+        try {
+            const [data, error]: any = await workspaceClient.list(token);
 
-        const [data, error]: any = await workspaceClient.list(token);
+            if (error) {
+                toast.error('Failed to synchronize data');
+                return;
+            }
 
-        if (error) {
-            toast.error('Failed to synchronize data');
-            setIsLoading(false);
-            return;
-        }
+            if (data.workflows) {
+                workflowsDispatcher({
+                    type: WorkflowActionType.SET_WORKFLOWS,
+                    payload: data?.workflows as WorkflowType[] ?? [],
+                });
+            }
 
-        if (data.workflows) {
-            workflowsDispatcher({
-                type: WorkflowActionType.SET_WORKFLOWS,
-                payload: data?.workflows as WorkflowType[] ?? [],
-            });
-        }
+            if (data.workspaces) {
+                const record = data.workspaces.reduce((acc: WorkspaceRecord, ws: any) => {
+                    const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
+                        wAcc[wf.id] = wf;
+                        return wAcc;
+                    }, {});
 
-        if (data.workspaces) {
-            const record = data.workspaces.reduce((acc: WorkspaceRecord, ws: any) => {
-                const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
-                    wAcc[wf.id] = wf;
-                    return wAcc;
+                    acc[ws.id] = { ...ws, workflows: workflowRecord };
+                    return acc;
                 }, {});
 
-                acc[ws.id] = { ...ws, workflows: workflowRecord };
-                return acc;
-            }, {});
-
-            setWorkspaces(record);
+                setWorkspaces(record);
+            }
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false);
     }, [token, workflowsDispatcher]);
 
     const createWorkspace = useCallback(async (name: string, description?: string) => {
@@ -174,7 +176,14 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     }, [token, workspaces, setWorkflowInWorkspace]);
 
     useEffect(() => {
-        if (user && token) loadWorkspaces();
+        if (user && token && !isInitialized.current) {
+            const initialize = async () => {
+                await loadWorkspaces();
+                isInitialized.current = true;
+            };
+
+            initialize();
+        }
     }, [token, user, loadWorkspaces]);
 
     const value = useMemo(() => ({

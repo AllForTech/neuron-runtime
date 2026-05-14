@@ -74,7 +74,7 @@ export default function DynamicNode(node: NodeProps) {
                 <Card
                     onContextMenu={(e) => e.stopPropagation()}
                     className={cn(
-                        'group relative flex h-fit w-[200px] flex-col gap-1.5 rounded-2xl border-0 bg-neutral-800/35 p-3 backdrop-blur-sm transition-all',
+                        'group relative flex h-fit w-[200px] ring-0! flex-col gap-1.5 rounded-2xl border-0 bg-neutral-800/35 p-3 backdrop-blur-sm transition-all',
                         statusClass,
                         nodeError && validationStyles,
                         selected && 'border-neutral-700! border-3!',
