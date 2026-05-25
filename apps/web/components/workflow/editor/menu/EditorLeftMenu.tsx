@@ -10,7 +10,7 @@ export function EditorLeftMenu() {
   } = useWorkflowEditor();
 
   return (
-      <div className="flex flex-col items-center gap-4 py-4 w-[30px]">
+      <div className="flex flex-col rounded-lg border border-white/5 bg-neutral-900/60 shadow-2xl backdrop-blur-xl items-center gap-4 py-4 px-1.5 w-[30px]">
           <TooltipButton
               icon={Plus}
               label="Add"

@@ -400,7 +400,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         const newNodeId = crypto.randomUUID();
 
         const position = connectingNode
-            ? { x: connectingNode.position.x + 500, y: connectingNode.position.y + 300 }
+            ? { x: connectingNode.position.x + 350, y: connectingNode.position.y + 250 }
             : { x: 200, y: 300 };
 
         const newNode: WorkflowNode = {

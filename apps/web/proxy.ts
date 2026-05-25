@@ -10,11 +10,11 @@ export async function proxy(request: NextRequest) {
     // const url = request.nextUrl.clone();
     //
     // if (!user && (url.pathname.startsWith('/dashboard') || url.pathname.startsWith('/editor'))) {
-    //     url.pathname = '/sign-in';
+    //     url.pathname = '/auth';
     //     return NextResponse.redirect(url);
     // }
     //
-    // if (user && (url.pathname === '/sign-in' || url.pathname === '/sign-up' || url.pathname === '/')) {
+    // if (user && (url.pathname === '/auth' || url.pathname === '/sign-up' || url.pathname === '/')) {
     //     url.pathname = '/dashboard';
     //     return NextResponse.redirect(url);
     // }

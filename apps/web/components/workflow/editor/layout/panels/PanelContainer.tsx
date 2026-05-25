@@ -5,7 +5,6 @@ import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { getPanelById } from '@/constants/panel-registry';
 import type { PanelId } from '@/constants/editor-panel';
 import { X } from 'lucide-react';
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PanelContainerProps {
     panelId: PanelId;
@@ -19,7 +18,7 @@ export function PanelContainer({ panelId }: PanelContainerProps) {
 
     const PanelIcon = panel?.icon;
     const PanelComponent = panel?.component;
-    
+
     const handleClose = () => {
         editorUIDispatch({ type: 'CLOSE_PANEL', panelId });
     };
@@ -31,29 +30,27 @@ export function PanelContainer({ panelId }: PanelContainerProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             transition={{ duration: 0.2 }}
-            className="flex h-full w-full flex-col bg-[#0A0A0A]"
+            className="flex h-full w-full flex-col"
         >
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3 shrink-0">
+            {/* Header: shrink-0 ensures this doesn't compress when content grows */}
+            <div className="flex items-center justify-between px-4 py-3 shrink-0">
                 <div className="flex items-center gap-2">
-                    {panel.icon && <PanelIcon size={14} className="text-neutral-500" />}
+                    {PanelIcon && <PanelIcon size={14} className="text-neutral-500" />}
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-            {panel.label}
-          </span>
+                        {panel.label}
+                    </span>
                 </div>
                 <button
                     onClick={handleClose}
-                    className="rounded-lg p-1 text-neutral-500 hover:bg-white/10 hover:text-white transition-colors"
+                    className="rounded-lg p-1 text-neutral-500 transition-colors hover:bg-white/10 hover:text-white"
                 >
                     <X size={14} />
                 </button>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-hidden">
-                <ScrollArea className="h-full no-scrollbar w-full">
-                    <div className="h-full w-full">
-                        <PanelComponent />
-                    </div>
-                </ScrollArea>
+            {/* Content: flex-1 takes up remaining height, min-h-0 prevents flex blowout, overflow-y-auto handles scrolling */}
+            <div className="flex-1 min-h-0 w-full overflow-y-auto no-scrollbar relative">
+                <PanelComponent />
             </div>
         </motion.div>
     );

@@ -23,13 +23,13 @@ export function TooltipButton({
       <button
         onClick={onClick}
         className={cn(
-          'flex h-5 w-full items-center justify-center rounded-xl p-1 transition-all duration-200',
+          'flex container-fit w-full bg-white/06 items-center justify-center rounded-md p-0.5 transition-all duration-200',
           'text-neutral-400 hover:bg-white/10 hover:text-white active:scale-90',
           'border border-transparent hover:border-white/10',
           className
         )}
       >
-        <Icon size={14} strokeWidth={1.5} />
+        <Icon size={14} strokeWidth={2} />
       </button>
 
       {/* Premium Tooltip Label */}

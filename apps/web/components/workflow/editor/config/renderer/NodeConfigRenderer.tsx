@@ -56,7 +56,7 @@ export function NodeConfigRenderer({ schema, values, onChange }: any) {
                             className="relative w-full group"
                         >
                             {/* Subtle gradient border on hover */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/[0.06] via-transparent to-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/[0.05] via-transparent to-white/[0.015] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             
                             <ConfigSectionRenderer
                                 section={section}

@@ -124,9 +124,9 @@ export default function NodeConfigPanel() {
     }
 
     return (
-        <div className="flex h-full flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto">
-                <div className="p-4 pb-20">
+        <div className="flex h-full flex-col">
+            <div className="flex-1 h-fit w-full!">
+                <div className="p-4 px-1.5! pb-20">
                     <NodeConfigRenderer
                         key={selectedNode.id}
                         schema={nodeDef}

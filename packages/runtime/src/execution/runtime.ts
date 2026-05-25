@@ -124,11 +124,21 @@ export class Runtime {
                 }
             );
 
+            logger.debug("Runtime", "Workflow resolved configs", resolvedConfig);
+
             const runner = new NodeRunner();
             const { result, signal } = await runner.run(node, resolvedConfig);
 
             const output = result.data;
             const policy = node.config as BaseNodeConfig;
+
+            logger.debug("Runtime", "Workflow execution result", {
+                result: output,
+                policy,
+                nodeType: node?.type,
+                nodeConfig: node?.config
+            });
+
 
             if (signal !== "success") {
                 await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {

@@ -4,7 +4,7 @@ export function delay(ms: number) {
 
 export async function runWithTimeout<T>(
     fn: () => Promise<T>,
-    timeoutMs?: number
+    timeoutMs = 1
 ): Promise<T> {
     if (!timeoutMs) return fn();
 

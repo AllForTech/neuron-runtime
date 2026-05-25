@@ -1,9 +1,8 @@
-'use client'; // Required for Framer Motion on a page level
-
+'use client';
 import { motion } from 'framer-motion';
 import { AuthForm } from '@/components/auth/AuthForm';
 
-export default function SignInPage() {
+export default function Auth() {
     return (
         <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-[#030303] p-6 md:p-10">
             {/* Cinematic Animated Background Elements */}

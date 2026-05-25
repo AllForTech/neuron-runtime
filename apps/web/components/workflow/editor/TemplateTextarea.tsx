@@ -169,7 +169,7 @@ export function TemplateTextarea({
       {query !== null && filtered.length > 0 && (
         <div
           onClick={() => setQuery(null)}
-          className={'screen center absolute z-48 bg-transparent'}
+          className={'screen center absolute z-68 bg-transparent'}
         />
       )}
 
@@ -181,7 +181,7 @@ export function TemplateTextarea({
             top: y ?? 0,
             left: x ?? 0,
           }}
-          className="z-100 w-64"
+          className="z-200! w-64"
         >
           <UpstreamNodePicker
             nodes={variables}

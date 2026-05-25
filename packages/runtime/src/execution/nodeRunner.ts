@@ -1,6 +1,6 @@
 import { WorkflowNode } from "@neuron/db";
 import { nodeExecutors } from "@neuron/nodes/server";
-import { BaseNodeConfig, NodeExecutor, NodeType } from "@neuron/shared";
+import {BaseNodeConfig, logger, NodeExecutor, NodeType} from "@neuron/shared";
 import { createExecutionResult, normalizeExecutionPolicy,  delay, runWithTimeout  } from "../utils";
 import { ExecutionSignal } from "@neuron/shared";
 
@@ -57,6 +57,7 @@ export class NodeRunner {
             } catch (err: any) {
                 lastError = err;
 
+                logger.debug("Execution error", err);
                 // Timeout detection
                 if (err.message === "Execution timeout") {
                     return {

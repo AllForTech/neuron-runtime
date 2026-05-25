@@ -37,12 +37,12 @@ export async function updateSession(request: NextRequest) {
     //
     // // 1. If not logged in and trying to access protected routes
     // if (!user && (url.pathname.startsWith('/dashboard') || url.pathname.startsWith('/editor'))) {
-    //     url.pathname = '/sign-in';
+    //     url.pathname = '/auth';
     //     return NextResponse.redirect(url);
     // }
     //
     // // 2. If logged in and trying to access auth pages (Sign-in/Sign-up)
-    // if (user && (url.pathname === '/sign-in' || url.pathname === '/sign-up' || url.pathname === '/')) {
+    // if (user && (url.pathname === '/auth' || url.pathname === '/sign-up' || url.pathname === '/')) {
     //     url.pathname = '/dashboard';
     //     // We must pass the existing supabaseResponse's cookies to the new redirect
     //     const redirectResponse = NextResponse.redirect(url);

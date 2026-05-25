@@ -12,9 +12,8 @@ interface SidebarProps {
     className?: string;
 }
 
-const LEFT_SIDEBAR_WIDTH = 300;
-const RIGHT_SIDEBAR_WIDTH = 370;
-const MENU_WIDTH = 38; // w-[30px] + gap (approximately)
+const LEFT_SIDEBAR_WIDTH = 280;
+const RIGHT_SIDEBAR_WIDTH = 360;
 
 export function EditorSidebar({ position, className }: SidebarProps) {
     const { editorUIState } = useWorkflowEditor();
@@ -36,16 +35,16 @@ export function EditorSidebar({ position, className }: SidebarProps) {
                     exit={{ opacity: 0, x: position === 'left' ? -20 : 20 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className={cn(
-                        'absolute top-0 bottom-0 z-40 overflow-hidden shrink-0',
+                        'absolute h-[92%] top-[50%] -translate-y-[50%] rounded-xl shadow-xl bottom-0 z-40 overflow-y-hidden shrink-0',
                         // Don't cover the menu buttons
                         position === 'left'
-                            ? 'left-[38px]'
-                            : 'right-[38px]',
+                            ? 'left-[48px]'
+                            : 'right-[48px]',
                         className
                     )}
                     style={{ width }}
                 >
-                    <div className="h-full w-full rounded-xl bg-neutral-950/80 backdrop-blur-xl border border-white/[0.06] overflow-hidden">
+                    <div className="w-full h-full! rounded-xl bg-neutral-950 backdrop-blur-3xl border-2 border-neutral-900">
                         {activePanelId && (
                             <PanelContainer panelId={activePanelId} />
                         )}

@@ -79,7 +79,8 @@ export async function resolveTemplate(
 
     if (isSingleVar) {
         const path = trimmed.slice(2, -2).trim();
-        return await extractValue(path, context, options?.variables);
+        // FIX: Pass the entire 'options' object, not 'options?.variables'
+        return await extractValue(path, context, options);
     }
 
     // If there is surrounding text, we treat it as a string
@@ -88,17 +89,20 @@ export async function resolveTemplate(
 
     for (const match of matches) {
         const [fullMatch, path] = match;
-        const resolvedValue = await extractValue(path!, context, options?.variables);
+        // FIX: Pass the entire 'options' object here as well
+        const resolvedValue = await extractValue(path!, context, options);
 
         if (resolvedValue !== undefined && resolvedValue !== null) {
             const stringified = typeof resolvedValue === "object"
                 ? JSON.stringify(resolvedValue)
                 : String(resolvedValue);
-            logger.warn("Runtime", "Could not resolve: ${path}. Falling back to raw string.");
+
+            // BONUS FIX: Swapped double quotes for backticks so ${path} interpolates correctly
+            logger.warn("Runtime", `Could not resolve: ${path}. Falling back to raw string.`);
 
             resolvedString = resolvedString?.replaceAll(fullMatch, stringified);
         } else {
-            logger.warn("Runtime", `Could not resolve: ${path}`)
+            logger.warn("Runtime", `Could not resolve: ${path}`);
         }
     }
 

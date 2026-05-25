@@ -51,7 +51,7 @@ export default function GraphNavigator() {
                 </p>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2.5 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-2.5 no-scrollbar">
                 {Object.entries(nodes).length < 1 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-center opacity-30">
                         <Layers className="h-8 w-8 mb-3 stroke-[1]" />

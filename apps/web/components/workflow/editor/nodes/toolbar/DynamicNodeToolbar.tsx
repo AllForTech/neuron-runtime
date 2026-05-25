@@ -32,7 +32,10 @@ export function DynamicNodeToolbar({
 }: JaguarNodeToolbarProps) {
   const { workflowEditorDispatch, editorState } = useWorkflowEditor();
 
-  const status = editorState.runtime?.nodeStatus?.[nodeId] ?? 'idle';
+    const status =
+        editorState.runtime?.nodeStatus?.[nodeId] ??
+        editorState.runtime?.nodeErrors?.[nodeId] ??
+        'idle';
   const output =
     editorState.runtime.nodeOutputs?.[nodeId] ||
     editorState.runtime.nodeErrors?.[nodeId];
@@ -97,7 +100,7 @@ export function DynamicNodeToolbar({
             nodeType={nodeType}
             config={config}
             nodeData={output}
-            status={status}
+            status={status as string}
             className={cn('transition-200 hidden', isVisible && 'block')}
           />
 

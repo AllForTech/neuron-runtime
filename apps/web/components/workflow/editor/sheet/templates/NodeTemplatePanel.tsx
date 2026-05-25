@@ -34,7 +34,7 @@ export default function NodeTemplatePanel() {
     }, [search, activeCategory, activeNodeTypes, nodeCatalog]);
 
     return (
-        <div className="flex h-full flex-col bg-transparent overflow-hidden">
+        <div className="flex h-full flex-col p-0.5 bg-transparent overflow-hidden">
             {/* Compact Header */}
             <div className="p-3 space-y-3 border-b border-white/[0.05]">
                 <div className="relative group">
@@ -65,7 +65,7 @@ export default function NodeTemplatePanel() {
             </div>
 
             {/* List View - Fixed Overflow */}
-            <div className="flex-1 overflow-y-auto px-2 py-3 no-scrollbar! custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-2.5 py-4 no-scrollbar! custom-scrollbar">
                 {filteredNodes.length > 0 ? (
                     <div className="flex flex-col gap-1.5 pb-10">
                         {filteredNodes.map((node) => (

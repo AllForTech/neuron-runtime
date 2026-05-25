@@ -16,7 +16,7 @@ export function NodeTemplateCard({ template, onSelect }: { template: any; onSele
                 onClick={onSelect}
                 className={cn(
                     "group relative flex flex-col gap-1.5 p-2.5 cursor-pointer rounded-xl",
-                    "bg-white/[0.02] border border-white/[0.04]",
+                    "bg-white/[0.03] border border-white/[0.04]",
                     "hover:border-white/10 hover:bg-white/[0.05]",
                     "transition-all duration-200 active:scale-[0.98]"
                 )}
