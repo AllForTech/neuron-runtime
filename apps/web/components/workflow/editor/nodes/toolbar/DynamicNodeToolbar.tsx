@@ -55,8 +55,6 @@ export function DynamicNodeToolbar({
     // });
   };
 
-    console.log(`node output for ${nodeType}`, output, editorState.runtime.nodeOutputs, editorState.runtime.nodeErrors);
-
   return (
     <NodeToolbar
       isVisible={isVisible}

@@ -33,17 +33,19 @@ export function DeploymentPanel({
         setShowKey(true);
     };
 
-    const deploymentsArray = Object.values(editorState.deployment || {});
+    const deploymentsArray = Object.values(editorState.deployment || {}) ?? [];
+
+    console.log("Deployment panel", deploymentsArray, editorState.deployment);
 
     return (
         <EditorPanel
             open={isOpen}
             onOpenChange={onOpenChange}
             title="Mesh Orchestration"
-            icon={<Rocket size={20} className="text-primary" />}
+            icon={<Rocket size={18} className="text-primary" />}
             description="Deploy and manage production-grade instances of your workflow."
             position="Top Center"
-            className="max-h-[85vh] overflow-hidden"
+            className="max-h-[85vh] z-250! bg-neutral-950! border-2 border-neutral-900 shadow-2xl! overflow-hidden"
             width="w-[850px]"
         >
             <Tabs defaultValue="deploy" className="w-full flex flex-col h-full">
@@ -126,14 +128,14 @@ export function DeploymentPanel({
                                         <Activity size={16} className="text-primary" />
                                         <span className="text-[11px] font-black uppercase tracking-widest text-primary">Deployment Summary</span>
                                     </div>
-                                    <div className="space-y-3">
-                                        <SummaryItem label="Workflow" value={workflowName} />
-                                        <SummaryItem label="Nodes" value={editorState.graph.nodes.length as any} />
+                                    <div className="space-y-3 h-full">
+                                        <SummaryItem label="Workflow" value={workflowName || "Untitled"} />
+                                        <SummaryItem label="Nodes" value={Object.keys(editorState.graph.nodes)?.length as any || 0} />
                                         <SummaryItem label="Mode" value={isPrivate ? "Private" : "Public"} />
                                     </div>
                                     <AppButton
                                         icon={<Rocket size={16} />}
-                                        label="Initialize Live Mesh"
+                                        label="Deploy Production"
                                         loading={isDeploying}
                                         disabled={isDeploying || (isPrivate && !secretKey)}
                                         onClick={() => deployWorkflow({ secretKey, private: isPrivate })}
@@ -151,14 +153,14 @@ export function DeploymentPanel({
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Live Active Instances</h3>
                             </div>
 
-                            {deploymentsArray.length === 0 ? (
+                            {!deploymentsArray || deploymentsArray.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-20 border border-dashed border-white/5 rounded-3xl">
                                     <Rocket size={40} className="text-neutral-800 mb-4" />
                                     <p className="text-[11px] font-bold text-neutral-600 uppercase tracking-widest">No active deployments found</p>
                                 </div>
                             ) : (
                                 <Accordion type="multiple" className="space-y-3">
-                                    {deploymentsArray.map((deployment: DeployedWorkflow) => (
+                                    {deploymentsArray?.length > 0 && deploymentsArray.map((deployment: DeployedWorkflow) => (
                                         <DeploymentHistoryItem
                                             key={deployment.id}
                                             deployment={deployment}

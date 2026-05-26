@@ -211,6 +211,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.UPDATE_GLOBAL_VARS:
                 return { ...state, globalVariables: action.payload, isDirty: true };
             case WorkflowEditorActionType.SET_DEPLOYMENT:
+                return { ...state, deployment: action.payload };
+            case WorkflowEditorActionType.UPDATE_DEPLOYMENT:
                 return { ...state, deployment: { [action.payload.id]: action.payload, ...state.deployment } };
             case WorkflowEditorActionType.UPDATE_DIRTY_STATE:
                 return { ...state, isDirty: action.state ?? false };
@@ -428,8 +430,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
         setSelectedNode(null);
         // TODO: Observe
-        // setSelectedHandle(null);
-        setIsSheetOpen(false);
+        setSelectedHandle(null);
+        editorUIDispatch({ type: 'CLOSE_PANEL', panelId: 'node-library' });
     };
 
     const handleRunWorkflow = async () => {
@@ -452,8 +454,10 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         try {
             const token = await getSession();
             const [data, error] = await workflowClient.getAllDeployment(workflowId, token);
+
             if (error) throw error;
-            if (data) {
+
+            if (data && (data as DeployedWorkflow[])?.length > 0) {
                 const deploymentRecord: Record<string, DeployedWorkflow> = {};
 
                 for (const dp of data as DeployedWorkflow[])
@@ -481,7 +485,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
             if (error) throw error;
             // TODO: Adjust dispatch logic hare.
-            workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: deployed });
+            workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_DEPLOYMENT, payload: deployed });
             toast.success('Workflow deployed.');
         } catch (e: any) {
             toast.error(e.message);
