@@ -95,7 +95,7 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
 
             <DialogContent
                 className={cn(
-                    "max-h-[85dvh] w-[95vw] max-w-[850px] no-scrollbar rounded-2xl border border-white/[0.08] bg-[#0A0A0A]/98 backdrop-blur-2xl",
+                    "h-[83dvh] w-[88dvw] max-w-[850px] no-scrollbar rounded-2xl border-2 border-neutral-900 bg-neutral-950 backdrop-blur-2xl",
                     "p-0 overflow-hidden shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] flex flex-col",
                     "focus:outline-none"
                 )}
@@ -119,21 +119,21 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                     </div>
 
                     {/* --- UPGRADE: Internal Search --- */}
-                    <div className="relative group">
+                    <div className="relative group mr-10">
                         <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-neutral-300 transition-colors" />
                         <input
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Find parameter..."
-                            className="bg-white/[0.03] border border-white/[0.05] rounded-full py-1.5 pl-8 pr-4 text-[10px] text-neutral-200 focus:outline-none focus:border-white/10 w-40 transition-all"
+                            className="bg-white/[0.03] min-w-[120px] border border-white/[0.05] rounded-full py-1.5 pl-8 pr-4 text-[10px] text-neutral-200 focus:outline-none focus:border-white/10 w-40 transition-all"
                         />
                     </div>
                 </DialogHeader>
 
                 {/* Main Sidebar Layout */}
-                <div className="flex flex-1 overflow-hidden no-scrollbar h-[500px]">
+                <div className="flex flex-1 overflow-hidden no-scrollbar h-[550px]">
                     {/* Sidebar Navigation */}
-                    <aside className="w-48 border-r border-white/[0.04] bg-white/[0.01] p-3 flex flex-col no-scrollbar gap-1">
+                    <aside className="w-46 border-r border-white/[0.04] bg-white/[0.01] p-3 flex flex-col no-scrollbar gap-1">
                         <p className="px-2 pb-2 text-[9px] font-bold text-neutral-700 uppercase tracking-[0.15em]">Categories</p>
                         {categories.map((cat) => (
                             <button
@@ -142,7 +142,7 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                                 className={cn(
                                     "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-all group",
                                     activeTab === cat.id
-                                        ? "bg-white/[0.05] text-white border border-white/[0.05] shadow-inner"
+                                        ? "bg-white/[0.06] text-white border border-white/[0.07] shadow-inner"
                                         : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.02] border border-transparent"
                                 )}
                             >
@@ -155,13 +155,6 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                     {/* Content Area */}
                     <main className="flex-1 overflow-y-auto no-scrollbar! p-8 relative">
                         <div className="max-w-xl mx-auto flex flex-col gap-8">
-                            <div className="space-y-1.5">
-                                <h4 className="text-[13px] font-bold text-white tracking-tight">{activeField?.label}</h4>
-                                <p className="text-[11px] text-neutral-500 leading-relaxed">
-                                    {activeField?.description || "Configure the properties for this category."}
-                                </p>
-                            </div>
-
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                 {activeField && (
                                     <ConfigFieldRenderer

@@ -35,7 +35,7 @@ export function ConfigSectionRenderer({ section, values, onChange }: any) {
                    {/* Glass container */}
                    <div className={cn(
                        "relative rounded-2xl border border-white/[0.04] bg-white/[0.02] backdrop-blur-sm transition-all duration-300",
-                       "hover:border-white/[0.08] hover:bg-white/[0.03]"
+                       "hover:border-white/[0.08] hover:bg-white/[0.024]"
                    )}>
                        {/* Subtle inner glow */}
                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-neutral-950/30 pointer-events-none" />

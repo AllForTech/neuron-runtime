@@ -1,7 +1,7 @@
 import {DeployedWorkflow, NewDeployedWorkflow} from "../types/index.js";
 import {db} from "../client.js";
 import {deployedWorkflows} from "../schemas/index.js";
-import {and, eq} from "drizzle-orm";
+import {and, desc, eq} from "drizzle-orm";
 
 
 export async function getDeploymentById(id: string): Promise<Partial<DeployedWorkflow>> {
@@ -63,11 +63,21 @@ export async function getDeploymentsByUserId(userId: string) {
 }
 
 /**
- * Get deployment by workflowId
+ * Get single deployment by workflowId
  */
 export async function getDeploymentByWorkflowId(workflowId: string) {
     return await db.query.deployedWorkflows.findFirst({
         where: eq(deployedWorkflows.workflowId, workflowId)
+    })
+}
+
+/**
+ * Get all deployments by workflowId
+ */
+export async function getALLDeploymentByWorkflowId(workflowId: string) {
+    return await db.query.deployedWorkflows.findMany({
+        where: eq(deployedWorkflows.workflowId, workflowId),
+        orderBy: [desc(deployedWorkflows.createdAt)]
     })
 }
 

@@ -23,16 +23,16 @@ interface CodeFieldProps {
 
 const customHighlightStyle = HighlightStyle.define([
     { tag: t.comment, color: '#6b7280' },
-    { tag: t.keyword, color: '#a78bfa' },
-    { tag: t.string, color: '#34d399' },
-    { tag: t.variableName, color: '#f472b6' },
+    { tag: t.keyword, color: '#b59ffa' },
+    { tag: t.string, color: '#d7fda2' },
+    { tag: t.variableName, color: '#e8e8e8' },
     { tag: t.propertyName, color: '#60a5fa' },
     { tag: t.typeName, color: '#c084fc' },
-    { tag: t.number, color: '#fb923c' },
-    { tag: t.function(t.variableName), color: '#60a5fa' },
-    { tag: t.operator, color: '#f472b6' },
-    { tag: t.bool, color: '#fbbf24' },
-    { tag: t.null, color: '#fbbf24' },
+    { tag: t.number, color: '#fdab6c' },
+    { tag: t.function(t.variableName), color: '#72b1ff' },
+    { tag: t.operator, color: '#a4ceff' },
+    { tag: t.bool, color: '#cd8fff' },
+    { tag: t.null, color: '#cd8fff' },
 ]);
 
 export function CodeField({ field, values, onChange }: CodeFieldProps) {
@@ -107,23 +107,19 @@ export function CodeField({ field, values, onChange }: CodeFieldProps) {
             required={field.required}
         >
             <div className="group relative">
-                {/* Header with icon */}
-                <div className="absolute left-2.5 top-2 z-10 flex items-center gap-2">
-                    <Code size={10} className="text-purple-400" />
-                </div>
 
                 {/* Editor */}
                 <div
                     className={cn(
-                        "relative mt-4 w-full overflow-hidden rounded-xl border transition-all duration-300",
+                        "relative h-full max-h-[500px] mt-4 w-full p-1 overflow-hidden rounded-xl border transition-all duration-300",
                         "border-white/[0.04] bg-[#050505]",
                         "hover:border-white/[0.08]",
-                        "focus-within:border-white/[0.12] focus-within:shadow-[0_0_20px_-8px_rgba(167,139,250,0.15)]"
+                        "focus-within:border-white/[0.12]"
                     )}
                 >
                     <div
                         ref={editorRef}
-                        className="w-full overflow-hidden rounded-xl"
+                        className="w-full h-full overflow-hidden rounded-xl"
                     />
                 </div>
 

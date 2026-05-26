@@ -84,28 +84,36 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                         className="flex items-center gap-1.5 text-[10px] font-medium text-neutral-500 hover:text-white transition-colors group"
                     >
                         <Plus size={11} className="text-neutral-600 group-hover:text-white" />
-                        <span>Add Entry</span>
+                        <span>Add</span>
                     </button>
                 </div>
 
                 {/* List Section */}
-                <div className="flex flex-col gap-2">
+                <div className="flex-1 flex-col no-scrollbar overflow-x-hidden gap-2">
                     {items.map((item, index) => (
                         <div
                             key={`${field.path}-${index}`}
-                            className="group relative"
+                            className="group gap-1.5 relative  p-2 border-white/[0.04] bg-white/[0.02] hover:border-white/[0.08] rounded-xl border transition-all duration-300"
                         >
+                            <div className={'w-full flex items-center justify-end'}>
+                                {/* Actions */}
+                                <button
+                                    type="button"
+                                    onClick={() => removeItem(index)}
+                                    className="text-neutral-600 hover:text-red-400 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <Trash2 size={11} />
+                                </button>
+                            </div>
                             <div className={cn(
-                                "relative flex items-center gap-2 rounded-xl border p-2 transition-all duration-300",
-                                "border-white/[0.04] bg-white/[0.02] hover:border-white/[0.08]"
-                            )}>
+                                "relative w-full flex items-center gap-2")}>
                                 {/* Key Input */}
                                 <input
                                     type="text"
                                     value={item.key}
                                     placeholder="Key"
                                     onChange={(e) => updateItem(index, e.target.value, item.value)}
-                                    className="flex-1 bg-transparent border-none text-[12px] text-neutral-200 font-medium placeholder:text-neutral-700 focus:outline-none"
+                                    className="flex-1 w-full! bg-transparent border-none text-[12px] text-neutral-200 font-medium placeholder:text-neutral-700 focus:outline-none"
                                 />
 
                                 <div className="text-neutral-700 text-[10px]">:</div>
@@ -117,7 +125,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                             value={item.value}
                                             variables={availableVariables as any}
                                             onChange={(val) => updateItem(index, item.key, val)}
-                                            className="!min-h-[32px] text-[11px]"
+                                            className="!min-h-[32px] w-full! text-[11px]"
                                         />
                                     ) : (
                                         <input
@@ -125,19 +133,10 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                             value={item.value}
                                             placeholder="Value"
                                             onChange={(e) => updateItem(index, item.key, e.target.value)}
-                                            className="w-full bg-transparent border-none text-[12px] text-neutral-300 placeholder:text-neutral-700 focus:outline-none"
+                                            className="w-full! bg-transparent border-none text-[12px] text-neutral-300 placeholder:text-neutral-700 focus:outline-none"
                                         />
                                     )}
                                 </div>
-
-                                {/* Actions */}
-                                <button
-                                    type="button"
-                                    onClick={() => removeItem(index)}
-                                    className="text-neutral-600 hover:text-red-400 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <Trash2 size={11} />
-                                </button>
                             </div>
                         </div>
                     ))}

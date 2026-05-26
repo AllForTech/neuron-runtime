@@ -120,9 +120,9 @@ export default function NodeConfigPanel() {
                         </button>
                     </DialogTrigger>
 
-                    <DialogContent className="max-w-[90vw] w-[1200px] h-[85vh] p-0 bg-neutral-950 border-neutral-900 shadow-2xl flex flex-col overflow-hidden">
+                    <DialogContent className="max-w-[91vw] w-[1200px] h-[85vh] p-0 bg-neutral-950 border-neutral-900 border-2 shadow-2xl rounded-2xl! flex flex-col no-scrollbar! overflow-hidden">
                         {/* Themed Dialog Header */}
-                        <DialogHeader className="px-8 py-6 border-b border-white/[0.04] flex-row items-center justify-between space-y-0 shrink-0">
+                        <DialogHeader className="px-8 py-4.5 border-b border-white/[0.04] flex-row items-center justify-between space-y-0 shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white">
                                     <Sparkles size={18} strokeWidth={1.5} />
@@ -131,14 +131,14 @@ export default function NodeConfigPanel() {
                                     <DialogTitle className="text-sm font-bold tracking-tight text-white">
                                         {selectedNode?.data?.meta?.name || selectedNode?.type}
                                     </DialogTitle>
-                                    <p className="text-[11px] text-neutral-500 mt-0.5">Advanced Configuration Engine</p>
+                                    <p className="text-[11px] text-neutral-500 mt-0.5">Advanced Configurations</p>
                                 </div>
                             </div>
                         </DialogHeader>
 
                         {/* Large Render Area */}
-                        <div className="flex-1 overflow-y-auto p-12 scrollbar-thin scrollbar-thumb-white/[0.05]">
-                            <div className="max-w-3xl mx-auto">
+                        <div className="flex-1 py-4 px-8! overflow-y-auto no-scrollbar">
+                            <div className="max-w-full no-scrollbar mx-auto">
                                 <NodeConfigRenderer
                                     schema={nodeDef}
                                     values={values}
@@ -148,10 +148,10 @@ export default function NodeConfigPanel() {
                         </div>
 
                         {/* Dialog Footer */}
-                        <div className="px-8 py-4 bg-white/[0.01] border-t border-white/[0.04] flex justify-end">
+                        <div className="px-8 py-2.5 bg-white/[0.01] border-t border-white/[0.04] flex justify-end">
                             <button
                                 onClick={() => setIsExpanded(false)}
-                                className="px-6 py-2 rounded-lg bg-white text-black text-[11px] font-bold uppercase tracking-widest hover:bg-neutral-200 transition-colors"
+                                className="px-6 py-2 rounded-lg bg-white text-black text-[11px] font-bold uppercase tracking-widest hover:bg-neutral-200 active:scale-[0.97] shadow-[0_0_20px_-5px_rgba(255,255,255,0.4)] transition-colors"
                             >
                                 Done
                             </button>

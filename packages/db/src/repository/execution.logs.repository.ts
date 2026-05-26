@@ -1,7 +1,7 @@
 
 import { eq, and, asc } from "drizzle-orm";
-import {NewExecutionLog} from "../types/index.js";
-import {executionLogs} from "../schemas/index.js";
+import {NewExecutionLog} from "../types";
+import {executionLogs} from "../schemas";
 import {db} from "../client.js";
 
 export async function createExecutionLog(data: NewExecutionLog) {
