@@ -49,16 +49,11 @@ export function SelectField({
                         )}
                     >
                         <div className="flex items-center gap-2.5 overflow-hidden">
-                            {/*<ChevronDown size={11} className="shrink-0 text-neutral-600 group-hover:text-neutral-400 transition-colors" />*/}
                             <SelectValue 
                                 placeholder={field.placeholder as string || "Select option..."}
                                 className="text-neutral-400"
                             />
                         </div>
-                        {/*<ChevronDown */}
-                        {/*    size={12} */}
-                        {/*    className="ml-auto text-neutral-600 group-hover:text-neutral-400 transition-colors" */}
-                        {/*/>*/}
                     </SelectTrigger>
 
                     <SelectContent

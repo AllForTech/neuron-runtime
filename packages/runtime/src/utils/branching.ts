@@ -8,6 +8,13 @@ export function getEdgeTargets(
     output: any,
     signal: ExecutionSignal
 ): string[] {
+    
+    if (type.startsWith("Trigger.")) {
+        return edges
+            .filter(e => e.source === nodeId)
+            .map(e => e.target);
+    }
+    
     // 1. Logic Nodes (Binary Condition)
     if (type === "Logic.Condition") {
         const branch = output ? "true" : "false";

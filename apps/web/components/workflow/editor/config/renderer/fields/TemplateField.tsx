@@ -30,7 +30,7 @@ export function TemplateField({ field, values, onChange }: any) {
                 placeholder={field.placeholder}
                 disabled={field.disabled}
                 onChange={(val) => onChange(field.path, val)}
-                className={"min-h-[120px] h-full"}
+                className={"min-h-[120px] z-50 h-full"}
             />
         </FieldWrapper>
     );

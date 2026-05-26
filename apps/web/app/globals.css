@@ -5,15 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 * {
-  box-sizing: border-box !important ;
-    font-family: var(--font-urbanist), sans-serif;
+  box-sizing: border-box;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-    --font-sans: var(--font-urbanist), ui-sans-serif, system-ui;
-    --font-geist: var(--font-geist-sans), sans-serif;
+    --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui;
     --font-mono: var(--font-geist-mono), monospace;
     --font-urbanist: var(--font-urbanist), sans-serif;
     --font-landing: var(--font-urbanist), sans-serif;
@@ -137,7 +136,6 @@
     @apply bg-background text-foreground;
     @apply subpixel-antialiased;
       font-family: var(--font-geist-sans), sans-serif;
-    text-rendering: optimizeLegibility;
   }
 }
 

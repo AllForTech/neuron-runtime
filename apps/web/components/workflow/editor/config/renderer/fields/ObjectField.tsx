@@ -1,7 +1,6 @@
 'use client';
 
 import React, { memo } from 'react';
-import { motion } from 'framer-motion';
 import { Box } from 'lucide-react';
 import { ObjectFieldSchema } from "@neuron/shared";
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
@@ -14,11 +13,8 @@ export function ObjectField({ field, values, onChange }: {
     onChange: (path: string, value: any) => void
 }) {
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="w-full flex flex-col gap-4"
-        >
+        <div className="w-full flex flex-col gap-4">
+            {/* Header Section with Divider */}
             {field.label && (
                 <div className="flex items-center gap-2.5 pt-1">
                     <div className="flex items-center justify-center w-5 h-5 rounded-md bg-white/[0.03] text-neutral-600">
@@ -27,16 +23,20 @@ export function ObjectField({ field, values, onChange }: {
                     <span className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
                         {field.label}
                     </span>
+                    {/* Horizontal Rail */}
                     <div className="h-px flex-1 bg-white/[0.04]" />
                 </div>
             )}
 
+            {/* Container Surface */}
             <div className={cn(
                 "relative w-full rounded-xl border border-white/[0.03] bg-white/[0.01] p-4 transition-all duration-300",
                 "hover:border-white/[0.06] hover:bg-white/[0.02]"
             )}>
+                {/* Visual Depth Layer */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-neutral-950/20 pointer-events-none rounded-xl" />
-                
+
+                {/* Dynamic Grid Layout */}
                 <div className={cn("relative grid gap-y-3", getLayoutClass(field.layout))}>
                     {field.fields.map((subField, index) => (
                         <ConfigFieldRenderer
@@ -48,6 +48,6 @@ export function ObjectField({ field, values, onChange }: {
                     ))}
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

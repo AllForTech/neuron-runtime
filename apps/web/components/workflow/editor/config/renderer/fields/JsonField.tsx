@@ -52,6 +52,12 @@ export function JsonField({ field, values, onChange }: JsonFieldProps) {
                     '.cm-scroller': { overflow: 'auto' },
                     '&.cm-focused': { outline: 'none' },
                     '.cm-content': { fontFamily: 'JetBrains Mono, monospace' },
+                    '.cm-gutters': {
+                        backgroundColor: '#0a0a0a',
+                        borderRight: '1px solid rgba(255,255,255,0.05)'
+                    },
+                    '.cm-activeLineGutter': { backgroundColor: 'rgba(255,255,255,0.02)' },
+                    '.cm-activeLine': { backgroundColor: 'rgba(255,255,255,0.02)' },
                 }),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
