@@ -26,11 +26,11 @@ import { WorkflowEditorActionType } from '@/constants';
 import { EmptyGraphMenu } from '@/components/workflow/editor/EmptyGraphContextMenu';
 import DynamicNode from '@/components/workflow/editor/nodes/DynamicNode';
 import { EditorLoader } from '@/components/workflow/editor/EditorLoader';
-import { DeployWorkflowPanel } from '@/components/workflow/editor/dialog/DeployWorkflowDialog';
 import TriggerNode from '@/components/workflow/editor/nodes/TriggerNode';
 import {DndProvider, DroppableZone} from "@neuron/ui";
 import {EditorLayout} from "@/components/workflow/editor/layout/EditorLayout";
 import { EditorTopMenu } from "./menu/EditorTopMenu";
+import {DeploymentPanel} from "@/components/workflow/editor/Panel/deployment/DeploymentPanel";
 
 const snapGrid: [number, number] = [80, 80];
 
@@ -215,57 +215,59 @@ export function Editor() {
     // Render
     // --------------------------------------------
 
-    if (isWorkflowLoading) {
-        return <EditorLoader />;
-    }
-
     return (
-        <DndProvider onMove={handleDnd}>
-            <DroppableZone className={"screen"} id={null}>
-                <EditorLayout>
-                    <ReactFlow
-                        className={'container-full'}
-                        nodes={graphNodes}
-                        edges={graphEdges}
-                        nodeTypes={nodeTypes}
-                        onNodesChange={handleNodesChange}
-                        onEdgesChange={handleEdgesChange}
-                        onNodeDragStop={onNodeDragStop}
-                        onConnect={onConnect}
-                        onNodeDoubleClick={handleNodeDoubleClick}
-                        fitView
-                        snapToGrid={true}
-                        snapGrid={snapGrid}
-                        minZoom={0.12}
-                        maxZoom={5}
-                    >
-                        <Background
-                            color={'#121212'}
-                            gap={80}
-                            variant={BackgroundVariant.Cross}
-                            size={18}
-                        />
+      <>
+          {isWorkflowLoading ? (
+              <EditorLoader />
+          ) : (
+              <DndProvider onMove={handleDnd}>
+                  <DroppableZone className={"screen"} id={null}>
+                      <EditorLayout>
+                          <ReactFlow
+                              className={'container-full'}
+                              nodes={graphNodes}
+                              edges={graphEdges}
+                              nodeTypes={nodeTypes}
+                              onNodesChange={handleNodesChange}
+                              onEdgesChange={handleEdgesChange}
+                              onNodeDragStop={onNodeDragStop}
+                              onConnect={onConnect}
+                              onNodeDoubleClick={handleNodeDoubleClick}
+                              fitView
+                              snapToGrid={true}
+                              snapGrid={snapGrid}
+                              minZoom={0.12}
+                              maxZoom={5}
+                          >
+                              <Background
+                                  color={'#121212'}
+                                  gap={80}
+                                  variant={BackgroundVariant.Cross}
+                                  size={18}
+                              />
 
-                        <EditorTopMenu />
+                              <EditorTopMenu />
 
-                        {graphNodes.length === 0 && (
-                            <Panel
-                                position="top-center"
-                                className={'container-fit canter top-[40%]!'}
-                            >
-                                <EmptyGraphMenu onAddNode={handleAddNode} />
-                            </Panel>
-                        )}
+                              {graphNodes.length === 0 && (
+                                  <Panel
+                                      position="top-center"
+                                      className={'container-fit canter top-[40%]!'}
+                                  >
+                                      <EmptyGraphMenu onAddNode={handleAddNode} />
+                                  </Panel>
+                              )}
 
-                        <DeployWorkflowPanel
-                            isOpen={isDeployWorkflowDialogOpen}
-                            onOpenChange={setIsDeployWorkflowDialogOpen}
-                            workflowName={editorState.workflow?.name}
-                        />
+                              <DeploymentPanel
+                                  isOpen={isDeployWorkflowDialogOpen}
+                                  onOpenChange={setIsDeployWorkflowDialogOpen}
+                                  workflowName={editorState.workflow?.name}
+                              />
 
-                    </ReactFlow>
-                </EditorLayout>
-            </DroppableZone>
-        </DndProvider>
+                          </ReactFlow>
+                      </EditorLayout>
+                  </DroppableZone>
+              </DndProvider>
+          )}
+      </>
     );
 }

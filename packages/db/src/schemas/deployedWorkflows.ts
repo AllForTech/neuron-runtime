@@ -7,8 +7,7 @@ export const deployedWorkflows = pgTable("deployed_workflows", {
 
     workflowId: uuid("workflow_id")
         .references(() => workflows.id)
-        .notNull()
-        .unique(),
+        .notNull(),
 
     nodes: jsonb("nodes").notNull(),
     edges: jsonb("edges").notNull(),

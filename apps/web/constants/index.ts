@@ -22,7 +22,7 @@ import {
     Send, LucideIcon,
 } from 'lucide-react';
 import { NodeType } from "@neuron/shared";
-import { SectionType } from '@/components/layout/hero/HeroSection';
+
 
 export * from './editor-panel';
 export * from './panel-registry';
@@ -172,103 +172,6 @@ export enum WorkflowEditorActionType {
   DELETE_EXECUTIONS = 'DELETE_EXECUTIONS',
 }
 
-export interface IntegrationAction {
-  id: string;
-  label: string;
-  description: string;
-  fields: {
-    id: string;
-    label: string;
-    type: 'string' | 'textarea' | 'select';
-    placeholder?: string;
-    options?: { label: string; value: string }[];
-  }[];
-}
-
-export const INTEGRATION_MANIFEST: Record<
-  string,
-  { label: string; actions: IntegrationAction[] }
-> = {
-  slack: {
-    label: 'Slack',
-    actions: [
-      {
-        id: 'postMessage',
-        label: 'Send Message',
-        description: 'Post a message to a specific channel.',
-        fields: [
-          {
-            id: 'channel',
-            label: 'Channel ID',
-            type: 'string',
-            placeholder: 'C12345678',
-          },
-          {
-            id: 'text',
-            label: 'Message Text',
-            type: 'textarea',
-            placeholder: 'Hello from Jaguar!',
-          },
-        ],
-      },
-    ],
-  },
-  whatsapp: {
-    label: 'WhatsApp',
-    actions: [
-      {
-        id: 'sendTemplate',
-        label: 'Send Template Message',
-        description: 'Send an approved WhatsApp template.',
-        fields: [
-          {
-            id: 'phoneNumber',
-            label: 'Recipient Phone',
-            type: 'string',
-            placeholder: '234...',
-          },
-          { id: 'templateName', label: 'Template Name', type: 'string' },
-        ],
-      },
-    ],
-  },
-};
-
-export const NEURON_PILLARS = [
-  {
-    title: 'Logical Mesh',
-    icon: Share2,
-    desc: 'A unified communication fabric that bridges fragmented APIs into a single, type-safe execution stream. No more glue code.',
-    color: '#6366f1', // Indigo
-    gridClass: 'md:col-span-2',
-    delay: 0.1,
-  },
-  {
-    title: 'Edge Runtime',
-    icon: Zap,
-    desc: 'Low-latency units designed for high-precision payloads at the source.',
-    color: '#10b981', // Emerald
-    gridClass: 'md:col-span-1',
-    delay: 0.2,
-  },
-  {
-    title: 'Intent Analysis',
-    icon: Brain,
-    desc: 'Translating natural language intent into executable system commands in real-time.',
-    color: '#a855f7', // Purple
-    gridClass: 'md:col-span-1',
-    delay: 0.3,
-  },
-  {
-    title: 'Secure Sandbox',
-    icon: Shield,
-    desc: 'Isolated execution environments for third-party integrations, keeping your core kernel untouchable and resilient.',
-    color: '#ef4444', // Rose
-    gridClass: 'md:col-span-2',
-    delay: 0.4,
-  },
-];
-
 export type FloatingItem = {
   title: string;
   icon: any;
@@ -276,88 +179,5 @@ export type FloatingItem = {
   side: 'left' | 'right';
 };
 
-export const DATA: Record<SectionType, FloatingItem[]> = {
-  intro: [],
-  features: [
-    {
-      title: 'Execution Engine',
-      icon: Cpu,
-      side: 'left',
-      desc: 'High-performance runtime built for executing node-based workflows with deterministic state handling and asynchronous task coordination.',
-    },
-    {
-      title: 'Integration Layer',
-      icon: Workflow,
-      side: 'right',
-      desc: 'Abstracted interface for connecting external APIs, services, and webhooks into a unified execution pipeline.',
-    },
-    {
-      title: 'State Manager',
-      icon: Layers,
-      side: 'left',
-      desc: 'Maintains data consistency across nodes, ensuring reliable propagation of inputs, outputs, and intermediate transformations.',
-    },
-    {
-      title: 'Secure Connections',
-      icon: Terminal,
-      side: 'right',
-      desc: 'Handles credential isolation and authentication flows for third-party services with strict access boundaries.',
-    },
-  ],
-
-  capabilities: [
-    {
-      title: 'Real-Time Execution',
-      icon: Activity,
-      side: 'left',
-      desc: 'Event-driven processing engine capable of executing workflows instantly with full visibility into each step.',
-    },
-    {
-      title: 'Conditional Routing',
-      icon: GitBranch,
-      side: 'right',
-      desc: 'Dynamic branching logic that adapts execution paths based on runtime data and evaluation results.',
-    },
-    {
-      title: 'Context Propagation',
-      icon: Cpu,
-      side: 'left',
-      desc: 'Ensures every node operates with accurate upstream data through structured context resolution.',
-    },
-    {
-      title: 'Composable Pipelines',
-      icon: Workflow,
-      side: 'right',
-      desc: 'Build modular workflows by chaining nodes into reusable, scalable execution pipelines.',
-    },
-  ],
-
-  demos: [
-    {
-      title: 'Content Generation Flow',
-      icon: Layers,
-      side: 'left',
-      desc: 'Automates blog creation by combining LLM nodes, external data sources, and transformation steps into a single pipeline.',
-    },
-    {
-      title: 'API Orchestration',
-      icon: Terminal,
-      side: 'right',
-      desc: 'Coordinates multiple API calls, handles responses, and transforms data across services in real-time.',
-    },
-    {
-      title: 'Decision Automation',
-      icon: GitBranch,
-      side: 'left',
-      desc: 'Implements logic-driven workflows that evaluate conditions and route execution intelligently.',
-    },
-    {
-      title: 'Hybrid AI Workflows',
-      icon: Activity,
-      side: 'right',
-      desc: 'Combines deterministic logic with LLM-based reasoning for advanced automation scenarios.',
-    },
-  ],
-};
 
 export const SINGLETON_NODE_TYPES: NodeType[] = ['Trigger.Webhook', 'Trigger.Schedule', 'Trigger.Manual', 'Network.Respond', 'Utility.Context'];

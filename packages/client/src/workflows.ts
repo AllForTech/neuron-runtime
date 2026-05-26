@@ -55,6 +55,13 @@ export const workflows = {
             method: 'GET',
         }, token)),
 
+    /** get all deployment */
+    getAllDeployment: (workflowId: string, token: string) =>
+        safeTask(() => authorizedFetch(`${URL}/workflows/deploy/all/${workflowId}`, {
+            method: 'GET',
+        }, token)),
+
+
     /** Delete a deployment */
     deleteDeployment: (workflowId: string, token: string) =>
         safeTask(() => authorizedFetch(`${URL}/workflows/deploy/${workflowId}`, {

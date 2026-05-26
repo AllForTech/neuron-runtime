@@ -1,6 +1,6 @@
 import {
     createExecution,
-    deleteDeploymentByWorkflowId,
+    deleteDeploymentByWorkflowId, getALLDeploymentByWorkflowId,
     getDeploymentById,
     getDeploymentByWorkflowId,
     saveDeployWorkflowData, updateExecutionStatus
@@ -97,6 +97,33 @@ export const getDeploymentController = async (req: any, res: any) => {
             createdAt: deployment.createdAt,
             updatedAt: deployment.updatedAt,
         } : null);
+    }catch (e: any) {
+
+        console.log(e);
+        return res.status(500).json({
+            error: "Internal server error",
+            message: e.message,
+        });
+    }
+}
+
+export const getAllDeploymentController = async (req: any, res: any) => {
+    try {
+        console.log("[Neuron] Deployments...");
+        const { workflowId } = req.params as any;
+
+        if (!workflowId) {
+            return res.status(400).json({
+                error: "Workflow ID is required",
+            });
+        }
+
+        const deployment = await getALLDeploymentByWorkflowId(workflowId);
+
+        console.log("fetching  all deployed Workflows with date: ", deployment);
+
+        return res.status(200).json(deployment ?? []);
+
     }catch (e: any) {
 
         console.log(e);

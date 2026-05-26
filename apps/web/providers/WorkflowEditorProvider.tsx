@@ -211,7 +211,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.UPDATE_GLOBAL_VARS:
                 return { ...state, globalVariables: action.payload, isDirty: true };
             case WorkflowEditorActionType.SET_DEPLOYMENT:
-                return { ...state, deployment: action.payload };
+                return { ...state, deployment: { [action.payload.id]: action.payload, ...state.deployment } };
             case WorkflowEditorActionType.UPDATE_DIRTY_STATE:
                 return { ...state, isDirty: action.state ?? false };
             case WorkflowEditorActionType.SET_EXECUTIONS:
@@ -427,7 +427,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
 
         setSelectedNode(null);
-        setSelectedHandle(null);
+        // TODO: Observe
+        // setSelectedHandle(null);
         setIsSheetOpen(false);
     };
 
@@ -450,12 +451,14 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     const loadDeployment = async () => {
         try {
             const token = await getSession();
-            const [data, error] = await workflowClient.getDeployment(workflowId, token);
+            const [data, error] = await workflowClient.getAllDeployment(workflowId, token);
             if (error) throw error;
             if (data) {
-                const deploymentRecord:Record<string, any> = {};
+                const deploymentRecord: Record<string, DeployedWorkflow> = {};
 
-                deploymentRecord[(data as DeployedWorkflow).id] = data;
+                for (const dp of data as DeployedWorkflow[])
+                    deploymentRecord[(dp as DeployedWorkflow).id] = dp;
+
                 workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: deploymentRecord });
             }
         } catch (e: any) {
@@ -477,7 +480,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             }, token);
 
             if (error) throw error;
-            workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: (deployed as any)[0] });
+            // TODO: Adjust dispatch logic hare.
+            workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: deployed });
             toast.success('Workflow deployed.');
         } catch (e: any) {
             toast.error(e.message);
@@ -486,6 +490,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
         }
     };
 
+    // TODO: Delete deployment base on deployment ID
     const deleteDeployment = async () => {
         try {
             const token = await getSession();
@@ -508,7 +513,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             if (data) {
                 const logsRecord: Record<string, ExecutionLog> = {};
                 (data as ExecutionLog[]).forEach((e) => (logsRecord[e.id] = e));
-                runtimeDispatch({ type: RuntimeActionType.SET_LOGS, payload: data as any });
+                runtimeDispatch({ type: RuntimeActionType.SET_LOGS, payload: logsRecord as any });
                 return logsRecord;
             }
             return {};

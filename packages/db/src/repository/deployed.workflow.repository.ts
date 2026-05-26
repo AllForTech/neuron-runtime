@@ -30,28 +30,17 @@ export async function getDeploymentById(id: string): Promise<Partial<DeployedWor
 }
 
 export async function saveDeployWorkflowData(workflowId: string, data: any) {
-    return db.transaction(async (tx) => {
-        return tx
-            .insert(deployedWorkflows)
-            .values({
-                ...data,
-                workflowId,
-                updatedAt: new Date(),
-            })
-            .onConflictDoUpdate({
-                target: deployedWorkflows.workflowId,
-                set: {
-                    nodes: data.nodes,
-                    edges: data.edges,
-                    name: data.name,
-                    secretKey: data.secretKey,
-                    private: data.private,
-                    isActive: data.isActive,
-                    updatedAt: new Date(),
-                },
-            })
-            .returning();
-    });
+    const [newDeployment] = await db
+        .insert(deployedWorkflows)
+        .values({
+            ...data,
+            workflowId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        })
+        .returning();
+
+    return newDeployment;
 }
 
 
