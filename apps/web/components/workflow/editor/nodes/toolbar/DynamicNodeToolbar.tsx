@@ -36,6 +36,7 @@ export function DynamicNodeToolbar({
         editorState.runtime?.nodeStatus?.[nodeId] ??
         editorState.runtime?.nodeErrors?.[nodeId] ??
         'idle';
+
   const output =
     editorState.runtime.nodeOutputs?.[nodeId] ||
     editorState.runtime.nodeErrors?.[nodeId];
@@ -54,12 +55,14 @@ export function DynamicNodeToolbar({
     // });
   };
 
+    console.log(`node output for ${nodeType}`, output, editorState.runtime.nodeOutputs, editorState.runtime.nodeErrors);
+
   return (
     <NodeToolbar
       isVisible={isVisible}
       position={Position.Top}
       offset={12}
-      className="z-50"
+      className="z-100"
     >
       <TooltipProvider delayDuration={0}>
         <div
@@ -100,7 +103,7 @@ export function DynamicNodeToolbar({
             nodeType={nodeType}
             config={config}
             nodeData={output}
-            status={status as string}
+            status={status as any}
             className={cn('transition-200 hidden', isVisible && 'block')}
           />
 

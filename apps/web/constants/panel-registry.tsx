@@ -6,16 +6,16 @@ import { PanelSkeletonLoader } from '@/components/workflow/editor/layout/panels/
 
 export * from '@/constants/editor-panel';
 
-const NodeTemplatePanelLazy = dynamic(() => import('@/components/workflow/editor/sheet/templates/NodeTemplatePanel'), { 
+const NodeTemplatePanelLazy = dynamic(() => import('@/components/workflow/editor/Panel/templates/NodeTemplatePanel'), {
     loading: () => <PanelSkeletonLoader /> 
 });
-const NodeConfigPanelLazy = dynamic(() => import('@/components/workflow/editor/sheet/NodeConfigPanel'), { 
+const NodeConfigPanelLazy = dynamic(() => import('@/components/workflow/editor/Panel/NodeConfigPanel'), {
     loading: () => <PanelSkeletonLoader /> 
 });
 const ExecutionTraceLazy = dynamic(() => import('@/components/workflow/editor/executions/ExecutionHistoryPanel'), {
     loading: () => <PanelSkeletonLoader /> 
 });
-const GlobalVariablesSheetLazy = dynamic(() => import('@/components/workflow/editor/sheet/GlobalVariableSheet'), { 
+const GlobalVariablesSheetLazy = dynamic(() => import('@/components/workflow/editor/Panel/GlobalVariableSheet'), {
     loading: () => <PanelSkeletonLoader /> 
 });
 const WorkflowInspectorLazy = dynamic(() => import('@/components/workflow/editor/WorkflowInspector'), { 
@@ -24,7 +24,7 @@ const WorkflowInspectorLazy = dynamic(() => import('@/components/workflow/editor
 const ExecutionHistorySheetLazy = dynamic(() => import('@/components/workflow/editor/executions/ExecutionHistoryPanel'), {
     loading: () => <PanelSkeletonLoader /> 
 });
-const GraphNavigatorLazy = dynamic(() => import('@/components/workflow/editor/sheet/NodesInspector'), { 
+const GraphNavigatorLazy = dynamic(() => import('@/components/workflow/editor/Panel/NodesInspector'), {
     loading: () => <PanelSkeletonLoader /> 
 });
 

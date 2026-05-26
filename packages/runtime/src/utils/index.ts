@@ -79,7 +79,6 @@ export async function resolveTemplate(
 
     if (isSingleVar) {
         const path = trimmed.slice(2, -2).trim();
-        // FIX: Pass the entire 'options' object, not 'options?.variables'
         return await extractValue(path, context, options);
     }
 
@@ -89,7 +88,6 @@ export async function resolveTemplate(
 
     for (const match of matches) {
         const [fullMatch, path] = match;
-        // FIX: Pass the entire 'options' object here as well
         const resolvedValue = await extractValue(path!, context, options);
 
         if (resolvedValue !== undefined && resolvedValue !== null) {

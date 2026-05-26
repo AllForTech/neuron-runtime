@@ -69,13 +69,13 @@ export function IdentityHeadline({ headlines, activeIndex }: HeroContentProps) {
             {/* Added justify-center for mobile, lg:justify-start for desktop, and flex-wrap in case of narrow screens */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-4">
                 <button
-                    onClick={() => router.push('/sign-in')}
+                    onClick={() => router.push('/auth')}
                     className="flex items-center gap-2 px-6 py-2.5 bg-foreground text-background rounded-lg font-semibold text-sm hover:bg-neutral-300 transition-colors">
                     Get Started
                     <ArrowRight size={16} strokeWidth={2.5} />
                 </button>
 
-                <button className="flex items-center gap-2 px-6 py-2.5 bg-transparent border border-neutral-800 text-neutral-300 rounded-lg font-semibold text-sm hover:bg-neutral-900 transition-colors">
+                <button disabled={true} className="flex items-center gap-2 px-6 py-2.5 bg-transparent border border-neutral-800 text-neutral-300 rounded-lg font-semibold text-sm hover:bg-neutral-900 transition-colors">
                     <Terminal size={16} />
                     View Documentation
                 </button>

@@ -1,159 +1,127 @@
-# Turborepo starter
+# Neuron
 
-This Turborepo starter is maintained by the Turborepo core team.
+![Neuron Hero](apps/web/assets/neuron-hero-view-screenshot.png)
 
-## Using this example
+Neuron is a programmable workflow platform designed to move beyond static automation into adaptive execution systems. It allows users to design, deploy, and operate workflows that do more than follow predefined steps, they can interpret data, make decisions, and evolve based on context.
 
-Run the following command:
+At its core, Neuron is built around the idea that workflows should behave less like rigid pipelines and more like dynamic systems. Instead of simply chaining actions together, it enables the creation of interconnected processes where data flows, transforms, and influences outcomes in real time.
 
-```sh
-npx create-turbo@latest
-```
+---
 
-## What's inside?
+## What Neuron Is
 
-This Turborepo includes the following packages/apps:
+![Neuron Editor](apps/web/assets/neuron-dashboard-screenshot.png)
 
-### Apps and Packages
+Neuron is a system for building and running intelligent workflows.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+It provides a structured environment where logic, integrations, and decision-making mechanisms come together into a single execution model. Workflows are visually composed, but their behavior is not limited to linear execution. They can branch, adapt, and respond to changing inputs, making them suitable for both simple automations and complex, multistep processes.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Rather than treating automation as a fixed sequence of steps, Neuron treats it as a living system capable of reacting, reasoning, and coordinating across different services and data sources.
 
-### Utilities
+---
 
-This Turborepo has some additional tools already setup for you:
+## Core Capabilities
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Visual Workflow Construction
 
-### Build
+![Neuron Editor](apps/web/assets/neuron-editor-screenshot.png)
 
-To build all apps and packages, run the following command:
+Neuron allows workflows to be designed as connected nodes, where each node represents a specific operation or piece of logic. These nodes can be combined to form complex systems that are easy to understand at a glance while remaining powerful under the hood.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Workflows are not constrained to linear paths. They can branch, merge, and dynamically determine execution paths based on incoming data.
 
-```sh
-cd my-turborepo
-turbo build
-```
+---
 
-Without global `turbo`, use your package manager:
+### Real-Time and Long-Lived Execution
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
-```
+Neuron supports both single-run executions and long-lived processes. Workflows can act as persistent systems that listen for events, maintain state, and continuously process incoming data streams.
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+This enables use cases such as real-time data handling, event-driven systems, and continuous monitoring without needing to re-trigger workflows manually.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo build --filter=docs
-```
+### Intelligent Decision Systems
 
-Without global `turbo`:
+Neuron introduces decision-making directly into workflows. Instead of relying solely on predefined conditions, workflows can evaluate inputs, apply transformations, and determine outcomes dynamically.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+This includes support for structured logic as well as more advanced reasoning layers, allowing workflows to behave in a way that feels adaptive rather than scripted.
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+### AI Integration as a First-Class Concept
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+AI is not treated as an external add-on. It is embedded directly into the workflow model.
 
-```sh
-cd my-turborepo
-turbo dev
-```
+Neuron allows workflows to incorporate AI-driven nodes that can:
 
-Without global `turbo`, use your package manager:
+- interpret and transform data
+- generate structured outputs
+- interact with tools and external systems
+- operate within controlled execution loops
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+These AI components can use context, memory, and tools to make decisions during execution, enabling workflows that can reason about their inputs rather than simply process them.
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Tooling and External Integrations
 
-```sh
-turbo dev --filter=web
-```
+Neuron provides a unified way to interact with external services such as messaging platforms, APIs, and third-party systems.
 
-Without global `turbo`:
+Integrations are modeled as reusable actions that can be configured and executed within workflows. This allows users to connect systems together without losing control over how data is handled or transformed between steps.
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+---
 
-### Remote Caching
+### Secure Execution and Deployment
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Workflows can be deployed and accessed through controlled endpoints. Each deployment is isolated and secured, ensuring that execution can be triggered safely from external systems.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+This makes it possible to integrate workflows into other platforms, applications, or services while maintaining strict control over access and behavior.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+### Context and Memory Awareness
 
-```sh
-cd my-turborepo
-turbo login
-```
+Neuron supports context-aware execution by allowing workflows to work with structured data, historical information, and derived insights.
 
-Without global `turbo`, use your package manager:
+Rather than relying only on immediate inputs, workflows can incorporate relevant context to improve decision-making. This enables more accurate processing, especially in systems that require continuity or awareness of previous states.
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
+---
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Data Transformation and Composition
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Data is central to every workflow in Neuron. The platform provides flexible ways to transform, reshape, and route data between nodes.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Users can construct workflows that:
 
-```sh
-turbo link
-```
+- combine multiple data sources
+- apply custom transformations
+- extract meaningful structures from raw inputs
+- pass results seamlessly between steps
 
-Without global `turbo`:
+This makes Neuron suitable for building pipelines that are both expressive and maintainable.
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
+---
 
-## Useful Links
+## What Neuron Enables
 
-Learn more about the power of Turborepo:
+Neuron is designed to support a wide range of use cases, including:
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- automated data processing pipelines
+- event-driven systems reacting to real-time inputs
+- AI-assisted decision workflows
+- integrations between multiple platforms and services
+- systems that require both logic and adaptability
+
+It is not limited to a single domain. Instead, it provides a flexible foundation for building systems that need to coordinate actions, interpret data, and produce outcomes reliably.
+
+---
+
+## Philosophy
+
+Neuron is built on a simple idea:
+
+Workflows should not just execute, they should understand, adapt, and evolve.
+
+By combining structured logic, real-time execution, and intelligent components, Neuron moves beyond traditional automation into a model where systems can operate with awareness and flexibility.
+
+It is a platform for building not just workflows, but systems that behave with intent.

@@ -1,10 +1,19 @@
-import {NodeExecutor, NodeExecutorContext, ExecutorOutput, transformToObject} from "@neuron/shared";
+import {NodeExecutor, NodeExecutorContext, ExecutorOutput, transformToObject, logger} from "@neuron/shared";
 import { HttpNodeConfig } from "./index.js";
 
 export const httpNodeExecutor: NodeExecutor = async ({
+    nodeType,
                                                  config,
                                              }: NodeExecutorContext): Promise<ExecutorOutput> => {
     const { url, method, headers, body } = config as HttpNodeConfig;
+
+
+    logger.debug("Runtime Executor", `Config data from node type ${nodeType}`, {
+        url,
+        method,
+        body,
+        headers,
+    })
 
     const formattedHeaders = transformToObject(headers, { isHeader: true });
 

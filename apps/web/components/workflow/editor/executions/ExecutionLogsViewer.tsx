@@ -92,7 +92,7 @@ function ExecutionLogs({
           <div className="flex items-center gap-2">
             <Timer className="h-3 w-3 text-neutral-600" />
             <span className="text-[10px] text-neutral-500">
-              {execution?.durationMs || 0}ms
+              {(execution as any)?.durationMs || 0}ms
             </span>
           </div>
         </div>

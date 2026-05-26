@@ -18,7 +18,7 @@ export function SceneRuntime({ runtime, children }: SceneRuntimeProps) {
     return (
         <SceneRuntimeContext.Provider value={{ runtime }}>
             <div
-                className="fixed inset-0 w-screen h-screen overflow-hidden bg-background"
+                className="fixed font-landing! inset-0 w-screen h-screen overflow-hidden bg-background"
                 style={{
                     willChange: 'transform',
                 }}

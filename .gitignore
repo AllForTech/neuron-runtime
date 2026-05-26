@@ -38,3 +38,9 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Ignore context and rules directories as requested
+context/
+rules/
+@opencode.json
+AGENTS.md

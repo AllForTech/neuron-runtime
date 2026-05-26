@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Settings2, ArrowLeft } from 'lucide-react';
 import { ContextRegistrationSheet } from '../editor/sheet/ContextRegistrationSheet';
 import { NodeMeta } from '@/components/workflow/editor/nodes/NodeMeta';
-import { ExecutionConfigSettings } from './sheet/ExecutionConfigSettings';
+import { ExecutionConfigSettings } from './Panel/ExecutionConfigSettings';
 import { NodeExecutionConfig } from '@neuron/shared';
 
 interface ReusableSheetProps {

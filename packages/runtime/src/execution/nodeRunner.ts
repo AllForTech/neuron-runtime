@@ -42,7 +42,7 @@ export class NodeRunner {
                     () =>
                         executor({
                             nodeType: node.type as NodeType,
-                            config: node.config as BaseNodeConfig,
+                            config: resolvedConfig as BaseNodeConfig,
                             input: resolvedConfig
                         }),
                     policy.timeoutMs

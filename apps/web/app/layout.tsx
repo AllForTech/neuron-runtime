@@ -28,23 +28,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`no-scrollbar ${urbanist.variable} scroll-smooth`}
-      suppressHydrationWarning
-    >
-      <body
-        id={'hide-scrollbar'}
-        className={`${urbanist.variable} no-scrollbar dark antialiased`}
-      >
+    return (
+        <html
+            lang="en"
+            className={`no-scrollbar ${urbanist.variable} ${geistSans.variable} ${geistMono.variable} scroll-smooth`}
+            suppressHydrationWarning
+        >
+        <body
+            id={'hide-scrollbar'}
+            // Combined all font variables here so they are available to all child components
+            className={`${geistSans.className} no-scrollbar dark antialiased`}
+        >
         <Providers>{children}</Providers>
         <Toaster />
-      </body>
-    </html>
-  );
+        </body>
+        </html>
+    );
 }
