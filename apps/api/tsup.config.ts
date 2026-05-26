@@ -13,6 +13,5 @@ export default defineConfig({
     },
     clean: true,
     shims: true,
-    onSuccess: "node -r dotenv/config dist/index.js",
     noExternal: ['@neuron/shared', '@neuron/db', '@neuron/auth', '@neuron/runtime'],
 });
