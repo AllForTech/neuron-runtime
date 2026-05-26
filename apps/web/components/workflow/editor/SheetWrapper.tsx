@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Settings2, ArrowLeft } from 'lucide-react';
-import { ContextRegistrationSheet } from '../editor/sheet/ContextRegistrationSheet';
 import { NodeMeta } from '@/components/workflow/editor/nodes/NodeMeta';
 import { ExecutionConfigSettings } from './Panel/ExecutionConfigSettings';
 import { NodeExecutionConfig } from '@neuron/shared';
@@ -109,14 +108,6 @@ export function SheetWrapper({
                   />
                 )}
                 <div className="space-y-5">{children}</div>
-                {showContextSettings && nodeId && (
-                  <div className="border-t border-neutral-800/50 w-full pt-6">
-                    <p className="mb-4 text-[10px] font-bold tracking-[0.2em] text-neutral-600 uppercase">
-                      Neuron Engine Core
-                    </p>
-                    <ContextRegistrationSheet nodeId={nodeId} />
-                  </div>
-                )}
               </>
             ) : (
               <ExecutionConfigSettings
