@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
+    "dev": "tsx --watch -r dotenv/config src/index.ts",
     "start": "node -r dotenv/config dist/index.js",
     "clean": "rm -rf dist"
   },

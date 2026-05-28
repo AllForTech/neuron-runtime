@@ -36,9 +36,6 @@ export function DecisionNodeHandlesRenderer({
               type="source"
               position={Position.Right}
               id={rule.id}
-              className={cn(
-                '-right-[35px]! bg-neutral-900 shadow-sm transition-all hover:border-blue-400 hover:bg-blue-500'
-              )}
             />
 
             {/* Label preview next to handle */}
@@ -51,8 +48,10 @@ export function DecisionNodeHandlesRenderer({
 
       {/* DEFAULT / ELSE HANDLE */}
       {includeDefault && (
-        <div className="group pointer-events-auto relative mt-auto flex items-center justify-end border-t border-neutral-800/50 pt-4">
-          <span className="absolute right-8 text-[9px] font-bold tracking-tighter text-amber-500/50 uppercase">
+        <div className="group pointer-events-auto relative mt-auto flex items-center justify-end border pt-4">
+          <span className={cn("absolute -right-[250%] text-[9px] font-bold tracking-tighter bg-neutral-900 border-white/15 text-neutral-300 shadow-2xl uppercase",
+              "opacity-0 scale-95 group-hover/handle:opacity-100 group-hover/handle:scale-100 transition-all duration-150"
+          )}>
             Default
           </span>
           <NodeHandle
@@ -60,7 +59,6 @@ export function DecisionNodeHandlesRenderer({
             type="source"
             position={Position.Right}
             id="default-else"
-            className="-right-[35px]! border-amber-900/30! bg-neutral-900 transition-all hover:bg-amber-600"
           />
         </div>
       )}

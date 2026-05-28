@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Settings, Sparkles, ChevronRight, Search, RotateCcw, AlertCircle } from 'lucide-react';
+import { Settings, Sparkles, ChevronRight, RotateCcw, PanelLeftClose } from 'lucide-react';
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
 import { NodeConfigSection } from "@neuron/shared";
 
@@ -19,16 +19,14 @@ interface DialogSectionProps {
     section: NodeConfigSection;
     values: Record<string, any>;
     onChange: (path: string, value: any) => void;
-    defaultValues?: Record<string, any>; // For Reset functionality
+    defaultValues?: Record<string, any>;
 }
 
 export function DialogSectionRenderer({ section, values, onChange, defaultValues }: DialogSectionProps) {
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<string>(section.fields[0]?.id || 'general');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
-    // --- UPGRADE: Smart Filtering & Categorization ---
-    // This allows you to treat "ObjectField" or groups as tabs automatically
     const categories = useMemo(() => {
         return section.fields.map((f: any) => ({
             id: f.id || f.path,
@@ -41,7 +39,6 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
         return section.fields.find((f: any) => (f.id || f.path) === activeTab);
     }, [section.fields, activeTab]);
 
-    // --- UPGRADE: Dirty State Detection ---
     const isDirty = useMemo(() => {
         return JSON.stringify(values) !== JSON.stringify(defaultValues);
     }, [values, defaultValues]);
@@ -100,13 +97,11 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                     "focus:outline-none"
                 )}
             >
-                {/* Surface Polish Layer */}
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-neutral-950/50" />
                 </div>
 
-                {/* Header */}
-                <DialogHeader className="relative px-6 py-4 border-b border-white/[0.04] flex-row items-center justify-between space-y-0">
+                <DialogHeader className="relative px-6 py-4 border-b border-white/[0.04] flex-row items-center justify-between space-y-0 h-[60px] shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white shadow-[0_0_12px_-4px_rgba(255,255,255,0.15)]">
                             <Sparkles size={13} strokeWidth={1.5} />
@@ -117,44 +112,54 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                             </DialogTitle>
                         </div>
                     </div>
-
-                    {/* --- UPGRADE: Internal Search --- */}
-                    <div className="relative group mr-10">
-                        <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-neutral-300 transition-colors" />
-                        <input
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Find parameter..."
-                            className="bg-white/[0.03] min-w-[120px] border border-white/[0.05] rounded-full py-1.5 pl-8 pr-4 text-[10px] text-neutral-200 focus:outline-none focus:border-white/10 w-40 transition-all"
-                        />
-                    </div>
                 </DialogHeader>
 
-                {/* Main Sidebar Layout */}
-                <div className="flex flex-1 overflow-hidden no-scrollbar h-[550px]">
-                    {/* Sidebar Navigation */}
-                    <aside className="w-46 border-r border-white/[0.04] bg-white/[0.01] p-3 flex flex-col no-scrollbar gap-1">
-                        <p className="px-2 pb-2 text-[9px] font-bold text-neutral-700 uppercase tracking-[0.15em]">Categories</p>
+                <div className="flex flex-1 overflow-hidden h-full no-scrollbar">
+                    {/* Collapsible Sidebar */}
+                    <aside
+                        onMouseEnter={() => setIsSidebarExpanded(true)}
+                        onMouseLeave={() => setIsSidebarExpanded(false)}
+                        className={cn(
+                            "border-r border-white/[0.04] bg-white/[0.01] p-3 flex flex-col gap-1 transition-all duration-500 ease-in-out no-scrollbar shrink-0 z-20",
+                            isSidebarExpanded ? "w-48" : "w-[60px]"
+                        )}
+                    >
+                        <div className="flex items-center justify-center h-6 mb-2">
+                            <p className={cn(
+                                "text-[9px] font-bold text-neutral-700 uppercase tracking-[0.15em] transition-opacity duration-300 whitespace-nowrap",
+                                isSidebarExpanded ? "opacity-100" : "opacity-0"
+                            )}>
+                                Categories
+                            </p>
+                        </div>
+
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
                                 onClick={() => setActiveTab(cat.id)}
                                 className={cn(
-                                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-all group",
+                                    "flex items-center rounded-lg text-[11px] font-medium transition-all group overflow-hidden h-9 shrink-0",
                                     activeTab === cat.id
                                         ? "bg-white/[0.06] text-white border border-white/[0.07] shadow-inner"
-                                        : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.02] border border-transparent"
+                                        : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.02] border border-transparent",
+                                    isSidebarExpanded ? "px-3 gap-2.5" : "px-0 justify-center"
                                 )}
                             >
-                                <cat.icon size={12} className={cn(activeTab === cat.id ? "text-white" : "text-neutral-700 group-hover:text-neutral-500")} />
-                                <span className="truncate">{cat.label}</span>
+                                <cat.icon size={12} className={cn(
+                                    "shrink-0",
+                                    activeTab === cat.id ? "text-white" : "text-neutral-700 group-hover:text-neutral-500"
+                                )} />
+                                {isSidebarExpanded && (
+                                    <span className="truncate animate-in fade-in slide-in-from-left-1 duration-300 whitespace-nowrap">
+                                        {cat.label}
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </aside>
 
-                    {/* Content Area */}
-                    <main className="flex-1 overflow-y-auto no-scrollbar! p-8 relative">
-                        <div className="max-w-xl mx-auto flex flex-col gap-8">
+                    <main className="flex-1 overflow-y-auto no-scrollbar p-8 relative">
+                        <div className="max-w-xl mx-auto flex flex-col gap-8 no-scrollbar">
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                 {activeField && (
                                     <ConfigFieldRenderer
@@ -168,10 +173,8 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
                     </main>
                 </div>
 
-                {/* Footer Controls */}
-                <footer className="relative flex items-center justify-between px-6 py-4 border-t border-white/[0.04] bg-[#0D0D0D]">
+                <footer className="relative flex items-center justify-between px-6 py-4 border-t border-white/[0.04] bg-[#0D0D0D] h-[68px] shrink-0">
                     <div className="flex items-center gap-4">
-                        {/* --- UPGRADE: Reset to Default --- */}
                         <button
                             onClick={handleReset}
                             disabled={!isDirty}

@@ -13,7 +13,8 @@
         "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
         "NEXT_PUBLIC_API_ENDPOINT",
         "VAULT_SECRET",
-        "DATABASE_URL"
+        "DATABASE_URL",
+        "ENCRYPTION_KEY"
       ]
     },
     "lint": {

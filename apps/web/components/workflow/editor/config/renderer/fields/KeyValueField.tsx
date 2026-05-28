@@ -33,33 +33,47 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
         return getAvailableUpstreamNodes(selectedNode.id, { nodes, edges });
     }, [selectedNode, nodes, edges]);
 
-    const handleSync = (newItems: { key: string; value: any }[]) => {
-        const jsonObject = newItems.reduce((acc, item) => {
-            if (item.key.trim() !== "") {
-                acc[item.key] = item.value;
-            }
+
+    const addItem = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Create a new array with an empty item and pass it to onChange
+        const newItem = { key: '', value: '' };
+        const updatedItems = [...items, newItem];
+
+        // Directly transforming to the expected object format for the store
+        const updatedObject = updatedItems.reduce((acc, item, idx) => {
+            const k = item.key.trim() || `pending_key_${idx}`;
+            acc[k] = item.value;
+            return acc;
+        }, {} as any);
+
+        onChange(field.path, updatedObject);
+    };
+
+    const updateItem = (index: number, newKey: string, newValue: any) => {
+        const newItems = [...items];
+        newItems[index] = { key: newKey, value: newValue };
+
+        const jsonObject = newItems.reduce((acc, item, idx) => {
+            const k = item.key.trim() || `pending_key_${idx}`;
+            acc[k] = item.value;
             return acc;
         }, {} as Record<string, any>);
 
         onChange(field.path, jsonObject);
     };
 
-    const addItem = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleSync([...items, { key: '', value: '' }]);
-    };
-
-    const updateItem = (index: number, newKey: string, newValue: any) => {
-        const newItems = [...items];
-        newItems[index] = { key: newKey, value: newValue };
-        handleSync(newItems);
-    };
-
     const removeItem = (index: number) => {
-        const newItems = [...items];
-        newItems.splice(index, 1);
-        handleSync(newItems);
+        const newItems = items.filter((_, i) => i !== index);
+        const jsonObject = newItems.reduce((acc, item, idx) => {
+            const k = item.key.trim() || `pending_key_${idx}`;
+            acc[k] = item.value;
+            return acc;
+        }, {} as Record<string, any>);
+
+        onChange(field.path, jsonObject);
     };
 
     return (
@@ -93,7 +107,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                     {items.map((item, index) => (
                         <div
                             key={`${field.path}-${index}`}
-                            className="group gap-1.5 relative  p-2 border-white/[0.04] bg-white/[0.02] hover:border-white/[0.08] rounded-xl border transition-all duration-300"
+                            className="group gap-2 relative  p-2 border-white/[0.04] bg-white/[0.02] hover:border-white/[0.08] rounded-xl border transition-all duration-300"
                         >
                             <div className={'w-full flex items-center justify-end'}>
                                 {/* Actions */}
@@ -110,10 +124,10 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                 {/* Key Input */}
                                 <input
                                     type="text"
-                                    value={item.key}
+                                    value={item.key.includes('pending_key_') ? '' : item.key}
                                     placeholder="Key"
                                     onChange={(e) => updateItem(index, e.target.value, item.value)}
-                                    className="flex-1 w-full! bg-transparent border-none text-[12px] text-neutral-200 font-medium placeholder:text-neutral-700 focus:outline-none"
+                                    className="flex-1 w-full! bg-transparent border border-neutral-600 focus:border-neutral-400 text-[12px] text-neutral-200 font-medium placeholder:text-neutral-700 focus:outline-none"
                                 />
 
                                 <div className="text-neutral-700 text-[10px]">:</div>

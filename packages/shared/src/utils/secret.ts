@@ -1,58 +1,71 @@
-import 'server-only';
+import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 
-// @ts-ignore
-import crypto from "crypto";
+const ALGORITHM = 'aes-256-gcm';
+const IV_LENGTH = 12;
 
-const algorithm = "aes-256-gcm"
+/**
+ * Helper to hydrate and validate the key from the environment
+ */
+const getEncryptionKey = (): Buffer => {
+    const rawKey = process.env.ENCRYPTION_KEY;
 
-export function encrypt(secret: string, text: string) {
-    const key = crypto.createHash("sha256")
-        .update(secret)
-        .digest()
-
-    const iv = crypto.randomBytes(16)
-
-    const cipher = crypto.createCipheriv(
-        algorithm,
-        key,
-        iv
-    )
-
-    const encrypted = Buffer.concat([
-        cipher.update(text, "utf8"),
-        cipher.final()
-    ])
-
-    const tag = cipher.getAuthTag()
-
-    return {
-        content: encrypted.toString("hex"),
-        iv: iv.toString("hex"),
-        tag: tag.toString("hex")
+    if (!rawKey) {
+        throw new Error('ENCRYPTION_KEY is missing from environment variables.');
     }
+
+    // Convert hex string to 32 bytes.
+    // If your key is 64 hex chars, this Buffer will have a length of 32.
+    const keyBuffer = Buffer.from(rawKey, 'hex');
+
+    if (keyBuffer.length !== 32) {
+        throw new Error(`Invalid Key Length: AES-256 requires 32 bytes. Your key provides ${keyBuffer.length} bytes.`);
+    }
+
+    return keyBuffer;
+};
+
+export function encryptSecret(text: string): string {
+    const key = getEncryptionKey();
+    const iv = randomBytes(IV_LENGTH);
+
+    const cipher = createCipheriv(ALGORITHM, key, iv);
+
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    const authTag = cipher.getAuthTag().toString('hex');
+
+    // Return as iv:tag:content
+    return `${iv.toString('hex')}:${authTag}:${encrypted}`;
 }
 
-export function decrypt(secret: string, payload: any) {
-    const key = crypto.createHash("sha256")
-        .update(secret)
-        .digest()
+export function decryptSecret(hash: string): string {
+    const key = getEncryptionKey();
 
-    const decipher = crypto.createDecipheriv(
-        algorithm,
-        key,
-        Buffer.from(payload.iv, "hex")
-    )
+    const [ivPart, authTagPart, encryptedPart] = hash.split(':');
 
-    decipher.setAuthTag(
-        Buffer.from(payload.tag, "hex")
-    )
+    if (!ivPart || !authTagPart || !encryptedPart) {
+        throw new Error('Invalid encryption format: Missing IV, AuthTag, or Content.');
+    }
 
-    const decrypted = Buffer.concat([
-        decipher.update(
-            Buffer.from(payload.content, "hex")
-        ),
-        decipher.final()
-    ])
+    const iv = Buffer.from(ivPart, 'hex');
+    const authTag = Buffer.from(authTagPart, 'hex');
 
-    return decrypted.toString("utf8")
+    const decipher = createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(authTag);
+
+    let decrypted = decipher.update(encryptedPart, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+
+    return decrypted;
+}
+
+export async function getWorkflowSecret(deployment: any) {
+    if (!deployment.secretKey) return null;
+    try {
+        return decryptSecret(deployment.secretKey);
+    } catch (e) {
+        console.error("Integrity check failed: Secret key might be tampered with or ENCRYPTION_KEY changed.");
+        return null;
+    }
 }

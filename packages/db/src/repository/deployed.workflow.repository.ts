@@ -13,7 +13,7 @@ export async function getDeploymentById(id: string): Promise<Partial<DeployedWor
             edges: deployedWorkflows.edges,
             userId: deployedWorkflows.userId,
             secretKey: deployedWorkflows.secretKey,
-            isPrivate: deployedWorkflows.private,
+            private: deployedWorkflows.private,
             isActive: deployedWorkflows.isActive,
             workflowId: deployedWorkflows.workflowId,
         })

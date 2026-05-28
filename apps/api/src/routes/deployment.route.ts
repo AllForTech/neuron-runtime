@@ -3,6 +3,6 @@ import {executeDeployedWorkflowController} from "@/controllers/deploy.workflow.c
 
 const router = Router();
 
-router.get("/:workflowId", executeDeployedWorkflowController);
+router.get("/:deploymentId", executeDeployedWorkflowController);
 
 export default router;

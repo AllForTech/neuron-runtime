@@ -79,12 +79,12 @@ export function DeploymentHistoryItem({ deployment, onDelete }: { deployment: De
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                         <span className="text-[10px] text-neutral-600 uppercase font-black">Endpoint</span>
-                        <div className="flex items-center gap-2 bg-black/40 p-2 rounded-lg border border-white/5">
+                        <div className="flex items-center gap-2 p-2">
                             <a
                                 href={endpoint}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group flex items-center gap-1.5 text-[11px] font-mono text-neutral-200 hover:text-white transition-colors truncate flex-1"
+                                className="group flex items-center gap-1.5 text-[11.5px] font-mono text-neutral-200 hover:text-white hover:underline transition-colors truncate flex-1"
                             >
                                 <span className="truncate">{endpoint}</span>
                                 <ExternalLink size={10} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
