@@ -51,3 +51,6 @@ export const NODE_KIND = {
     // Integration
     INTEGRATION_SERVICE: "Integration.Service",
 } as const;
+
+
+export const  SECRET_PREFIX = 'nrn_live_' as const;

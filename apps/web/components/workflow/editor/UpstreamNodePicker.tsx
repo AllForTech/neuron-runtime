@@ -55,6 +55,9 @@ export function UpstreamNodePicker({
   return (
     <Command
       id={'hide-scrollbar'}
+      style={{
+          zIndex: 1000
+      }}
       className={cn(
         'animate-in z-150! fade-in zoom-in-95 w-72 overflow-hidden rounded-md border border-neutral-700/70 bg-neutral-900! p-0.5 shadow-3xl transition-all duration-100',
         className

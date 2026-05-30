@@ -2,7 +2,7 @@
 
 import React, { memo } from 'react';
 import { Plus, Trash2, ListFilter, Layers } from "lucide-react";
-import { ArrayFieldSchema } from "@neuron/shared";
+import { ArrayFieldSchema, generateId } from "@neuron/shared";
 import { getValueAtPath } from "@/lib/config/path";
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,10 @@ export function ArrayField({ field, values, onChange }: {
 
     const addItem = (e: React.MouseEvent) => {
         e.preventDefault();
-        const newItem = field.defaultItem || {};
+        const newItem = {
+            ...field.defaultItem,
+            _id: generateId()
+        };
         onChange(field.path, [...items, newItem]);
     };
 
@@ -56,7 +59,7 @@ export function ArrayField({ field, values, onChange }: {
             <div className="flex flex-col gap-2">
                 {items.map((item, index) => (
                     <div
-                        key={`${field.path}-${index}`}
+                        key={item._id || `${field.path}-${index}`}
                         className="group relative"
                     >
                         {/* Glass card container */}
@@ -93,6 +96,7 @@ export function ArrayField({ field, values, onChange }: {
                                         key={subField.path}
                                         field={{
                                             ...subField,
+                                            // Ensure path uses index for data binding
                                             path: `${field.path}.${index}.${subField.path}`
                                         }}
                                         values={values}

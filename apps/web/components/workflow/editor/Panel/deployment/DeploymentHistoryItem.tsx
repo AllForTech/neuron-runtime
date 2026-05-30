@@ -84,7 +84,7 @@ export function DeploymentHistoryItem({ deployment, onDelete }: { deployment: De
                                 href={endpoint}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group flex items-center gap-1.5 text-[11.5px] font-mono text-neutral-200 hover:text-white hover:underline transition-colors truncate flex-1"
+                                className="group flex items-center gap-1.5 text-[11.5px] underline font-mono text-neutral-200 hover:text-white hover:underline transition-colors truncate flex-1"
                             >
                                 <span className="truncate">{endpoint}</span>
                                 <ExternalLink size={10} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />

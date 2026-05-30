@@ -127,10 +127,10 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                     value={item.key.includes('pending_key_') ? '' : item.key}
                                     placeholder="Key"
                                     onChange={(e) => updateItem(index, e.target.value, item.value)}
-                                    className="flex-1 w-full! bg-transparent border border-neutral-600 focus:border-neutral-400 text-[12px] text-neutral-200 font-medium placeholder:text-neutral-700 focus:outline-none"
+                                    className="flex-1 w-full! rounded-lg px-3 py-2 bg-white/[0.02] border-2 border-white/[0.06] focus:border-white/[0.42] text-[11px] text-neutral-200 font-semibold placeholder:text-neutral-700 focus:outline-none"
                                 />
 
-                                <div className="text-neutral-700 text-[10px]">:</div>
+                                <div className="text-neutral-600 text-[10px]">:</div>
 
                                 {/* Value Input / Template Area */}
                                 <div className="flex-[2]">
@@ -147,7 +147,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                             value={item.value}
                                             placeholder="Value"
                                             onChange={(e) => updateItem(index, item.key, e.target.value)}
-                                            className="w-full! bg-transparent border-none text-[12px] text-neutral-300 placeholder:text-neutral-700 focus:outline-none"
+                                            className="w-full! rounded-lg px-3 py-2 bg-white/[0.02] border-2 border-white/[0.06] focus:border-white/[0.42] text-[11px] font-semibold text-neutral-200 placeholder:text-neutral-700 focus:outline-none"
                                         />
                                     )}
                                 </div>
@@ -160,7 +160,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                         <button
                             type="button"
                             onClick={addItem}
-                            className="flex flex-col items-center justify-center rounded-xl border border-dashed py-6 border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02] group/empty"
+                            className="flex flex-col w-full! items-center justify-center rounded-xl border border-dashed py-6 border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02] group/empty"
                         >
                             <Key size={16} className="mb-2 text-neutral-700 group-hover/empty:text-neutral-500 transition-colors" />
                             <p className="text-[10px] text-neutral-600 font-medium">No entries. Click to add.</p>
