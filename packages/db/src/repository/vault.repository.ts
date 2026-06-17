@@ -23,10 +23,11 @@ export const findSecretByName = async (name: string, userId: string) => {
         .from(vaultSecrets)
         .where(
             and(
-                eq(vaultSecrets.id, name),
+                eq(vaultSecrets.name, name),
                 eq(vaultSecrets.userId, userId),
             )
         );
+
     return result || null;
 };
 

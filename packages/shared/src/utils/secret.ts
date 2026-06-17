@@ -1,4 +1,5 @@
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+export { SECRET_PREFIX } from "../constants";
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;

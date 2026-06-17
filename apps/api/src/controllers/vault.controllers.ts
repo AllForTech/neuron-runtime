@@ -6,6 +6,7 @@ import {
     findSecretById
 } from "@neuron/db";
 import {AuthRequest} from "./execution.controller";
+import {decryptSecret, encryptSecret, SECRET_PREFIX } from "@neuron/shared/server";
 
 const secret = process.env.VAULT_SECRET!;
 
@@ -30,15 +31,14 @@ export const createSecret = async (req: AuthRequest, res: Response) => {
 
         console.log("Creating encrypted secret...");
 
-        // Utilizing your shared encryption logic
-        // const encrypted = encrypt(secret, value);
+        const encryptedKey = value.startsWith(SECRET_PREFIX) ? value : encryptSecret(value);
 
-        // TODO: Encrypt value
+        // TODO: Remove iv and tag from vault schema
         const newSecret = await insertVaultSecret({
             name,
-            content: value,
-            iv: value,
-            tag: value,
+            content: encryptedKey,
+            iv: encryptedKey,
+            tag: encryptedKey,
             userId,
         });
 
@@ -66,9 +66,11 @@ export const getDecryptedSecret = async (req: AuthRequest, res: Response) => {
         const { id } = req.params as any;
         const secret = await findSecretById(id);
 
-        if (!secret) return res.status(404).json({ error: 'Not found' });
+        if (!secret) return res.status(404).json({ error: 'No Secret found' });
 
-        res.json({ name: secret.name, value: secret.content });
+        const decryptedSecret = secret.content.startsWith(SECRET_PREFIX) ? secret.content : decryptSecret(secret.content)
+
+        res.json({ name: secret.name, value: decryptedSecret });
     } catch (error) {
         console.error("Decryption failed:", error);
         res.status(500).json({ error: 'Decryption failed' });

@@ -478,7 +478,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             const token = await getSession();
             const [deployed, error] = await workflowClient.deploy(workflowId, {
                 ...data,
-                name: editorState.workflow.name,
+                name: editorState.workflow.name || "Untitled",
                 nodes: nodes,
                 edges: Object.values(editorState.graph.edges),
             }, token);
@@ -489,6 +489,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             toast.success('Workflow deployed.');
         } catch (e: any) {
             toast.error(e.message);
+            console.log(e)
         } finally {
             setIsDeploying(false);
         }

@@ -9,7 +9,6 @@ import {supabase} from "@neuron/auth";
 import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "@neuron/db";
 import {executeWorkflow} from "@/engine/execution";
 import {decryptSecret, encryptSecret} from "@neuron/shared/server";
-import {logger} from "@neuron/shared";
 import {timingSafeEqual} from "node:crypto";
 
 
@@ -65,7 +64,7 @@ export const deployWorkflowController = async (req: any, res: any) => {
            isActive: true
        }
 
-       console.log("Deploying Workflow...");
+       console.log("Deploying Workflow...", data);
 
        const deployment = await saveDeployWorkflowData(workflowId, data);
 

@@ -36,6 +36,7 @@ import { DeployedWorkflow } from "@neuron/db";
 import { DeploymentHistoryItem } from "@/components/workflow/editor/Panel/deployment/DeploymentHistoryItem";
 import { generateSecureKey } from "@neuron/shared";
 import { cn } from "@/lib/utils";
+import {Button} from "@/components/ui/button";
 
 export function DeploymentPanel({
                                     isOpen,
@@ -66,8 +67,8 @@ export function DeploymentPanel({
                 <DialogContent
                     className={cn(
                         "z-[9999]! p-0 gap-0 overflow-hidden border-2 border-neutral-900 bg-neutral-950 shadow-2xl",
-                        "max-h-[85vh] w-full max-w-[850px] flex flex-col no-scrollbar",
-                        "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" // Ensures Top-Center logic
+                        "h-[85vh] w-full max-w-[850px] flex flex-col no-scrollbar",
+                        "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                     )}
                 >
                     {/* Header Section - Matches your EditorPanel exactly */}
@@ -130,9 +131,9 @@ export function DeploymentPanel({
                                                         <div className="flex items-center justify-between">
                                                             <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Access Token</Label>
                                                             {secretKey && (
-                                                                <button onClick={() => setShowKey(!showKey)} className="text-neutral-500 hover:text-white transition-colors">
+                                                                <Button variant={'default'} size={'sm'} onClick={() => setShowKey(!showKey)} className="text-neutral-500 hover:text-white transition-colors">
                                                                     {showKey ? <EyeOff size={12} /> : <Eye size={12} />}
-                                                                </button>
+                                                                </Button>
                                                             )}
                                                         </div>
                                                         <div className="flex gap-2">

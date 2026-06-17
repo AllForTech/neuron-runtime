@@ -1,4 +1,5 @@
-import { findSecretByName } from "../repository/index.js";
+import { findSecretByName } from "../repository";
+import {decryptSecret} from "@neuron/shared/server";
 
 export class VaultService {
     private cache: Map<string, string> = new Map();
@@ -8,26 +9,20 @@ export class VaultService {
         this.userId = userId;
     }
 
-    async resolve(key: string): Promise<string> {
-        if (this.cache.has(key)) {
-            return this.cache.get(key)!;
+    async resolve(name: string): Promise<string> {
+        if (this.cache.has(name)) {
+            return this.cache.get(name)!;
         }
 
-        const secret = await findSecretByName(key, this.userId);
+        const secret = await findSecretByName(name, this.userId);
 
         if (!secret) {
-            throw new Error(`Vault secret not found: ${key}`);
+            throw new Error(`Vault secret not found: ${name}`);
         }
 
-        // TODO: Decrypt value before returning.
-        // Decrypt the secret here so the consumer doesn't have to
-        // const decryptedValue = decrypt({
-        //     content: secret.content,
-        //     iv: secret.iv,
-        //     tag: secret.tag,
-        // });
+        const decryptedSecret = secret.content.startsWith("") decryptSecret(secret.content)
 
-        this.cache.set(key, secret.content);
+        this.cache.set(name, decryptedSecret);
         return secret.content;
     }
 }
