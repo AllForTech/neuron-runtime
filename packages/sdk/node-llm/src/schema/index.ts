@@ -8,7 +8,7 @@ export const LLM_NODE_SCHEMA: NodeConfigSchema = {
             id: "model-settings",
             title: "Model Configuration",
             description: "Select your AI provider and tune the generation parameters.",
-            layout: "grid",
+            layout: "column",
             fields: [
                 {
                     id: "provider",
@@ -33,7 +33,7 @@ export const LLM_NODE_SCHEMA: NodeConfigSchema = {
                 },
                 {
                     id: "apiKey",
-                    type: "secret",
+                    type: "template",
                     path: "apiKey",
                     label: "API Key",
                     placeholder: "sk-...",

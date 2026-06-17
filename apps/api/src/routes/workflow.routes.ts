@@ -44,13 +44,5 @@ router.get("/deploy/:workflowId", getDeploymentController);
 router.delete("/deploy/:workflowId", deleteDeploymentController);
 router.get("/deploy/all/:workflowId", getAllDeploymentController);
 
-// --- Workspace / Grouping Management ---
-router.get("/workspaces", getWorkspacesController as any);
-router.post("/workspaces", createWorkspaceController as any);
-router.patch("/workspaces/:id", updateWorkspaceController as any);
-router.delete("/workspaces/:id", deleteWorkspaceController as any);
-
-// Drag & Drop action
-router.post("/workspaces/assign-workflow", assignWorkflowToWorkspaceController as any);
 
 export default router;

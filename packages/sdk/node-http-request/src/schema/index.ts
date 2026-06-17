@@ -8,7 +8,7 @@ export const HTTP_REQUEST_NODE_SCHEMA: NodeConfigSchema = {
             id: "request-settings",
             title: "Request Configuration",
             description: "Configure the outgoing HTTP request parameters.",
-            layout: "grid",
+            layout: "column",
             fields: [
                 {
                     id: "method",
