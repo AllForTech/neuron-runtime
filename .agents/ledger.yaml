@@ -1,0 +1,444 @@
+version: 1
+initiative: "Refactor, cleanup, and modularize Neuron Runtime: module boundaries, isolated logic, Zustand frontend state, security blockers, tooling/CI, and design-token compliance."
+mode: "PLAN APPROVED — branch created; implementation not started"
+plan: ".agents/reports/implementation-plan.md"
+decisions: ".agents/decisions/user-decisions.md"
+
+baseline:
+  branch: main
+  head_commit: 30c939e
+  working_tree: "clean for tracked files at task start; .agents/ created by coordinator during planning"
+  instruction_files_read: ["AGENTS.md", "context/DESIGN_RULES.md"]
+  missing_required_files: ["context/NEURON_RUNTIME.md"]
+
+user_decisions:
+  - "D-01 Preserve HTTP/realtime contracts; allow internal correctness/security fixes."
+  - "D-02 Security fixes are Phase 0 blockers."
+  - "D-03 Repoint AGENTS.md to context/NEURON_ENGINE.md and track context docs."
+  - "D-04 Full phased program."
+  - "D-05 Zustand replaces editor context; all consumers migrated directly in-phase; internal context shape unfrozen."
+
+pre_existing_defects:
+  - id: P-001
+    description: "AGENTS.md:26 mandates missing context/NEURON_RUNTIME.md; context docs ignored by .gitignore:43."
+    remediation: T-100
+    status: open
+  - id: P-002
+    description: "No tests/test runner/test task anywhere."
+    remediation: T-101
+    status: open
+  - id: P-003
+    description: "pnpm lint exits 2 (missing @repo/eslint-config/react-internal.js); frontend lint dead in Next 16."
+    remediation: T-101
+    status: open
+  - id: P-004
+    description: "check-types covers 1/23 packages; fresh tsc fails in api (~20 errors + TS6059), web (13), shared/db."
+    remediation: [T-101, T-102]
+    status: open
+  - id: P-005
+    description: "CI job 'Build and Test' builds only; pnpm 8 vs 9 pinned; no lint/typecheck/test gates."
+    remediation: T-101
+    status: open
+  - id: P-006
+    description: "Broken start:api and start scripts."
+    remediation: T-132
+    status: open
+  - id: P-007
+    description: "vm2 sandbox RCE path + duplicate copy."
+    remediation: T-103
+    status: open
+  - id: P-008
+    description: "Cross-user vault/deployment secret read/delete."
+    remediation: T-104
+    status: open
+  - id: P-009
+    description: "VaultService.resolve returns ciphertext first/plaintext later; hardcoded client AES key; secret logging."
+    remediation: [T-105, T-106]
+    status: open
+  - id: P-010
+    description: "Unvalidated deployment graph, SSRF-capable HTTP node, api_key in query, credentials in configs/logs."
+    remediation: T-106
+    status: open
+  - id: P-011
+    description: "Dead/duplicate engine, transform, branching, registry code."
+    remediation: T-130
+    status: open
+  - id: P-012
+    description: "15 web files import @neuron/db directly."
+    remediation: T-131
+    status: open
+  - id: P-013
+    description: "Duplicate framer-motion/motion and reactflow/@xyflow/react dependencies."
+    remediation: T-132
+    status: open
+  - id: P-014
+    description: "100+ raw hex/Tailwind color violations of DESIGN_RULES.md."
+    remediation: T-133
+    status: open
+  - id: P-015
+    description: "CORS '*', suppressed crashes, unvalidated realtime payloads."
+    remediation: T-134
+    status: open
+
+parallelism_assessment: "Research parallel (2 explore + architect + security + verification). Implementation sequenced by phase; intra-phase parallelism only with disjoint leases recorded in ownership.yaml. Web Zustand work (Phase C) can overlap backend Phase B after security gate T-107."
+
+tasks:
+  - id: T-001
+    objective: "Map architecture, boundaries, dependencies, contracts, and execution flow."
+    owner: explore
+    status: done
+    reports: ["chat report: architecture/flow map with file:line evidence"]
+    evidence: ["Two end-to-end execution paths traced", "Hotspots and boundary leaks cited"]
+    commit: null
+
+  - id: T-002
+    objective: "Audit quality, tests, validation, duplication, dead code, and failure modes."
+    owner: explore
+    status: done
+    evidence: ["Validation commands run with exact outcomes", "Prioritized P0/P1/P2 candidate list"]
+    commit: null
+
+  - id: T-003
+    objective: "Architecture assessment and target module boundaries."
+    owner: architect
+    status: done
+    reports: [".agents/decisions/T-003-architecture.md"]
+    evidence: ["Six-layer boundary model, 3 alternatives, 13 invariants, 10-step migration"]
+    commit: null
+
+  - id: T-004
+    objective: "Security threat model and blocking prerequisites."
+    owner: security
+    status: done
+    evidence: ["Critical/High/Medium findings with file:line", "Must-not-break invariants", "Must-fix-before-refactor list"]
+    commit: null
+
+  - id: T-005
+    objective: "Consolidate research, ask clarifying questions, produce plan, create branch."
+    owner: coordinator
+    status: in_progress
+    evidence: ["Questions asked 2026-11-19; all answered", "Plan written to .agents/reports/implementation-plan.md"]
+    open_risks: ["Branch creation + first commit pending"]
+    commit: null
+
+  - id: T-006
+    objective: "Reconcile research discrepancies with primary evidence."
+    owner: explore
+    status: done
+    evidence: ["8/8 questions answered with exact command output", "context/ tracked set = 1 file; zero tracked build artifacts"]
+    commit: null
+
+  - id: T-007
+    objective: "Zustand frontend architecture addendum with direct consumer migration."
+    owner: architect
+    status: done
+    reports: [".agents/decisions/T-007-zustand-frontend.md"]
+    evidence: ["context7-verified Zustand 5.0.12 patterns", "Four stores, staged migration, explicit T-003 overrides"]
+    commit: null
+
+  - id: T-100
+    objective: "Resolve doc contract: repoint AGENTS.md and track context docs."
+    owner: documenter
+    reviewer: reviewer
+    dependencies: []
+    acceptance: ["AGENTS.md:26 names an existing tracked doc", "git ls-files context lists the docs", "no dangling mandate"]
+    verification: ["git ls-files context", "read AGENTS.md:25-26"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-101
+    objective: "Repair validation harness (check-types, lint, test, CI, pnpm version)."
+    owner: coder
+    reviewer: reviewer
+    dependencies: []
+    acceptance: ["pnpm check-types/lint/test all exit 0", "CI runs all three", "baseline errors visible"]
+    verification: ["pnpm check-types", "pnpm lint", "pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-102
+    objective: "Fix all surfaced pre-existing type errors without weakening checks."
+    owner: bugfixer
+    reviewer: reviewer
+    dependencies: [T-101]
+    acceptance: ["tsc --noEmit passes for every package", "no ignoreBuildErrors relaxation"]
+    verification: ["per-package tsc --noEmit --incremental false"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-103
+    objective: "Replace vm2 with isolated-vm on live path; delete duplicate."
+    owner: coder
+    reviewer: security
+    dependencies: [T-101, T-107]
+    acceptance: ["no vm2 imports", "sandbox tests pass", "duplicate deleted"]
+    verification: ["pnpm test", "grep vm2"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: ["isolated-vm native build availability"]
+    commit: null
+
+  - id: T-104
+    objective: "Add userId scoping to vault/deployment repositories and controllers."
+    owner: bugfixer
+    reviewer: security
+    dependencies: [T-102]
+    acceptance: ["cross-user operations return 404", "negative auth tests pass"]
+    verification: ["pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-105
+    objective: "Fix VaultService return, remove client key literal, redact secrets in logs."
+    owner: bugfixer
+    reviewer: security
+    dependencies: [T-102]
+    acceptance: ["plaintext always returned", "no fallback secret literal in web source", "logs redacted"]
+    verification: ["pnpm test", "grep fallback literal"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-106
+    objective: "Harden public execution, payload validation, egress policy."
+    owner: coder
+    reviewer: security
+    dependencies: [T-104, T-105]
+    acceptance: ["no api_key query auth", "credential filtering tests", "SSRF tests", "frozen response shapes"]
+    verification: ["pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-107
+    objective: "Independent security re-review of Phase 0 outcomes."
+    owner: security
+    dependencies: [T-103, T-104, T-105, T-106]
+    acceptance: ["written sign-off that blockers resolved or explicitly accepted"]
+    verification: ["security report"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-110
+    objective: "Runtime ports; remove runtime→db and runtime→editor-enum edges."
+    owner: coder
+    reviewer: architect
+    dependencies: [T-107]
+    acceptance: ["zero forbidden imports", "characterization tests pass"]
+    verification: ["boundary grep", "pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-111
+    objective: "Realtime event adapter with wire-contract tests."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-110]
+    acceptance: ["channel/event literals asserted", "visuals unchanged"]
+    verification: ["pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-112
+    objective: "Application use-cases; consolidate orchestration with two projectors."
+    owner: coder
+    reviewer: architect
+    dependencies: [T-110, T-111]
+    acceptance: ["both HTTP behaviors preserved", "one orchestration implementation"]
+    verification: ["pnpm test", "pnpm check-types"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-120
+    objective: "AST inventory of workflow editor consumers and dispatch sites."
+    owner: explore
+    dependencies: [T-101]
+    acceptance: ["exact consumer list", "count reconciled", "dispatch sites listed"]
+    verification: ["read-only AST/grep report"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-121
+    objective: "Create Zustand stores, transitions, selectors, adapters, commands, bootstrap."
+    owner: coder
+    reviewer: architect
+    dependencies: [T-101, T-110, T-120]
+    acceptance: ["store tests pass without DOM", "distinct reset semantics", "retry schedule pinned"]
+    verification: ["pnpm test", "pnpm check-types"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-122
+    objective: "Install temporary shim; swap editor provider to bootstrap."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-121]
+    acceptance: ["full characterization suite green", "app renders/executes unchanged"]
+    verification: ["pnpm test", "pnpm build"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-123
+    objective: "Migrate all editor consumers to Zustand in per-slice batches."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-122]
+    acceptance: ["every consumer uses store hooks", "each cutoff compiles", "no direct dispatch"]
+    verification: ["pnpm check-types", "pnpm test"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: ["overlapping consumer files need single owner per batch"]
+    commit: null
+
+  - id: T-124
+    objective: "Delete shim/provider/realtime hook/duplicates; add CI boundary gates."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-123]
+    acceptance: ["no editor context symbols", "CI gates pass", "wire contract intact"]
+    verification: ["boundary greps", "pnpm test", "pnpm lint"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-130
+    objective: "Delete dead legacy engine/duplicate implementations."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-112, T-124]
+    acceptance: ["importer grep clean", "one implementation each", "build green"]
+    verification: ["git grep", "pnpm build"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-131
+    objective: "Decouple web from @neuron/db."
+    owner: coder
+    reviewer: architect
+    dependencies: [T-124, T-110]
+    acceptance: ["zero web→db imports", "CI gate enforces"]
+    verification: ["boundary grep", "pnpm check-types"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-132
+    objective: "Deduplicate animation/flow deps; fix start scripts."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-101]
+    acceptance: ["one library per family", "scripts resolve to emitted files"]
+    verification: ["pnpm build", "manifest inspection"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-133
+    objective: "Apply semantic OKLCH design tokens."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-124]
+    acceptance: ["zero raw-color violations in scope", "design checklist passes"]
+    verification: ["targeted grep", "visual check"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-134
+    objective: "Harden CORS, crash handling, realtime payload validation."
+    owner: coder
+    reviewer: security
+    dependencies: [T-107, T-111]
+    acceptance: ["explicit CORS allowlist", "fail-fast/degraded mode", "payload validation tests", "wire strings unchanged"]
+    verification: ["pnpm test", "config inspection"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: ["remote Supabase RLS policies unknown"]
+    commit: null
+
+  - id: T-135
+    objective: "Full verification, sign-offs, ledger/report/handoff update."
+    owner: coordinator
+    reviewer: reviewer
+    signoff: [architect, security]
+    dependencies: [T-100, T-101, T-102, T-103, T-104, T-105, T-106, T-107, T-110, T-111, T-112, T-120, T-121, T-122, T-123, T-124, T-130, T-131, T-132, T-133, T-134]
+    acceptance: ["all checks pass", "sign-offs recorded", "all commits recorded", "definition of done met"]
+    verification: ["pnpm check-types", "pnpm lint", "pnpm test", "pnpm build", "boundary greps", "git status"]
+    status: not_started
+    lease: null
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
