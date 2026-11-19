@@ -1,6 +1,7 @@
 version: 1
 initiative: "Refactor, cleanup, and modularize Neuron Runtime: module boundaries, isolated logic, Zustand frontend state, security blockers, tooling/CI, and design-token compliance."
-mode: "PLAN APPROVED — branch created; implementation not started"
+mode: "PLAN APPROVED — implementation not started"
+branch: refactor/module-boundaries-cleanup
 plan: ".agents/reports/implementation-plan.md"
 decisions: ".agents/decisions/user-decisions.md"
 
@@ -116,10 +117,10 @@ tasks:
   - id: T-005
     objective: "Consolidate research, ask clarifying questions, produce plan, create branch."
     owner: coordinator
-    status: in_progress
-    evidence: ["Questions asked 2026-11-19; all answered", "Plan written to .agents/reports/implementation-plan.md"]
-    open_risks: ["Branch creation + first commit pending"]
-    commit: null
+    status: done
+    evidence: ["Questions asked 2026-11-19; all answered", "Plan written to .agents/reports/implementation-plan.md", "Branch refactor/module-boundaries-cleanup created", "Governance/plan committed"]
+    open_risks: []
+    commit: f5a5150
 
   - id: T-006
     objective: "Reconcile research discrepancies with primary evidence."
