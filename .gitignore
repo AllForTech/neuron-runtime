@@ -12,7 +12,7 @@ node_modules
 .env.test.local
 .env.production.local
 .env.*.local
-! .env.example
+!.env.example
 
 # Testing
 coverage
@@ -40,6 +40,8 @@ yarn-error.log*
 *.pem
 
 # Ignore context and rules directories as requested
+# Exception: the canonical context/*.md docs and AGENTS.md are force-added (tracked)
+# despite these rules so the AGENTS.md "Read:" mandate resolves; new context/ files stay ignored.
 context/
 rules/
 @opencode.json
