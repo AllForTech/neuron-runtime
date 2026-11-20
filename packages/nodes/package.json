@@ -16,7 +16,8 @@
   },
 
   "scripts": {
-    "build": "tsup src/client/index.ts src/server/index.ts --format esm --dts --clean"
+    "build": "tsup src/client/index.ts src/server/index.ts --format esm --dts --clean",
+    "check-types": "tsc --noEmit --incremental false"
   },
   "dependencies": {
     "@neuron/node-condition": "workspace:*",

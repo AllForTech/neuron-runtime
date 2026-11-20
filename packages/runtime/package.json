@@ -11,7 +11,8 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts"
+    "build": "tsup src/index.ts --format esm --dts",
+    "check-types": "tsc --noEmit --incremental false"
   },
   "dependencies": {
     "@neuron/shared": "workspace:*",

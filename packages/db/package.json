@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm",
+    "check-types": "tsc --noEmit --incremental false",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push"

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint .",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit --incremental false",
     "format": "prettier --write .",
     "clean": "rm -rf dist"
   },
