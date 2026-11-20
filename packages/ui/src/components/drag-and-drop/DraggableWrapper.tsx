@@ -6,7 +6,7 @@ import { cn } from '../../utils/utils.js';
 
 interface GenericDraggableProps {
     id: string;
-    data: Record<string, any>; // Pass { workflow: wf } or { secret: s }
+    data: Record<string, unknown>; // Pass { workflow: wf } or { secret: s }
     children: React.ReactNode;
     className?: string;
 }

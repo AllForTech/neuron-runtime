@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import JsonViewer from '@/components/ui/json-viewer';
 
 interface JsonOutputProps {
-  data: Record<string, any> | any[];
+  data: Record<string, unknown> | unknown[];
   title?: string;
   className?: string;
   maxHeight?: string;

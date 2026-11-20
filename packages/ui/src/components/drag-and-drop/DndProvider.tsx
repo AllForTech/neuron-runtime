@@ -7,8 +7,6 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    DropAnimation,
-    defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 
 interface DndProviderProps {
@@ -19,18 +17,8 @@ interface DndProviderProps {
      * @param targetId The ID of the drop zone (or null if dropped nowhere)
      * @param data The raw data object passed to the DraggableItem
      */
-    onMove: (id: string, targetId: string | null, data: any) => void;
+    onMove: (id: string, targetId: string | null, data: Record<string, unknown> | undefined) => void;
 }
-
-const dropAnimation: DropAnimation = {
-    sideEffects: defaultDropAnimationSideEffects({
-        styles: {
-            active: {
-                opacity: '0.5',
-            },
-        },
-    }),
-};
 
 export function DndProvider({ children, onMove }: DndProviderProps) {
     const sensors = useSensors(

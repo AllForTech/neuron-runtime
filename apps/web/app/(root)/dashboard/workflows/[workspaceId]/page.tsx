@@ -1,6 +1,6 @@
 import {WorkspaceDetailView} from "@/components/workflow/workspace/WorkspaceDetailView";
 
-export default async function Page({ params}: { params: Promise<Record<string, any>> }) {
+export default async function Page({ params }: { params: Promise<{ workspaceId: string }> }) {
     const { workspaceId } = await params
 
     return (
