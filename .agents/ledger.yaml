@@ -332,12 +332,40 @@ tasks:
     dependencies: [T-101]
     acceptance: ["tsc --noEmit passes for every package", "no ignoreBuildErrors relaxation"]
     verification: ["per-package tsc --noEmit --incremental false"]
-    status: not_started
+    status: done
     lease: null
-    evidence: ["Baseline pnpm check-types: 90 errors (backend 76, frontend 14); discovered broken relative import in apps/web/hooks/workflow/useWorkflow.tsx pointing to non-existent shared/src/types/workflow.types"]
+    evidence: ["pnpm check-types exit 0", "pnpm lint exit 0", "pnpm test exit 0 (5 tests)", "reviewer approve after explicit staging of express.d.ts and typecheck.test.ts", "ad64613"]
+    reports: [".agents/reports/T-102b.md"]
+    open_risks: ["Express Request.user typed required though set only on protected routes (type-only, no runtime change)", "Next generated route-type validation dropped from frontend tsconfig per task brief", "Legacy node-type string comparison remains in DynamicNode.tsx:161 (pre-existing)"]
+    commit: ad64613
+
+  - id: T-102a
+    objective: "Fix backend typecheck errors: apps/api tsconfig rootDir and route overloads; db/shared source errors surfaced by backend tsconfig."
+    owner: bugfixer
+    reviewer: reviewer
+    dependencies: [T-101]
+    acceptance: ["pnpm --filter backend check-types exits 0", "no ignoreBuildErrors/skipLibCheck/any widening used to hide errors", "no behavior change to routes"]
+    verification: ["pnpm --filter backend check-types", "pnpm test", "git status --short"]
+    status: done
+    lease: null
+    evidence: ["pnpm --filter backend check-types exit 0; rootDir fixed; route overloads resolved via express.d.ts; new typecheck.test.ts added"]
     reports: []
-    open_risks: ["Broken useWorkflow.tsx import must be fixed or file deleted; covered by this task"]
-    commit: null
+    open_risks: ["express.d.ts user field is type-unsound but type-only"]
+    commit: ad64613
+
+  - id: T-102b
+    objective: "Fix frontend typecheck errors without weakening checks."
+    owner: bugfixer
+    reviewer: reviewer
+    dependencies: [T-101]
+    acceptance: ["pnpm --filter frontend check-types exits 0", ".next generated files excluded from tsconfig", "broken useWorkflow.tsx relative import fixed", "no ignoreBuildErrors/skipLibCheck/any widening"]
+    verification: ["pnpm --filter frontend check-types", "pnpm test", "git status --short"]
+    status: done
+    lease: null
+    evidence: ["pnpm --filter frontend check-types exit 0; .next excluded; dangling imports fixed; NodeType registry re-keyed; animate-ui generics fixed; report .agents/reports/T-102b.md"]
+    reports: [".agents/reports/T-102b.md"]
+    open_risks: ["Next generated route-type validation no longer included"]
+    commit: ad64613
 
   - id: T-103
     objective: "Replace vm2 with isolated-vm on live path; delete duplicate."
