@@ -1,6 +1,9 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
-import { NodeVM } from "vm2";
+import ivm from "isolated-vm";
 import { TransformNodeConfig } from "../index.js";
+
+const TRANSFORM_TIMEOUT_MS = 1000;
+const ISOLATE_MEMORY_LIMIT_MB = 64;
 
 function normalizeTransformCode(code: string) {
     const trimmed = code.trim();
@@ -9,43 +12,46 @@ function normalizeTransformCode(code: string) {
 }
 
 export const transformNodeExecutor: NodeExecutor = async ({
-                                                 config,
-                                                 input,
-                                             }: NodeExecutorContext): Promise<ExecutorOutput> => { // Explicitly define return type
+                                                  config,
+                                                  input,
+                                              }: NodeExecutorContext): Promise<ExecutorOutput> => { // Explicitly define return type
+
+    // User code runs in a separate V8 isolate: no host globals (require/process),
+    // a hard CPU timeout, and a bounded heap. The isolate is released on every path.
+    const isolate = new ivm.Isolate({ memoryLimit: ISOLATE_MEMORY_LIMIT_MB });
 
     try {
-        const vm = new NodeVM({
-            console: "redirect",
-            sandbox: {
-                inputs: Object.freeze(input ?? {})
-            },
-            timeout: 1000,
-            eval: false,
-            wasm: false,
-            require: false,
-        });
+        const context = await isolate.createContext();
+        const jail = context.global;
+
+        await jail.set("inputs", new ivm.ExternalCopy(input ?? {}).copyInto());
 
         const userCode = normalizeTransformCode((config as TransformNodeConfig).code);
 
         const wrappedCode = `
-            module.exports = (function() {
-                "use strict";
-                try {
-                    const result = (function() {
-                        ${userCode}
-                    })();
-
-                    return result;
-                } catch (e) {
-                    return { __is_error: true, message: e.message };
-                }
-            })();
+            "use strict";
+            Object.freeze(inputs);
+            const noop = function () {};
+            globalThis.console = {
+                log: noop, info: noop, warn: noop, error: noop,
+                debug: noop, trace: noop, dir: noop, table: noop
+            };
+            try {
+                globalThis.__result = (function() {
+                    ${userCode}
+                })();
+            } catch (e) {
+                globalThis.__result = { __is_error: true, message: e.message };
+            }
         `;
 
-        const result = vm.run(wrappedCode, "transform.js");
+        const script = await isolate.compileScript(wrappedCode, { filename: "transform.js" });
+        await script.run(context, { timeout: TRANSFORM_TIMEOUT_MS });
 
-        if (result && result.__is_error) {
-            throw new Error(`User Script Error: ${result.message}`);
+        const result = await jail.get("__result", { copy: true });
+
+        if (result && (result as { __is_error?: boolean }).__is_error) {
+            throw new Error(`User Script Error: ${(result as { message: string }).message}`);
         }
 
         if (result === undefined || result === null) {
@@ -63,5 +69,7 @@ export const transformNodeExecutor: NodeExecutor = async ({
             : error.message;
 
         throw new Error(message);
+    } finally {
+        isolate.dispose();
     }
 }

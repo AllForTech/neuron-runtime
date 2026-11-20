@@ -28,7 +28,6 @@
     "express-rate-limit": "^8.3.2",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.6",
-    "vm2": "^3.10.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {
