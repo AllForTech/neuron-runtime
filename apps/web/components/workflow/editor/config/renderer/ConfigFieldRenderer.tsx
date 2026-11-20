@@ -17,8 +17,8 @@ import { TemplateField } from "@/components/workflow/editor/config/renderer/fiel
 
 interface ConfigFieldRendererProps {
     field: ConfigField;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void;
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void;
 }
 
 export function ConfigFieldRenderer({

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export function SwitchField({ field, values, onChange }: {
     field: SwitchFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: boolean) => void;
 }) {
     const value = !!getValueAtPath(values, field.path, field.defaultValue ?? false);

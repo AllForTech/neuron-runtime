@@ -2,11 +2,12 @@
 
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import type { RuntimeAction, WorkflowEditorAction } from '@/types';
 
 export function useWorkflowRealtime(
   runId: string,
-  workflowEditorDispatch: any,
-  runtimeDispatch: any
+  workflowEditorDispatch: (action: WorkflowEditorAction) => void,
+  runtimeDispatch: (action: RuntimeAction) => void
 ) {
   useEffect(() => {
     if (!runId) return;

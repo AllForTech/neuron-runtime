@@ -12,6 +12,7 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import {
   Accordion,
@@ -24,7 +25,7 @@ import { memo, useMemo } from 'react';
 import { ExecutionLog } from '@neuron/db';
 import { nanoid } from 'nanoid';
 
-const nodeIconMap: Record<string, any> = {
+const nodeIconMap: Record<string, LucideIcon> = {
   webhook: Zap,
   filter: Search,
   http_request: FileCode2,

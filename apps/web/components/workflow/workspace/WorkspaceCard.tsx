@@ -8,12 +8,13 @@ import { WorkspaceGroup } from './WorkspaceGroup';
 import { WorkflowActionsDropdown } from "@/components/workflow/WorkflowActionsDropdown";
 import { DraggableWorkflowWrapper } from '../DraggableWorkflowWrapper';
 import { cn } from '@/lib/utils';
+import type { Workflow } from '@neuron/db';
 
 interface WorkspaceCardProps {
     workspace: {
         id: string;
         name: string;
-        workflows: Record<string, any>;
+        workflows: Record<string, Workflow>;
     };
     onWorkflowClick: (id: string) => void;
     onDeleteWorkflow: (id: string) => Promise<void>;

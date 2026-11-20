@@ -25,7 +25,7 @@ interface ReusableSheetProps {
   nodeId?: string;
   showContextSettings?: boolean;
   nodeMeta?: { label: string; description?: string };
-  onMetaUpdate?: (key: string, value: any) => void;
+  onMetaUpdate?: (key: string, value: unknown) => void;
   // New Props for Execution Config
   executionConfig?: NodeExecutionConfig;
   onExecutionConfigUpdate?: (config: NodeExecutionConfig) => void;

@@ -7,12 +7,17 @@ import { getValueAtPath } from "@/lib/config/path";
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
 import { cn } from "@/lib/utils";
 
+interface ArrayItem {
+    _id?: string;
+    [key: string]: unknown;
+}
+
 export function ArrayField({ field, values, onChange }: {
     field: ArrayFieldSchema;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void
 }) {
-    const items = getValueAtPath(values, field.path, []) as any[];
+    const items = getValueAtPath<ArrayItem[]>(values, field.path, []);
 
     const addItem = (e: React.MouseEvent) => {
         e.preventDefault();

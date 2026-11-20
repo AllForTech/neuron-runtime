@@ -1,9 +1,10 @@
 import Dexie, { type Table } from 'dexie';
+import type { GlobalVariable, WorkflowDefinition } from '@neuron/shared';
 
 export interface LocalWorkflow {
   id: string;
-  graph: any;
-  globalVariables: any;
+  graph: WorkflowDefinition;
+  globalVariables: Record<string, GlobalVariable>;
   updatedAt: number;
   synced: boolean; // Flag to track if backend matches local
 }

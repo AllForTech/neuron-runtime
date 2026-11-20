@@ -19,7 +19,6 @@ import {
 } from 'reactflow';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-// @ts-ignore
 import 'reactflow/dist/style.css';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { WorkflowEditorActionType } from '@/constants';
@@ -120,7 +119,7 @@ export function Editor() {
     );
 
     const onNodeDragStop = useCallback(
-        (_: any, node: Node) => {
+        (_: unknown, node: Node) => {
             debouncedUpdatePosition(node.id, node.position);
         },
         [workflowEditorDispatch, debouncedUpdatePosition]
@@ -207,7 +206,7 @@ export function Editor() {
         editorUIDispatch({ type: 'SET_ACTIVE_PANEL', panelId: 'node-library', position: 'right' });
     };
 
-    const handleDnd = (templateId: string, targetId: string, nodeTemplate: any) => {
+    const handleDnd = (templateId: string, targetId: string, nodeTemplate: Record<string, unknown> | undefined) => {
 
     }
 

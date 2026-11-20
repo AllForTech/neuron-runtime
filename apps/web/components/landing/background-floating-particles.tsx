@@ -37,7 +37,10 @@ export function FloatingParticles() {
       opacity: Math.random() * 0.3 + 0.1,
     }))
 
-    setParticles(generatedParticles)
+    // Defer to the next frame so client-only randomness is not introduced
+    // synchronously during the effect (avoids cascading renders / hydration drift).
+    const frame = requestAnimationFrame(() => setParticles(generatedParticles))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   return (

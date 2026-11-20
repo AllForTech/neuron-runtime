@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
 
 export type PanelPosition = 'left' | 'right';
 
@@ -17,7 +18,7 @@ export interface PanelDefinition {
     position: PanelPosition;
     label: string;
     icon: LucideIcon;
-    component: any;
+    component: ComponentType<PanelProps>;
     isVisible?: (state: EditorUIState) => boolean;
     onOpen?: () => void;
     onClose?: () => void;

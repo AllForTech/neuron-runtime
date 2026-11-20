@@ -4,9 +4,7 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -26,13 +24,18 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { AppButton } from '@/components/CustomButton';
-import {User} from "@supabase/supabase-js";
+
+interface NavUserType {
+  avatar?: string;
+  name?: string;
+  email?: string;
+}
 
 export function NavUser({
   user,
   logout,
 }: {
-  user: any;
+  user: NavUserType | null;
   logout?: () => void;
 }) {
   const { isMobile } = useSidebar();
@@ -51,7 +54,7 @@ export function NavUser({
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.email?.split(0, 8)}</span>
+                <span className="truncate font-medium">{user?.email?.split('0', 8)}</span>
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />

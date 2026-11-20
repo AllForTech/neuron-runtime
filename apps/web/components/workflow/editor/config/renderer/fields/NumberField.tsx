@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export function NumberField({ field, values, onChange }: {
     field: NumberFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: number | undefined) => void;
 }) {
     const [isFocused, setIsFocused] = useState(false);

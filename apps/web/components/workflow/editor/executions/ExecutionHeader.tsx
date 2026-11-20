@@ -8,16 +8,25 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
+  type LucideIcon,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
+interface ExecutionSummary {
+  id: string;
+  status: 'pending' | 'running' | 'success' | 'failed' | 'error';
+  startedAt: string | Date;
+  durationMs?: number | null;
+  workflowVersionId?: string | null;
+}
+
 export function ExecutionHeader({
   execution,
   onBack,
 }: {
-  execution: any;
+  execution: ExecutionSummary;
   onBack: () => void;
 }) {
   const isSuccess = execution?.status === 'success';
@@ -99,7 +108,7 @@ function Stat({
   label,
   value,
 }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   value: string;
 }) {

@@ -17,7 +17,7 @@ import {CodeFieldSchema} from "@neuron/shared";
 
 interface CodeFieldProps {
     field: CodeFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: string) => void;
 }
 

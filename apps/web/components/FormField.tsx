@@ -30,7 +30,7 @@ interface FormFieldProps {
     | 'switch'
     | 'textArea'
     | 'card';
-  value: any;
+  value: unknown;
   path: string;
   onChange: (path: string, value: unknown) => void;
   placeholder?: string;
@@ -71,7 +71,7 @@ export default function FormField({
       <div className="col-span-2">
         {type === 'select' && (
           <Select
-            value={value}
+            value={typeof value === 'string' ? value : undefined}
             onValueChange={(val: string) => onChange(path, val)}
             disabled={disabled}
           >
@@ -100,7 +100,7 @@ export default function FormField({
         {type === 'switch' && (
           <div className="flex items-center">
             <Switch
-              checked={value}
+              checked={typeof value === 'boolean' ? value : false}
               onCheckedChange={(checked) => onChange(path, checked)}
               disabled={disabled}
             />
@@ -110,7 +110,7 @@ export default function FormField({
         {(type === 'text' || type === 'number' || type === 'email') && (
           <Input
             type={type}
-            value={value}
+            value={typeof value === 'string' || typeof value === 'number' ? value : ''}
             onChange={(e) => onChange(path, e.target.value)}
             placeholder={placeholder}
             disabled={disabled}
@@ -119,7 +119,7 @@ export default function FormField({
 
         {type === 'textArea' && (
           <Textarea
-            value={value}
+            value={typeof value === 'string' ? value : ''}
             className={cn(
               'bg-secondary/30 text-secondary-foreground min-h-30 w-full rounded-md border-[0.7] border-neutral-600 p-1.5 text-xs font-medium backdrop-blur-md'
             )}
@@ -137,7 +137,7 @@ export default function FormField({
           >
             {options.map((option) => (
               <Card
-                onClick={(e: any) => onChange(path, option.value)}
+                onClick={() => onChange(path, option.value)}
                 className={cn(
                   'bg-secondary/30 flex-col items-start justify-between rounded-md p-4 backdrop-blur-md transition',
                   'hover:border-primary border-[1.3px] border-neutral-700',

@@ -11,8 +11,8 @@ import { KeyValueFieldSchema } from "@neuron/shared";
 
 interface KeyValueFieldProps {
     field: KeyValueFieldSchema;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void;
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void;
 }
 
 export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
@@ -47,12 +47,12 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
             const k = item.key.trim() || `pending_key_${idx}`;
             acc[k] = item.value;
             return acc;
-        }, {} as any);
+        }, {} as Record<string, unknown>);
 
         onChange(field.path, updatedObject);
     };
 
-    const updateItem = (index: number, newKey: string, newValue: any) => {
+    const updateItem = (index: number, newKey: string, newValue: unknown) => {
         const newItems = [...items];
         newItems[index] = { key: newKey, value: newValue };
 
@@ -60,7 +60,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
             const k = item.key.trim() || `pending_key_${idx}`;
             acc[k] = item.value;
             return acc;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, unknown>);
 
         onChange(field.path, jsonObject);
     };
@@ -71,7 +71,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
             const k = item.key.trim() || `pending_key_${idx}`;
             acc[k] = item.value;
             return acc;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, unknown>);
 
         onChange(field.path, jsonObject);
     };
@@ -137,7 +137,7 @@ export function KeyValueField({ field, values, onChange }: KeyValueFieldProps) {
                                     {valueType === 'template' ? (
                                         <TemplateTextarea
                                             value={item.value}
-                                            variables={availableVariables as any}
+                                            variables={availableVariables}
                                             onChange={(val) => updateItem(index, item.key, val)}
                                             className="!min-h-[32px] w-full! text-[11px]"
                                         />

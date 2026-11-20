@@ -1,25 +1,25 @@
 'use client';
 
 import React from 'react';
-import { PlusIcon, ZapIcon } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DialogWrapper } from '@/components/DialogWrapper';
 import { useWorkflows } from '@/hooks/workflow/useWorkflows';
 import FormField from '@/components/FormField';
-import { cn } from '@/lib/utils';
 
 export const CreateWorkflowDialog = () => {
     const { createWorkflow, newWorkflow, setNewWorkflow } = useWorkflows();
 
-    const handleFieldChange = (path: string, value: any) => {
-        setNewWorkflow((prev: any) => {
+    const handleFieldChange = (path: string, value: unknown) => {
+        setNewWorkflow((prev) => {
             const keys = path.split('.');
             const updated = { ...prev };
-            let current: any = updated;
+            let current: Record<string, unknown> = updated;
 
             for (let i = 0; i < keys.length - 1; i++) {
-                current[keys[i]] = { ...current[keys[i]] };
-                current = current[keys[i]];
+                const key = keys[i];
+                current[key] = { ...(current[key] as Record<string, unknown>) };
+                current = current[key] as Record<string, unknown>;
             }
 
             current[keys[keys.length - 1]] = value;

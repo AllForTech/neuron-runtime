@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useWorkflows } from "@/hooks/workflow/useWorkflows";
 import { WorkflowActionType } from "@/constants";
 import { Workflow as WorkflowType } from "@neuron/db";
-import { workspaces as workspaceClient, workflows as workflowClient } from "@neuron/client";
+import { workspaces as workspaceClient } from "@neuron/client";
 
 interface Workspace {
     id: string;
@@ -17,6 +17,13 @@ interface Workspace {
 }
 
 type WorkspaceRecord = Record<string, Workspace>;
+
+type WorkspaceSummary = Omit<Workspace, 'workflows'> & { workflows?: WorkflowType[] };
+
+interface WorkspaceListResponse {
+    workflows?: WorkflowType[];
+    workspaces?: WorkspaceSummary[];
+}
 
 interface WorkspaceContextType {
     workspaces: WorkspaceRecord;
@@ -45,30 +52,40 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
 
         setIsLoading(true);
         try {
-            const [data, error]: any = await workspaceClient.list(token);
+            const [data, error] = (await workspaceClient.list(token)) as [
+                WorkspaceListResponse | null,
+                Error | null,
+                boolean
+            ];
 
             if (error) {
                 toast.error('Failed to synchronize data');
                 return;
             }
 
-            if (data.workflows) {
+            if (data?.workflows) {
                 workflowsDispatcher({
                     type: WorkflowActionType.SET_WORKFLOWS,
-                    payload: data?.workflows as WorkflowType[] ?? [],
+                    payload: data.workflows ?? [],
                 });
             }
 
-            if (data.workspaces) {
-                const record = data.workspaces.reduce((acc: WorkspaceRecord, ws: any) => {
-                    const workflowRecord = (ws.workflows || []).reduce((wAcc: Record<string, any>, wf: any) => {
-                        wAcc[wf.id] = wf;
-                        return wAcc;
-                    }, {});
+            if (data?.workspaces) {
+                const record = data.workspaces.reduce(
+                    (acc: WorkspaceRecord, ws: WorkspaceSummary) => {
+                        const workflowRecord = (ws.workflows || []).reduce(
+                            (wAcc: Record<string, WorkflowType>, wf: WorkflowType) => {
+                                wAcc[wf.id] = wf;
+                                return wAcc;
+                            },
+                            {} as Record<string, WorkflowType>
+                        );
 
-                    acc[ws.id] = { ...ws, workflows: workflowRecord };
-                    return acc;
-                }, {});
+                        acc[ws.id] = { ...ws, workflows: workflowRecord };
+                        return acc;
+                    },
+                    {} as WorkspaceRecord
+                );
 
                 setWorkspaces(record);
             }
@@ -89,7 +106,11 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
             return;
         }
 
-        const [data, error] = await workspaceClient.create({ name, description }, token);
+        const [data, error] = (await workspaceClient.create({ name, description }, token)) as [
+            WorkspaceSummary | null,
+            Error | null,
+            boolean
+        ];
 
         if (error) {
             toast.error(error.message);
@@ -100,7 +121,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
             toast.success('Workspace created');
             setWorkspaces(prev => ({
                 ...prev,
-                [(data as any).id]: { ...(data as any), workflows: {} }
+                [data.id]: { ...data, workflows: {} }
             }));
         }
     }, [token, workspaces]);
@@ -108,14 +129,18 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     const removeWorkspace = useCallback(async (id: string) => {
         if (!token) return;
 
-        const [data, error] = await workspaceClient.delete(id, token);
+        const [data, error] = (await workspaceClient.delete(id, token)) as [
+            { message?: string } | null,
+            Error | null,
+            boolean
+        ];
 
         if (error) {
             toast.error(error.message);
             return;
         }
 
-        toast.success((data as any)?.message ?? 'Workspace removed');
+        toast.success(data?.message ?? 'Workspace removed');
         setWorkspaces(prev => {
             const next = { ...prev };
             delete next[id];
@@ -167,7 +192,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
 
         setWorkflowInWorkspace(workflowId, workspaceId, workflow);
 
-        const [_, error] = await workspaceClient.assignWorkflow({ workflowId, workspaceId }, token);
+        const [, error] = await workspaceClient.assignWorkflow({ workflowId, workspaceId }, token);
 
         if (error) {
             setWorkspaces(previousState);

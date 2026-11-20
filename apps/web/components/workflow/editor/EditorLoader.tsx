@@ -128,10 +128,16 @@ function StatusCycle() {
   return messages[index];
 }
 
+interface BadgeProps {
+  children?: React.ReactNode;
+  className?: string;
+  variant?: string;
+}
+
 /**
  * A simple Badge component if you don't have it extracted
  */
-function Badge({ children, className, variant }: any) {
+function Badge({ children, className, variant }: BadgeProps) {
   return (
     <span
       className={cn(

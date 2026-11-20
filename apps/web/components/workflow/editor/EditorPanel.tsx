@@ -19,7 +19,7 @@ interface InspectorProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     title?: string;
-    icon?: ReactNode | any;
+    icon?: ReactNode;
     description?: string;
     tabs?: React.ReactNode;
     children: React.ReactNode;

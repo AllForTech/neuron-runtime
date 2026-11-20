@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import {
   useFloating,
@@ -53,6 +53,13 @@ export function TemplateTextarea({
     return autoUpdate(refs.reference.current, refs.floating.current, update);
   }, [refs, update]);
 
+  const setFloatingRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      refs.setFloating(node);
+    },
+    [refs]
+  );
+
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
     const text = e.target.value;
     const cursor = e.target.selectionStart;
@@ -90,7 +97,7 @@ export function TemplateTextarea({
           bottom: rect.top + coords.top,
         };
       },
-    } as any);
+    });
   }
 
   function selectVariable(variable: string) {
@@ -175,7 +182,7 @@ export function TemplateTextarea({
 
       {query !== null && filtered.length > 0 && (
         <div
-          ref={refs.setFloating}
+          ref={setFloatingRef}
           style={{
             position: strategy,
             top: y ?? 0,

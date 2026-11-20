@@ -91,7 +91,7 @@ export const VariableSuggestion = (
 
   render: () => {
     let component: HTMLDivElement;
-    let popup: any;
+    let popup: Instance | Instance[];
 
     return {
       onStart: (props) => {
@@ -137,8 +137,8 @@ export const VariableSuggestion = (
       },
 
       onExit() {
-        if (popup && popup[0]) {
-          popup[0].destroy();
+        if (popup && (popup as Instance[])[0]) {
+          (popup as Instance[])[0].destroy();
         }
       },
     };

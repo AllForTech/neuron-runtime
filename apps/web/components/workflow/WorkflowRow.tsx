@@ -5,16 +5,19 @@ import {
   Play,
   MoreVertical,
   Trash2,
-  ExternalLink,
-  Activity,
   Clock,
   Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import type { Workflow } from '@neuron/db';
 
-export const WorkflowRow = ({ workflow, onOpen, onDelete }: any) => {
+interface WorkflowRowProps {
+  workflow: Workflow;
+  onOpen: () => void;
+  onDelete: () => void;
+}
+
+export const WorkflowRow = ({ workflow, onOpen, onDelete }: WorkflowRowProps) => {
   return (
     <div
       onClick={onOpen}

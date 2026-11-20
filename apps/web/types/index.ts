@@ -1,3 +1,18 @@
+import type {
+  WorkflowActionType,
+  WorkflowEditorActionType,
+} from '@/constants';
+import type {
+  DeployedWorkflow,
+  Workflow as WorkflowTable,
+} from '@neuron/db';
+import type {
+  GlobalVariable,
+  WorkflowDefinition,
+  WorkflowEdge,
+  WorkflowNode,
+} from '@neuron/shared';
+
 export type ExecutionLogStatus = 'pending' | 'running' | 'success' | 'error';
 
 export interface ExecutionLog {
@@ -99,3 +114,32 @@ export type RuntimeAction =
     }
   | { type: RuntimeActionType.RESET_FLOW_VISUALS }
   | { type: RuntimeActionType.CLEAR_RUNTIME };
+
+/** Actions accepted by the workflows list reducer. */
+export type WorkflowAction =
+  | { type: WorkflowActionType.SET_WORKFLOWS; payload: WorkflowTable[] }
+  | { type: WorkflowActionType.ADD_WORKFLOW; payload: WorkflowTable }
+  | { type: WorkflowActionType.UPDATE_WORKFLOW; id: string; payload: Partial<WorkflowTable> }
+  | { type: WorkflowActionType.DELETE_WORKFLOW; id: string }
+  | { type: WorkflowActionType.UPDATE_STATUS; id: string; status: WorkflowTable['status'] };
+
+/** Actions accepted by the workflow editor graph reducer. */
+export type WorkflowEditorAction =
+  | { type: WorkflowEditorActionType.SET_WORKFLOW_ID; workflowId: string }
+  | { type: WorkflowEditorActionType.SET_GRAPH; payload: WorkflowDefinition }
+  | { type: WorkflowEditorActionType.ADD_NODE; payload: WorkflowNode }
+  | { type: WorkflowEditorActionType.UPDATE_NODE; id: string; payload: Record<string, unknown> }
+  | { type: WorkflowEditorActionType.UPDATE_NODE_POSITION; id: string; position: { x: number; y: number } }
+  | { type: WorkflowEditorActionType.DELETE_NODE; id: string }
+  | { type: WorkflowEditorActionType.ADD_EDGE; payload: WorkflowEdge }
+  | { type: WorkflowEditorActionType.DELETE_EDGE; id: string }
+  | { type: WorkflowEditorActionType.UPDATE_EDGE; id: string; payload: Partial<WorkflowEdge> }
+  | { type: WorkflowEditorActionType.RESET_NODE_STATUS }
+  | { type: WorkflowEditorActionType.NODE_EXECUTION_START; nodeId: string }
+  | { type: WorkflowEditorActionType.NODE_EXECUTION_SUCCESS; nodeId: string; output: unknown }
+  | { type: WorkflowEditorActionType.NODE_EXECUTION_ERROR; nodeId: string; error: string }
+  | { type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS; payload: Record<string, GlobalVariable> }
+  | { type: WorkflowEditorActionType.SET_DEPLOYMENT; payload: Record<string, DeployedWorkflow> | null }
+  | { type: WorkflowEditorActionType.UPDATE_DEPLOYMENT; payload: DeployedWorkflow }
+  | { type: WorkflowEditorActionType.UPDATE_DIRTY_STATE; state?: boolean }
+  | { type: WorkflowEditorActionType.SET_EXECUTIONS; payload: Record<string, Execution> };

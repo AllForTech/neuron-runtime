@@ -16,7 +16,7 @@ import {JsonFieldSchema} from "@neuron/shared";
 
 interface JsonFieldProps {
     field: JsonFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: string) => void;
 }
 

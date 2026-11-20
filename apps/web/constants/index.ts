@@ -174,7 +174,7 @@ export enum WorkflowEditorActionType {
 
 export type FloatingItem = {
   title: string;
-  icon: any;
+  icon: LucideIcon;
   desc: string;
   side: 'left' | 'right';
 };

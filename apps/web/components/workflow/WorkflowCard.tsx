@@ -5,13 +5,14 @@ import { Calendar, ChevronRight, FileText } from 'lucide-react';
 import { useWorkflow } from '@/hooks/workflow/useWorkflow';
 import { cn } from '@/lib/utils';
 import { WorkflowActionsDropdown } from './WorkflowActionsDropdown';
+import type { Workflow } from '@neuron/db';
 
 export const WorkflowCard = ({
                                  workflow,
                                  clickAction,
                                  deleteAction,
                              }: {
-    workflow: any;
+    workflow: Workflow;
     clickAction: (id: string) => Promise<void>;
     deleteAction: (id: string) => Promise<void>;
 }) => {

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { NodeProps, Position } from 'reactflow';
+import type { DecisionRule } from '@neuron/shared';
 import { NodeHandle } from './NodeHandle';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +25,7 @@ export function DecisionNodeHandlesRenderer({
 
   return (
     <div className="pointer-events-none absolute top-0 right-0 bottom-0 flex flex-col justify-around py-4">
-      {rules.map((rule: any, index: number) => {
+      {rules.map((rule: DecisionRule, index: number) => {
         return (
           <div
             key={rule.id || index}

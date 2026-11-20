@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { useParams } from 'next/navigation';
 import type {
+    GlobalVariable,
     NodeDefinition,
     NodeType,
     WorkflowDefinition,
@@ -19,7 +20,7 @@ import type {
 } from '@neuron/shared';
 import { DeployedWorkflow, Execution, ExecutionLog, Workflow as WorkflowType } from "@neuron/db";
 import { WorkflowEditorActionType, defaultEditorUIState, editorUIReducer } from '@/constants';
-import type { EditorUIAction, EditorUIState, PanelId } from '@/constants/editor-panel';
+import type { EditorUIAction, EditorUIState } from '@/constants/editor-panel';
 import { Edge, Node, useReactFlow } from 'reactflow';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -36,17 +37,48 @@ import {
     RuntimeActionType,
     RuntimeState,
 } from '@/types';
+import type {
+    Execution as RuntimeExecution,
+    ExecutionLog as RuntimeExecutionLog,
+    WorkflowEditorAction,
+} from '@/types';
 import {
     workflows as workflowClient,
     executions as executionsClient
 } from "@neuron/client";
 import { nodeCatalog } from '@neuron/nodes/client';
 
+type WorkflowGraphNodePayload = {
+    id: string;
+    type: NodeType;
+    positionX: number;
+    positionY: number;
+    config: WorkflowNode['config'];
+};
+
+type WorkflowGraphEdgePayload = {
+    id: string;
+    source: string;
+    target: string;
+    sourceHandle?: string;
+    targetHandle?: string;
+};
+
+type WorkflowGraphResponse = {
+    graph: { nodes: WorkflowGraphNodePayload[]; edges: WorkflowGraphEdgePayload[] };
+    executions: Execution[];
+    globalVariables: GlobalVariable[];
+};
+
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+}
+
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'retrying';
 
 export type WorkflowEditorContextType = {
     editorState: IWorkflowEditorState;
-    workflowEditorDispatch: (WorkflowEditorAction: any) => void;
+    workflowEditorDispatch: (action: WorkflowEditorAction) => void;
     runtimeState: RuntimeState;
     runtimeDispatch: (RuntimeAction: RuntimeAction) => void;
     editorUIState: EditorUIState;
@@ -81,7 +113,7 @@ export type WorkflowEditorContextType = {
     handleRunWorkflow: () => void;
     deployWorkflow: (data: { private: boolean; secretKey: string }) => void;
     deleteDeployment: () => void;
-    getExecutionLogs: (id: string) => any;
+    getExecutionLogs: (id: string) => Promise<Record<string, ExecutionLog>>;
     selectedHandle: string | null;
     setSelectedHandle: (value: string | null) => void;
     fitNode: (node: WorkflowNode) => void;
@@ -101,14 +133,14 @@ export interface IWorkflowEditorState {
     workflow: Partial<WorkflowType>;
     runtime: {
         nodeStatus: Record<string, 'idle' | 'running' | 'success' | 'error'>;
-        nodeOutputs: Record<string, any> | null;
+        nodeOutputs: Record<string, unknown> | null;
         nodeErrors: Record<string, string> | null;
         activeEdges: Record<string, boolean>;
         executions: Record<string, Execution>;
     };
-    executions?: any[] | null;
-    executionLogs?: any[] | null;
-    globalVariables: Record<string, any>;
+    executions?: Execution[] | null;
+    executionLogs?: ExecutionLog[] | null;
+    globalVariables: Record<string, GlobalVariable>;
     deployment: Record<string, DeployedWorkflow> | null;
     isDirty: boolean;
 }
@@ -171,7 +203,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
     const localDraft = useLiveQuery(() => db.drafts.get(workflowId), [workflowId]);
 
-    function workflowEditorReducer(state: IWorkflowEditorState, action: any): IWorkflowEditorState {
+    function workflowEditorReducer(state: IWorkflowEditorState, action: WorkflowEditorAction): IWorkflowEditorState {
         switch (action.type) {
             case WorkflowEditorActionType.SET_WORKFLOW_ID:
                 return { ...state, workflowId: action.workflowId };
@@ -180,7 +212,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.ADD_NODE:
                 return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.payload.id]: action.payload } }, isDirty: true };
             case WorkflowEditorActionType.UPDATE_NODE:
-                return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.id]: { ...state.graph.nodes[action.id], config: { ...action.payload } } } }, isDirty: true };
+                return { ...state, graph: { ...state.graph, nodes: { ...state.graph.nodes, [action.id]: { ...state.graph.nodes[action.id], config: { ...action.payload } } as unknown as WorkflowNode } }, isDirty: true };
             case WorkflowEditorActionType.UPDATE_NODE_POSITION: {
                 const node = state.graph.nodes[action.id];
                 if (!node) return state;
@@ -217,7 +249,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             case WorkflowEditorActionType.UPDATE_DIRTY_STATE:
                 return { ...state, isDirty: action.state ?? false };
             case WorkflowEditorActionType.SET_EXECUTIONS:
-                return { ...state, runtime: { ...state.runtime, executions: action.payload } };
+                return { ...state, runtime: { ...state.runtime, executions: action.payload as unknown as Record<string, Execution> } };
             default:
                 return state;
         }
@@ -301,15 +333,15 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             const [data, error] = await workflowClient.getGraph(workflowId, token);
 
             if (error) throw error;
-            const response = data as any;
+            const response = data as unknown as WorkflowGraphResponse;
 
             const nodesRecord: Record<string, WorkflowNode> = {};
-            response.graph.nodes.forEach((n: any) => {
-                nodesRecord[n.id] = { id: n.id, type: n.type as NodeType, position: { x: n.positionX, y: n.positionY }, config: n.config };
+            response.graph.nodes.forEach((n) => {
+                nodesRecord[n.id] = { id: n.id, type: n.type as NodeType, position: { x: n.positionX, y: n.positionY }, config: n.config } as WorkflowNode;
             });
 
             const edgesRecord: Record<string, WorkflowEdge> = {};
-            response.graph.edges.forEach((e: any) => {
+            response.graph.edges.forEach((e) => {
                 edgesRecord[e.id] = { id: e.id, source: e.source, target: e.target, sourceHandle: e.sourceHandle, targetHandle: e.targetHandle };
             });
 
@@ -318,11 +350,11 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
             workflowEditorDispatch({ type: WorkflowEditorActionType.SET_GRAPH, payload: { nodes: nodesRecord, edges: edgesRecord } });
             workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS, payload: arrayToGlobalVariables(response.globalVariables) });
-            runtimeDispatch({ type: RuntimeActionType.SET_EXECUTIONS, payload: executionRecord as any });
+            runtimeDispatch({ type: RuntimeActionType.SET_EXECUTIONS, payload: executionRecord as unknown as Record<string, RuntimeExecution> });
 
             await loadDeployment();
-        } catch (e: any) {
-            console.error(e.message);
+        } catch (e: unknown) {
+            console.error(getErrorMessage(e));
         } finally {
             setIsWorkflowLoading(false);
             isLoadingRef.current = false;
@@ -361,7 +393,7 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
                 globalVariables: globalVariablesToArray(localDraft.globalVariables),
             };
 
-            const [_, error] = await workflowClient.saveGraph(workflowId, token, payload);
+            const [, error] = await workflowClient.saveGraph(workflowId, token, payload);
 
             if (error) throw error;
 
@@ -373,8 +405,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
             setTimeout(() => setSaveStatus('idle'), 3000);
 
-        } catch (e: any) {
-            console.error(`Save attempt ${attempt + 1} failed:`, e.message);
+        } catch (e: unknown) {
+            console.error(`Save attempt ${attempt + 1} failed:`, getErrorMessage(e));
 
             if (attempt < RETRY_DELAY_MS.length) {
                 setSaveStatus('retrying');
@@ -440,11 +472,11 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             setIsRunning(true);
             toast.message('Running Workflow');
             const token = await getSession();
-            const [_, error] = await workflowClient.run(workflowId, token);
+            const [, error] = await workflowClient.run(workflowId, token);
             if (error) throw error;
             toast.success('Execution complete.');
-        } catch (e: any) {
-            toast.error(e.message);
+        } catch (e: unknown) {
+            toast.error(getErrorMessage(e));
         } finally {
             setIsRunning(false);
         }
@@ -465,8 +497,8 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
                 workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: deploymentRecord });
             }
-        } catch (e: any) {
-            console.error(e.message);
+        } catch (e: unknown) {
+            console.error(getErrorMessage(e));
         }
     };
 
@@ -485,10 +517,10 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
 
             if (error) throw error;
             // TODO: Adjust dispatch logic hare.
-            workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_DEPLOYMENT, payload: deployed });
+            workflowEditorDispatch({ type: WorkflowEditorActionType.UPDATE_DEPLOYMENT, payload: deployed as DeployedWorkflow });
             toast.success('Workflow deployed.');
-        } catch (e: any) {
-            toast.error(e.message);
+        } catch (e: unknown) {
+            toast.error(getErrorMessage(e));
             console.log(e)
         } finally {
             setIsDeploying(false);
@@ -499,12 +531,12 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
     const deleteDeployment = async () => {
         try {
             const token = await getSession();
-            const [_, error] = await workflowClient.deleteDeployment(workflowId, token);
+            const [, error] = await workflowClient.deleteDeployment(workflowId, token);
             if (error) throw error;
             workflowEditorDispatch({ type: WorkflowEditorActionType.SET_DEPLOYMENT, payload: null });
             toast.success('Deployment terminated.');
-        } catch (e: any) {
-            toast.error(e.message);
+        } catch (e: unknown) {
+            toast.error(getErrorMessage(e));
         }
     };
 
@@ -518,12 +550,12 @@ export function WorkflowEditorProvider({ children }: { children: React.ReactNode
             if (data) {
                 const logsRecord: Record<string, ExecutionLog> = {};
                 (data as ExecutionLog[]).forEach((e) => (logsRecord[e.id] = e));
-                runtimeDispatch({ type: RuntimeActionType.SET_LOGS, payload: logsRecord as any });
+                runtimeDispatch({ type: RuntimeActionType.SET_LOGS, payload: logsRecord as unknown as Record<string, RuntimeExecutionLog> });
                 return logsRecord;
             }
             return {};
-        } catch (e: any) {
-            console.log(e.message);
+        } catch (e: unknown) {
+            console.log(getErrorMessage(e));
             return {};
         } finally {
             setIsLogsLoading(false);

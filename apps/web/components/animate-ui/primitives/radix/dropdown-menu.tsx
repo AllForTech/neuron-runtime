@@ -139,9 +139,10 @@ function DropdownMenuSubTrigger({
   ...props
 }: DropdownMenuSubTriggerProps) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState<HTMLDivElement>(
+  const highlightedRef = React.useRef<HTMLDivElement | null>(null);
+  const [, dataRef] = useDataState<HTMLDivElement>(
     'highlighted',
-    undefined,
+    highlightedRef,
     (value) => {
       if (value === true) {
         const el = highlightedRef.current;
@@ -153,7 +154,7 @@ function DropdownMenuSubTrigger({
 
   return (
     <DropdownMenuPrimitive.SubTrigger
-      ref={highlightedRef}
+      ref={dataRef}
       disabled={disabled}
       textValue={textValue}
       asChild
@@ -354,9 +355,10 @@ function DropdownMenuItem({
   ...props
 }: DropdownMenuItemProps) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState<HTMLDivElement>(
+  const highlightedRef = React.useRef<HTMLDivElement | null>(null);
+  const [, dataRef] = useDataState<HTMLDivElement>(
     'highlighted',
-    undefined,
+    highlightedRef,
     (value) => {
       if (value === true) {
         const el = highlightedRef.current;
@@ -368,7 +370,7 @@ function DropdownMenuItem({
 
   return (
     <DropdownMenuPrimitive.Item
-      ref={highlightedRef}
+      ref={dataRef}
       disabled={disabled}
       onSelect={onSelect}
       textValue={textValue}
@@ -398,9 +400,10 @@ function DropdownMenuCheckboxItem({
   ...props
 }: DropdownMenuCheckboxItemProps) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState<HTMLDivElement>(
+  const highlightedRef = React.useRef<HTMLDivElement | null>(null);
+  const [, dataRef] = useDataState<HTMLDivElement>(
     'highlighted',
-    undefined,
+    highlightedRef,
     (value) => {
       if (value === true) {
         const el = highlightedRef.current;
@@ -412,7 +415,7 @@ function DropdownMenuCheckboxItem({
 
   return (
     <DropdownMenuPrimitive.CheckboxItem
-      ref={highlightedRef}
+      ref={dataRef}
       checked={checked}
       onCheckedChange={onCheckedChange}
       disabled={disabled}
@@ -443,9 +446,10 @@ function DropdownMenuRadioItem({
   ...props
 }: DropdownMenuRadioItemProps) {
   const { setHighlightedValue } = useDropdownMenu();
-  const [, highlightedRef] = useDataState<HTMLDivElement>(
+  const highlightedRef = React.useRef<HTMLDivElement | null>(null);
+  const [, dataRef] = useDataState<HTMLDivElement>(
     'highlighted',
-    undefined,
+    highlightedRef,
     (value) => {
       if (value === true) {
         const el = highlightedRef.current;
@@ -457,7 +461,7 @@ function DropdownMenuRadioItem({
 
   return (
     <DropdownMenuPrimitive.RadioItem
-      ref={highlightedRef}
+      ref={dataRef}
       value={value}
       disabled={disabled}
       onSelect={onSelect}

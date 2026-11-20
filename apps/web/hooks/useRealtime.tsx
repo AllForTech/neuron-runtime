@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-export function useRealtime(userId: string, onChange: (payload?: any) => void) {
+export function useRealtime(userId: string, onChange: (payload?: unknown) => void) {
   const supabase = createClient();
 
   useEffect(() => {

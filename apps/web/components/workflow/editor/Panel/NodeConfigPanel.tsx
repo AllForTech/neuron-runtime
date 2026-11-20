@@ -5,7 +5,6 @@ import { useWorkflowEditor } from "@/hooks/workflow/useWorkflowEditor";
 import { NodeConfigRenderer } from "@/components/workflow/editor/config/renderer/NodeConfigRenderer";
 import { Cpu, Hash, Settings2, Maximize2, Sparkles } from "lucide-react";
 import { headerObjectToArray } from "@/lib/utils";
-import { BaseNodeConfig } from "@neuron/shared";
 import { WorkflowEditorActionType } from "@/constants";
 
 // Import your themed Dialog components
@@ -19,7 +18,7 @@ import {
 import { useNodeConfigState } from "@/hooks/workflow/config/useNodeConfigState";
 
 export default function NodeConfigPanel() {
-    const [config, setConfig] = useState<BaseNodeConfig | null>(null);
+    const [config, setConfig] = useState<Record<string, unknown> | null>(null);
     const [isExpanded, setIsExpanded] = useState(false); // Track dialog state
 
     const { workflowEditorDispatch, editorState, nodeCatalog, selectedNode } = useWorkflowEditor();
@@ -32,14 +31,21 @@ export default function NodeConfigPanel() {
         currentConfigRef.current = currentNode?.config;
     }, [currentNode?.config]);
 
+    // Reset the pending config when a different node becomes active. Adjusting
+    // during render avoids a cascading extra render from an effect.
+    const [configNodeId, setConfigNodeId] = useState(selectedNode?.id);
+    if (selectedNode?.id !== configNodeId) {
+        setConfigNodeId(selectedNode?.id);
+        setConfig(null);
+    }
+
     useEffect(() => {
         if (selectedNode?.id) {
-            setConfig(null);
             editingIdRef.current = selectedNode.id;
         }
     }, [selectedNode?.id]);
 
-    const handleConfigChange = useCallback((newConfig: any) => {
+    const handleConfigChange = useCallback((newConfig: Record<string, unknown>) => {
         const nodeId = editingIdRef.current || selectedNode?.id;
         if (!nodeId) return;
         setConfig(newConfig);
@@ -77,9 +83,9 @@ export default function NodeConfigPanel() {
         if (JSON.stringify(selectedNode?.data) !== JSON.stringify(currentNode?.config)) return;
         if (editingIdRef.current !== selectedId) {
             editingIdRef.current = selectedId;
-            const data: any = { ...selectedNode?.data || {} };
+            const data: Record<string, unknown> = { ...selectedNode?.data || {} };
             if (data.headers && !Array.isArray(data.headers)) {
-                data.headers = headerObjectToArray(data.headers);
+                data.headers = headerObjectToArray(data.headers as Record<string, string>);
             }
             setValues(data);
         }
@@ -89,7 +95,7 @@ export default function NodeConfigPanel() {
             nodeCatalog.find(n => n.type === selectedNode?.type)?.schema,
         [selectedNode?.type, nodeCatalog]);
 
-    const handleUpdate = useCallback((path: string, value: any) => {
+    const handleUpdate = useCallback((path: string, value: unknown) => {
         updateValue(path, value);
     }, [updateValue]);
 

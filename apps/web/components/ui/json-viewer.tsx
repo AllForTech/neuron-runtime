@@ -11,7 +11,7 @@ import { ChevronRight } from 'lucide-react';
 // import { CopyButton } from "@/components/copy-button";
 
 interface JsonViewerProps {
-  data: Record<string, any>;
+  data: Record<string, unknown> | unknown[];
   className?: string;
   truncation?: Partial<TruncationSettings>;
   showLineNumbers?: boolean;
@@ -35,7 +35,7 @@ type DataType =
   | 'array'
   | 'unknown';
 
-const getDataType = (value: any): DataType => {
+const getDataType = (value: unknown): DataType => {
   if (value === null) return 'null';
   if (Array.isArray(value)) return 'array';
   const type = typeof value;
@@ -91,7 +91,7 @@ const formatRelativeTime = (date: Date): string => {
   return 'just now';
 };
 
-const detectDate = (value: any): Date | null => {
+const detectDate = (value: unknown): Date | null => {
   if (typeof value === 'string') {
     if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
       const date = new Date(value);
@@ -111,20 +111,31 @@ const detectDate = (value: any): Date | null => {
 };
 
 const SmartValue = React.forwardRef<
-  any,
-  { value: any; type: DataType } & React.HTMLAttributes<HTMLElement>
+  HTMLElement,
+  { value: unknown; type: DataType } & React.HTMLAttributes<HTMLElement>
 >(({ value, type, ...props }, ref) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const stringValue = String(value);
+  const setNode = React.useCallback(
+    (node: HTMLElement | null) => {
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (ref) {
+        (ref as React.RefObject<HTMLElement | null>).current = node;
+      }
+    },
+    [ref]
+  );
 
   if (type === 'string') {
     if (
-      /^#([0-9A-F]{3}){1,2}$/i.test(value) ||
-      /^rgba?\(/.test(value) ||
-      /^hsla?\(/.test(value)
+      /^#([0-9A-F]{3}){1,2}$/i.test(stringValue) ||
+      /^rgba?\(/.test(stringValue) ||
+      /^hsla?\(/.test(stringValue)
     ) {
       return (
         <span
-          ref={ref}
+          ref={setNode}
           {...props}
           className={cn(
             'inline-flex items-center gap-1.5 whitespace-nowrap',
@@ -133,14 +144,14 @@ const SmartValue = React.forwardRef<
         >
           <span
             className="h-3 w-3 shrink-0 rounded-[2px] border border-white/20"
-            style={{ backgroundColor: value }}
+            style={{ backgroundColor: stringValue }}
           />
-          <span className="text-green-600 dark:text-green-400">{`'${value}'`}</span>
+          <span className="text-green-600 dark:text-green-400">{`'${stringValue}'`}</span>
         </span>
       );
     }
 
-    if (/^https?:\/\//.test(value)) {
+    if (/^https?:\/\//.test(stringValue)) {
       const isLongUrl = String(value).length > 50;
       const isVeryLongUrl = String(value).length > 180;
 
@@ -148,11 +159,11 @@ const SmartValue = React.forwardRef<
         return (
           <span className="inline-flex flex-col items-start gap-1">
             <a
-              ref={ref}
-              href={value}
+              ref={setNode}
+              href={stringValue}
               target="_blank"
               rel="noopener noreferrer"
-              {...(props as any)}
+              {...props}
               className={cn(
                 'break-all whitespace-pre-wrap text-green-600 transition-colors hover:text-blue-600 hover:underline dark:text-green-400 dark:hover:text-blue-400',
                 !isExpanded && 'line-clamp-3',
@@ -173,7 +184,7 @@ const SmartValue = React.forwardRef<
                 props.onClick?.(e);
               }}
             >
-              {`'${value}'`}
+              {`'${stringValue}'`}
             </a>
             <Button
               variant="link"
@@ -192,11 +203,11 @@ const SmartValue = React.forwardRef<
 
       return (
         <a
-          ref={ref}
-          href={value}
+          ref={setNode}
+          href={stringValue}
           target="_blank"
           rel="noopener noreferrer"
-          {...(props as any)}
+          {...props}
           className={cn(
             'text-green-600 transition-colors hover:text-blue-600 hover:underline dark:text-green-400 dark:hover:text-blue-400',
             isLongUrl ? 'break-all whitespace-pre-wrap' : 'whitespace-nowrap',
@@ -207,7 +218,7 @@ const SmartValue = React.forwardRef<
             props.onClick?.(e);
           }}
         >
-          {`'${value}'`}
+          {`'${stringValue}'`}
         </a>
       );
     }
@@ -222,7 +233,7 @@ const SmartValue = React.forwardRef<
       return (
         <span className="inline-flex flex-col items-start gap-1">
           <span
-            ref={ref}
+            ref={setNode}
             {...props}
             className={cn(
               typeStyle,
@@ -241,7 +252,7 @@ const SmartValue = React.forwardRef<
                 : undefined
             }
           >
-            {`'${value}'`}
+            {`'${stringValue}'`}
           </span>
           <Button
             variant="link"
@@ -260,7 +271,7 @@ const SmartValue = React.forwardRef<
 
     return (
       <span
-        ref={ref}
+        ref={setNode}
         {...props}
         className={cn(
           typeStyle,
@@ -270,14 +281,14 @@ const SmartValue = React.forwardRef<
           props.className
         )}
       >
-        {`'${value}'`}
+        {`'${stringValue}'`}
       </span>
     );
   }
   if (type === 'null')
     return (
       <span
-        ref={ref}
+        ref={setNode}
         {...props}
         className={cn(typeStyle, 'whitespace-nowrap', props.className)}
       >
@@ -286,7 +297,7 @@ const SmartValue = React.forwardRef<
     );
   return (
     <span
-      ref={ref}
+      ref={setNode}
       {...props}
       className={cn(typeStyle, 'whitespace-nowrap', props.className)}
     >
@@ -297,7 +308,7 @@ const SmartValue = React.forwardRef<
 SmartValue.displayName = 'SmartValue';
 
 const calculateLineCount = (
-  data: any,
+  data: unknown,
   expandedPaths: Set<string>,
   path = 'root',
   level = 0,
@@ -308,7 +319,7 @@ const calculateLineCount = (
   if (dataType === 'object') {
     const isOpen = expandedPaths.has(path);
     if (!isOpen) return 1;
-    const entries = Object.entries(data);
+    const entries = Object.entries(data as Record<string, unknown>);
     if (entries.length === 0) return 2;
     return (
       2 +
@@ -330,14 +341,15 @@ const calculateLineCount = (
   if (dataType === 'array') {
     const isOpen = expandedPaths.has(path);
     if (!isOpen) return 1;
-    if (data.length === 0) return 2;
+    const items = data as unknown[];
+    if (items.length === 0) return 2;
 
-    if (truncation.enabled && data.length > truncation.itemsPerArray) {
-      const visibleItems = data.slice(0, truncation.itemsPerArray);
+    if (truncation.enabled && items.length > truncation.itemsPerArray) {
+      const visibleItems = items.slice(0, truncation.itemsPerArray);
       return (
         3 +
-        visibleItems.reduce(
-          (acc: number, item: any, index: number) =>
+        visibleItems.reduce<number>(
+          (acc, item, index) =>
             acc +
             calculateLineCount(
               item,
@@ -353,8 +365,8 @@ const calculateLineCount = (
 
     return (
       2 +
-      data.reduce(
-        (acc: number, item: any, index: number) =>
+      items.reduce<number>(
+        (acc, item, index) =>
           acc +
           calculateLineCount(
             item,
@@ -372,7 +384,7 @@ const calculateLineCount = (
 };
 
 const generateAllPaths = (
-  data: any,
+  data: unknown,
   maxLevel: number = Infinity,
   currentLevel: number = 0,
   currentPath: string = 'root'
@@ -542,7 +554,7 @@ const LineNumbers: React.FC<{ lineCount: number }> = ({ lineCount }) => {
 };
 
 interface JsonNodeProps {
-  data: any;
+  data: unknown;
   level?: number;
   path: string;
   expandedPaths: Set<string>;
@@ -574,7 +586,7 @@ const JsonNode: React.FC<JsonNodeProps> = ({
       case 'array':
         element = (
           <JsonArray
-            data={data}
+            data={data as unknown[]}
             level={level}
             path={path}
             expandedPaths={expandedPaths}
@@ -590,7 +602,7 @@ const JsonNode: React.FC<JsonNodeProps> = ({
       case 'object':
         element = (
           <JsonObject
-            data={data}
+            data={data as Record<string, unknown>}
             level={level}
             path={path}
             expandedPaths={expandedPaths}
@@ -648,7 +660,7 @@ const indentColors = [
 
 const JsonObject: React.FC<{
   objectKey?: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   level: number;
   path: string;
   expandedPaths: Set<string>;
@@ -685,7 +697,7 @@ const JsonObject: React.FC<{
       onClick={
         collapseOn === 'doubleClick'
           ? undefined
-          : (e) => {
+          : () => {
               toggleNode(path);
             }
       }
@@ -806,7 +818,7 @@ const JsonObject: React.FC<{
 
 const JsonArray: React.FC<{
   objectKey?: string;
-  data: any[];
+  data: unknown[];
   level: number;
   path: string;
   expandedPaths: Set<string>;
@@ -851,7 +863,7 @@ const JsonArray: React.FC<{
       onClick={
         collapseOn === 'doubleClick'
           ? undefined
-          : (e) => {
+          : () => {
               toggleNode(path);
             }
       }

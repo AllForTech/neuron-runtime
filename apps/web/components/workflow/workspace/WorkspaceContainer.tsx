@@ -112,7 +112,13 @@ export const WorkspaceContainer = ({
 /**
  * Internal helper to make the Unassigned area a valid drop target
  */
-const UnassignedDropZone = ({ workflows, onCardClick, deleteWorkflow }: any) => {
+interface UnassignedDropZoneProps {
+    workflows: WorkflowType[];
+    onCardClick: (id: string) => void;
+    deleteWorkflow: (id: string) => Promise<void>;
+}
+
+const UnassignedDropZone = ({ workflows, onCardClick, deleteWorkflow }: UnassignedDropZoneProps) => {
     const { setNodeRef, isOver } = useDroppable({
         id: 'general',
     });
@@ -130,7 +136,7 @@ const UnassignedDropZone = ({ workflows, onCardClick, deleteWorkflow }: any) => 
                 <span className="text-neutral-200">Workflows</span>
             </h2>
             <div className="grid mt-6 md:mt-10! grid-cols-1 min-h-[100px] gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {workflows.map((wf: any) => (
+                {workflows.map((wf) => (
                     <DraggableWorkflowWrapper key={wf.id} id={wf.id} workflow={wf}>
                         <WorkflowCard
                             workflow={wf}

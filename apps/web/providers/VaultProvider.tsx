@@ -42,14 +42,18 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (user && token) {
-            refreshSecrets();
+            const initialize = async () => {
+                await refreshSecrets();
+            };
+
+            initialize();
         }
     }, [user, token, refreshSecrets]);
 
     const addSecret = async (name: string, value: string) => {
         if (!token) return;
 
-        const [_, error] = await secretsClient.create(name, value, token);
+        const [, error] = await secretsClient.create(name, value, token);
 
         if (error) {
             toast.error('Failed to encrypt and store secret');
@@ -63,7 +67,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     const removeSecret = async (id: string) => {
         if (!token) return;
 
-        const [_, error] = await secretsClient.delete(id, token);
+        const [, error] = await secretsClient.delete(id, token);
 
         if (error) {
             toast.error('Could not delete secret');

@@ -1,10 +1,11 @@
 "use client";
 
 import { Box, Database, AlertCircle } from 'lucide-react';
+import type { ExecutionLog } from '@neuron/db';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JsonRenderer } from '@/components/JsonRenederer';
 
-export function ExecutionDataInspector({ selectedLog }: { selectedLog: any }) {
+export function ExecutionDataInspector({ selectedLog }: { selectedLog: ExecutionLog }) {
   const hasError = selectedLog?.error;
 
   return (
@@ -56,7 +57,7 @@ export function ExecutionDataInspector({ selectedLog }: { selectedLog: any }) {
         <TabsContent value="error" className="mt-0">
           <div className="rounded-lg border border-red-500/15 bg-red-500/5 p-3 text-[11px] text-red-400">
             <JsonRenderer
-              data={selectedLog?.error || {}}
+              data={(selectedLog?.error || {}) as Record<string, unknown>}
               maxHeight="max-h-[200px]"
               className="max-h-[200px]"
             />
