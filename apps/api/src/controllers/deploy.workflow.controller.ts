@@ -91,18 +91,26 @@ export const getDeploymentController = async (req: any, res: any) => {
             });
         }
 
-        const deployment = await getDeploymentByWorkflowId(workflowId);
+        const userId = req.user.id;
+        const deployment = await getDeploymentByWorkflowId(workflowId, userId);
 
         console.log("fetching deployed Workflow with date: ", deployment);
 
-        return res.status(200).json(deployment ? {
+        if (!deployment) {
+            return res.status(404).json({
+                success: false,
+                message: "No active deployment found for this workflow."
+            });
+        }
+
+        return res.status(200).json({
             id: deployment.id,
             name: deployment.name,
             private: deployment.private,
             isActive: deployment.isActive,
             createdAt: deployment.createdAt,
             updatedAt: deployment.updatedAt,
-        } : null);
+        });
     }catch (e: any) {
 
         console.log(e);
@@ -124,7 +132,8 @@ export const getAllDeploymentController = async (req: any, res: any) => {
             });
         }
 
-        const deployment = await getALLDeploymentByWorkflowId(workflowId);
+        const userId = req.user.id;
+        const deployment = await getALLDeploymentByWorkflowId(workflowId, userId);
 
         console.log("fetching  all deployed Workflows with date: ", deployment);
 
@@ -145,8 +154,9 @@ export const deleteDeploymentController = async (req: any, res: any) => {
     const { workflowId } = req.params;
 
     try {
+        const userId = req.user.id;
         // We call your existing service function
-        const deleted = await deleteDeploymentByWorkflowId(workflowId);
+        const deleted = await deleteDeploymentByWorkflowId(workflowId, userId);
 
         if (!deleted) {
             return res.status(404).json({

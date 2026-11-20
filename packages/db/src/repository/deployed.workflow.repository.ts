@@ -54,27 +54,38 @@ export async function getDeploymentsByUserId(userId: string) {
 /**
  * Get single deployment by workflowId
  */
-export async function getDeploymentByWorkflowId(workflowId: string) {
+export async function getDeploymentByWorkflowId(workflowId: string, userId: string) {
     return await db.query.deployedWorkflows.findFirst({
-        where: eq(deployedWorkflows.workflowId, workflowId)
+        where: and(
+            eq(deployedWorkflows.workflowId, workflowId),
+            eq(deployedWorkflows.userId, userId)
+        )
     })
 }
 
 /**
  * Get all deployments by workflowId
  */
-export async function getALLDeploymentByWorkflowId(workflowId: string) {
+export async function getALLDeploymentByWorkflowId(workflowId: string, userId: string) {
     return await db.query.deployedWorkflows.findMany({
-        where: eq(deployedWorkflows.workflowId, workflowId),
+        where: and(
+            eq(deployedWorkflows.workflowId, workflowId),
+            eq(deployedWorkflows.userId, userId)
+        ),
         orderBy: [desc(deployedWorkflows.createdAt)]
     })
 }
 
 
-export async function deleteDeploymentByWorkflowId(workflowId: string) {
+export async function deleteDeploymentByWorkflowId(workflowId: string, userId: string) {
     const result = await db
         .delete(deployedWorkflows)
-        .where(eq(deployedWorkflows.workflowId, workflowId))
+        .where(
+            and(
+                eq(deployedWorkflows.workflowId, workflowId),
+                eq(deployedWorkflows.userId, userId)
+            )
+        )
         .returning()
 
     return result[0] ?? null
@@ -83,14 +94,19 @@ export async function deleteDeploymentByWorkflowId(workflowId: string) {
 /**
  * Deactivate deployment (set active = false)
  */
-export async function deactivateDeployment(workflowId: string) {
+export async function deactivateDeployment(workflowId: string, userId: string) {
     const [updated] = await db
         .update(deployedWorkflows)
         .set({
             isActive: false,
             updatedAt: new Date()
         })
-        .where(eq(deployedWorkflows.workflowId, workflowId))
+        .where(
+            and(
+                eq(deployedWorkflows.workflowId, workflowId),
+                eq(deployedWorkflows.userId, userId)
+            )
+        )
         .returning()
 
     return updated ?? null
@@ -99,14 +115,19 @@ export async function deactivateDeployment(workflowId: string) {
 /**
  * Activate deployment (optional but useful)
  */
-export async function activateDeployment(workflowId: string) {
+export async function activateDeployment(workflowId: string, userId: string) {
     const [updated] = await db
         .update(deployedWorkflows)
         .set({
             isActive: true,
             updatedAt: new Date()
         })
-        .where(eq(deployedWorkflows.workflowId, workflowId))
+        .where(
+            and(
+                eq(deployedWorkflows.workflowId, workflowId),
+                eq(deployedWorkflows.userId, userId)
+            )
+        )
         .returning()
 
     return updated ?? null
