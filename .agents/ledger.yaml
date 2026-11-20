@@ -370,15 +370,30 @@ tasks:
   - id: T-103
     objective: "Replace vm2 with isolated-vm on live path; delete duplicate."
     owner: coder
+    reviewer: reviewer
+    signoff: [security]
+    dependencies: [T-101]
+    acceptance: ["no vm2 imports", "sandbox tests prove timeout and no require/process access", "duplicate API copy deleted", "pnpm test green", "security sign-off recorded"]
+    verification: ["pnpm test", "grep vm2", "pnpm check-types", "pnpm lint"]
+    status: done
+    lease: null
+    evidence: ["pnpm test exit 0 (9 tests)", "pnpm check-types exit 0", "pnpm lint exit 0", "no vm2 in source/manifests (node_modules false positive only)", "reviewer approved code", "security approved: C-1 resolved", "c0de867"]
+    reports: [".agents/reports/T-103.md"]
+    open_risks: ["Native prebuild integrity and per-call isolate memory/concurrency are hardening follow-ups (T-103a)", "console.* in user scripts is now a no-op"]
+    commit: c0de867
+
+  - id: T-103a
+    objective: "Harden isolated-vm usage: pin exact version, add memory-limit regression test, and bound concurrent isolate creation."
+    owner: coder
     reviewer: security
-    dependencies: [T-101, T-107]
-    acceptance: ["no vm2 imports", "sandbox tests pass", "duplicate deleted"]
-    verification: ["pnpm test", "grep vm2"]
+    dependencies: [T-103]
+    acceptance: ["isolated-vm pinned to exact version", "memory-limit test proves bounded heap", "concurrent isolate creation is bounded", "pnpm test/check-types/lint exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint"]
     status: not_started
     lease: null
-    evidence: []
+    evidence: ["Security review T-103 medium findings"]
     reports: []
-    open_risks: ["isolated-vm native build availability"]
+    open_risks: []
     commit: null
 
   - id: T-104
