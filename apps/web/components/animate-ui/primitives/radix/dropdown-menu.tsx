@@ -237,7 +237,11 @@ function DropdownMenuSubContent({
   );
 }
 
-type DropdownMenuHighlightProps = Omit<
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+type DropdownMenuHighlightProps = DistributiveOmit<
   HighlightProps,
   'controlledItems' | 'enabled' | 'hover'
 > & {

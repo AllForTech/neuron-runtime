@@ -139,6 +139,10 @@ function Highlight<T extends React.ElementType = 'div'>({
     mode = 'children',
   } = props;
 
+  const { itemsClassName } = props as
+    | UncontrolledParentModeHighlightProps<T>
+    | UncontrolledChildrenModeHighlightProps<T>;
+
   const localRef = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
@@ -328,7 +332,7 @@ function Highlight<T extends React.ElementType = 'div'>({
           ? render(children)
           : render(
               React.Children.map(children, (child, index) => (
-                <HighlightItem key={index} className={props?.itemsClassName}>
+                <HighlightItem key={index} className={itemsClassName}>
                   {child}
                 </HighlightItem>
               ))

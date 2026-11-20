@@ -68,7 +68,7 @@ export function ConfigSectionRenderer({ section, values, onChange }: ConfigSecti
                                    <h3 className="text-[11px] font-semibold tracking-wide text-neutral-300">
                                        {section.title}
                                    </h3>
-                                   {section.required && (
+                                    {section.fields?.some((field) => field.required) && (
                                        <span className="text-[8px] font-bold text-red-400/60">REQUIRED</span>
                                    )}
                                </div>

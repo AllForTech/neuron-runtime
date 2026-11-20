@@ -76,7 +76,11 @@ export async function updateExecutionStatus(params: {
     result?: any;
 }, workflowId?: string) {
 
-    const { dispatch } = workflowRuntimeBroadcast(workflowId);
+    // workflowId is optional for this repository operation; only broadcast
+    // when a channel can be derived from it.
+    const runtimeBroadcast = workflowId
+        ? workflowRuntimeBroadcast(workflowId)
+        : undefined;
 
     const [updated] = await db
         .update(executions)
@@ -93,14 +97,20 @@ export async function updateExecutionStatus(params: {
         )
         .returning();
 
-    await dispatch(RuntimeActionType.UPDATE_EXECUTION, {
-        executionId: updated.id,
-        payload: {
-            status: params.status,
-            finishedAt: params.finishedAt,
-            result: params.result,
-        }
-    })
+    if (!updated) {
+        throw new Error(`Execution ${params.executionId} not found`);
+    }
+
+    if (runtimeBroadcast) {
+        await runtimeBroadcast.dispatch(RuntimeActionType.UPDATE_EXECUTION, {
+            executionId: updated.id,
+            payload: {
+                status: params.status,
+                finishedAt: params.finishedAt,
+                result: params.result,
+            }
+        });
+    }
 
     return updated;
 }

@@ -106,7 +106,7 @@ export const OutputRenderer = ({ content, format }: OutputRendererProps) => {
                         priority
                         alt={props.alt || 'Image'}
                         className="object-cover"
-                        src={props.src || ''}
+                        src={typeof props.src === 'string' ? props.src : ''}
                       />
                     </div>
                   ),

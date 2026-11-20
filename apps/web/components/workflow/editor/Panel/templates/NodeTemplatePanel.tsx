@@ -71,7 +71,7 @@ export default function NodeTemplatePanel() {
                         {filteredNodes.map((node) => (
                             <NodeTemplateCard
                                 key={node?.template?.key}
-                                template={node?.template}
+                                node={node}
                                 onSelect={() => handleSelectTemplate(node, selectedNode)}
                             />
                         ))}

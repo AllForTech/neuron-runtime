@@ -11,7 +11,8 @@ import { NodeDefinition } from "@neuron/shared";
 
 const iconMap = Icons as unknown as Record<string, LucideIcon>;
 
-export function NodeTemplateCard({ template, onSelect }: { template: NodeDefinition['template']; onSelect: () => void }) {
+export function NodeTemplateCard({ node, onSelect }: { node: NodeDefinition; onSelect: () => void }) {
+    const { template } = node;
     const IconComponent = iconMap[template.icon] || Icons.Layers2;
 
     return (
@@ -74,7 +75,7 @@ export function NodeTemplateCard({ template, onSelect }: { template: NodeDefinit
                                 {template.category}
                             </span>
                             <span className="text-[8px] font-mono text-neutral-700 ml-auto truncate opacity-0 group-hover:opacity-100 transition-opacity">
-                                {template.type}
+                                {node.type}
                             </span>
                         </div>
                     </div>

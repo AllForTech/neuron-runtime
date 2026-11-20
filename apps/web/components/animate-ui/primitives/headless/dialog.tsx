@@ -39,7 +39,7 @@ function Dialog<TTag extends React.ElementType = 'div'>({
         <DialogPrimitive
           data-slot="dialog"
           className={className}
-          {...props}
+          {...(props as DialogPrimitiveProps)}
           static
         />
       )}

@@ -7,7 +7,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Execution } from '@/types';
+import type { Execution } from '@neuron/db';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
