@@ -443,16 +443,17 @@ tasks:
   - id: T-106
     objective: "Harden public execution, payload validation, egress policy."
     owner: coder
-    reviewer: security
+    reviewer: reviewer
+    signoff: [security]
     dependencies: [T-104, T-105]
-    acceptance: ["no api_key query auth", "credential filtering tests", "SSRF tests", "frozen response shapes"]
-    verification: ["pnpm test"]
-    status: not_started
+    acceptance: ["secret key accepted only via header (api_key query rejected)", "webhookData credential fields filtered", "public execution route rate-limited", "deployment payload zod-validated", "HTTP node rejects private/loopback/link-local egress including DNS rebinding via connect-time IP pinning", "frozen response shapes and retry schedule unchanged", "pnpm test/check-types/lint exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "git status --short"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["pnpm test exit 0 (13 files, 81 tests)", "pnpm check-types exit 0", "pnpm lint exit 0", "reviewer changes_requested then approved after compatibility and pinning fixes", "security changes_requested then approved after connect-time IP pinning", "DNS-rebinding TOCTOU closed by undici per-hop pinned dispatcher; two low residuals explicitly accepted", "d1943c4"]
+    reports: [".agents/reports/T-106.md", ".agents/decisions/T-106-dns-pinning.md"]
+    open_risks: ["in-memory per-process rate limit accepted residual; shared store needed for multi-instance deployment", "key-name-based credential filtering accepted residual", "prettier baseline not clean and Vitest reporter Map.groupBy failure on error output are pre-existing"]
+    commit: d1943c4
 
   - id: T-107
     objective: "Independent security re-review of Phase 0 outcomes."
