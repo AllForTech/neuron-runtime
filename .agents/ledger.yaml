@@ -399,30 +399,46 @@ tasks:
   - id: T-104
     objective: "Add userId scoping to vault/deployment repositories and controllers."
     owner: bugfixer
-    reviewer: security
+    reviewer: reviewer
+    signoff: [security]
     dependencies: [T-102]
-    acceptance: ["cross-user operations return 404", "negative auth tests pass"]
-    verification: ["pnpm test"]
-    status: not_started
+    acceptance: ["cross-user read/update/delete returns 404 for both resources", "negative authorization tests pass and would fail on baseline", "live user-scoping paths unchanged", "pnpm test/check-types/lint exit 0", "security sign-off recorded"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "git status --short"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["pnpm test exit 0 (26 tests incl. 17 scoping tests)", "pnpm check-types exit 0", "pnpm lint exit 0", "baseline 12/17 scoping tests failed", "reviewer approved", "security approved: C-2 resolved", "0125d43"]
+    reports: [".agents/reports/T-104.md"]
+    open_risks: ["Cross-user list returns 200 [] by design (no leak)", "pre-existing internal error text/log redaction issues deferred", "api_key query auth deferred to T-106"]
+    commit: 0125d43
 
   - id: T-105
     objective: "Fix VaultService return, remove client key literal, redact secrets in logs."
     owner: bugfixer
-    reviewer: security
+    reviewer: reviewer
+    signoff: [security]
     dependencies: [T-102]
-    acceptance: ["plaintext always returned", "no fallback secret literal in web source", "logs redacted"]
-    verification: ["pnpm test", "grep fallback literal"]
-    status: not_started
+    acceptance: ["VaultService.resolve always returns decrypted plaintext", "no hardcoded/fallback AES key literal in apps/web source", "logger redacts secret-like values", "contract/redaction tests pass", "pnpm test/check-types/lint exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "grep fallback literal"]
+    status: done
     lease: null
-    evidence: []
+    evidence: ["pnpm test exit 0 (36 tests after T-105a)", "pnpm check-types exit 0", "pnpm lint exit 0", "baseline 5/8 redaction/contract tests failed", "reviewer approved", "security approved after T-105a: H-2 and H-3 resolved", "a98c9ca"]
+    reports: [".agents/reports/T-105.md"]
+    open_risks: ["Best-effort pattern redaction may miss novel secret formats", "Direct console.* logging bypasses sanitizer (T-106 scope)", "VAULT_SECRET non-null assertion in vault.controllers.ts:11 remains (T-106 scope)"]
+    commit: a98c9ca
+
+  - id: T-105a
+    objective: "Anchor logger secret-field redaction regexes and preserve benign diagnostic fields."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-105]
+    acceptance: ["logger redacts actual secret fields", "logger preserves tokenCount/passed/credentialType/sessionStartedAt", "pnpm test exit 0"]
+    verification: ["pnpm exec vitest run packages/shared/src/utils/logger.redaction.test.ts", "pnpm test"]
+    status: done
+    lease: null
+    evidence: ["logger.redaction tests 5/5; pnpm test 36/36", "seven previously missed credential field names now redacted; benign fields preserved", "security re-review approved"]
     reports: []
-    open_risks: []
-    commit: null
+    open_risks: ["Deny-list data-suffix bypass remains low-severity residual (no current call sites)"]
+    commit: a98c9ca
 
   - id: T-106
     objective: "Harden public execution, payload validation, egress policy."
