@@ -26,7 +26,8 @@
 
   "dependencies": {
     "@neuron/shared": "workspace:*",
-    "@neuron/nodes-sdk": "workspace:*"
+    "@neuron/nodes-sdk": "workspace:*",
+    "undici": "^6.29.1"
   },
 
   "devDependencies": {

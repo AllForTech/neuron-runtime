@@ -1,5 +1,6 @@
 import {logger, NODE_KIND} from "@neuron/shared";
 import {ExecuteWorkflowType, Runtime} from "@neuron/runtime";
+import {sanitizeWebhookData} from "../schemas/webhook-data";
 
 export type FinalResponseType = {
     status: number;
@@ -19,11 +20,7 @@ export async function executeWorkflow({
     const triggerNode = graph.nodes.find(n => n.type === NODE_KIND.TRIGGER_WEBHOOK);
 
     if (triggerNode) {
-        (triggerNode.config as any).webhookData = {
-            body: req?.body || {},
-            query: req?.query || {},
-            headers: req?.headers || {}
-        };
+        (triggerNode.config as any).webhookData = sanitizeWebhookData(req);
     }
 
     const runtime = new Runtime({

@@ -10,6 +10,7 @@ import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "@neuron/db";
 import {executeWorkflow} from "@/engine/execution";
 import {decryptSecret, encryptSecret} from "@neuron/shared/server";
 import {timingSafeEqual} from "node:crypto";
+import {deployPayloadSchema} from "../schemas/deployment";
 
 
 export const deployWorkflowController = async (req: any, res: any) => {
@@ -47,24 +48,35 @@ export const deployWorkflowController = async (req: any, res: any) => {
            });
        }
 
-       const body = req.body;
+        const parsed = deployPayloadSchema.safeParse(req.body);
 
-       const encryptedKey = body.private && body?.secretKey
-           ? encryptSecret(body.secretKey)
-           : null;
+        if (!parsed.success) {
+            return res.status(400).json({
+                error: "Invalid deployment payload",
+            });
+        }
 
-       const data: NewDeployedWorkflow = {
-           userId,
-           workflowId,
-           name: body?.name ?? "Deploy",
-           nodes: body.nodes,
-           edges: body.edges,
-           secretKey: encryptedKey,
-           private: body.private,
-           isActive: true
-       }
+        const { name, nodes, edges, secretKey, private: isPrivate } = parsed.data;
+        const encryptedKey = isPrivate && secretKey
+            ? encryptSecret(secretKey)
+            : null;
 
-       console.log("Deploying Workflow...", data);
+        const data: NewDeployedWorkflow = {
+            userId,
+            workflowId,
+            name: name ?? "Deploy",
+            nodes,
+            edges,
+            secretKey: encryptedKey,
+            private: isPrivate ?? true,
+            isActive: true
+        };
+
+        console.log("[Neuron] Deployment validated", {
+            workflowId,
+            nodeCount: nodes.length,
+            edgeCount: edges.length,
+        });
 
        const deployment = await saveDeployWorkflowData(workflowId, data);
 
@@ -196,7 +208,7 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
 
         // --- AUTHENTICATION LAYER ---
         if (deployment.private) {
-            const providedKey = req.headers['x-neuron-key'] || req.query.api_key;
+            const providedKey = req.headers['x-neuron-key'];
 
             if (!providedKey || typeof providedKey !== 'string') {
                 return res.status(401).json({
