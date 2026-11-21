@@ -466,7 +466,7 @@ tasks:
     evidence: ["security approved Phase 0 at 7177384", "C-1/C-2/H-2/H-3 and T-106 blockers resolved", "five low residuals explicitly accepted with follow-ups", "coordinator evidence: pnpm test 81/81, check-types 0, lint 0"]
     reports: [".agents/reports/T-107.md"]
     open_risks: ["T-103a isolated-vm hardening remains scheduled", "per-process rate limit, key-name credential filtering, logger pattern gaps, raw console bypass follow-ups"]
-    commit: pending_governance_commit
+    commit: 1dcc3e2
 
   - id: T-110
     objective: "Runtime ports; remove runtime→db and runtime→editor-enum edges."
