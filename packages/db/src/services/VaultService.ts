@@ -20,9 +20,9 @@ export class VaultService {
             throw new Error(`Vault secret not found: ${name}`);
         }
 
-        const decryptedSecret = secret.content.startsWith(SECRET_PREFIX) ? secret.content : decryptSecret(secret.content)
+        const decryptedSecret = secret.content.startsWith(SECRET_PREFIX) ? secret.content : decryptSecret(secret.content);
 
         this.cache.set(name, decryptedSecret);
-        return secret.content;
+        return decryptedSecret;
     }
 }
