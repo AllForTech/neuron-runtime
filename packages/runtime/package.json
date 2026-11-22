@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@neuron/shared": "workspace:*",
-    "@neuron/nodes": "workspace:*",
-    "@neuron/db": "workspace:*"
+    "@neuron/nodes": "workspace:*"
   }
 }

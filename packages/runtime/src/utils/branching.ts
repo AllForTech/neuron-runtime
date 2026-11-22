@@ -1,10 +1,10 @@
 import {ExecutionSignal, NodeType} from "@neuron/shared";
-import {WorkflowEdge} from "@neuron/db";
+import type {RuntimeGraphEdge} from "../types";
 
 export function getEdgeTargets(
     type: NodeType,
     nodeId: string,
-    edges: WorkflowEdge[],
+    edges: RuntimeGraphEdge[],
     output: any,
     signal: ExecutionSignal
 ): string[] {

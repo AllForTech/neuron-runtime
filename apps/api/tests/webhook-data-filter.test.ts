@@ -27,6 +27,17 @@ const loggerMock = vi.hoisted(() => ({
 vi.mock("@neuron/shared", () => ({
     logger: loggerMock,
     NODE_KIND: { TRIGGER_WEBHOOK: "Trigger.Webhook" },
+    WorkflowEditorActionType: {
+        NODE_EXECUTION_START: "NODE_EXECUTION_START",
+        NODE_EXECUTION_SUCCESS: "NODE_EXECUTION_SUCCESS",
+        NODE_EXECUTION_ERROR: "NODE_EXECUTION_ERROR",
+    },
+}));
+
+vi.mock("@neuron/db", () => ({
+    VaultService: class {},
+    getGlobalVariables: vi.fn(async () => []),
+    workflowBroadcast: () => ({ dispatch: vi.fn(async () => {}) }),
 }));
 
 const BODY_SECRET = "body-secret-value";
@@ -129,5 +140,19 @@ describe("webhookData credential filtering", () => {
         );
 
         expect(runtimeCapture.constructorArgs[0].graph.nodes[0].config).toEqual({});
+    });
+
+    it("injects the three default collaborators into Runtime construction", async () => {
+        await executeWorkflow({
+            executionId: "exec-1",
+            workflowId: "workflow-1",
+            graph: graphWithTrigger(),
+            userId: "owner-1",
+        } as any);
+
+        const params = runtimeCapture.constructorArgs[0];
+        expect(typeof params.vault.resolve).toBe("function");
+        expect(typeof params.variables.getForWorkflow).toBe("function");
+        expect(typeof params.events.emit).toBe("function");
     });
 });

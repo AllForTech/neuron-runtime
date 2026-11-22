@@ -1,5 +1,6 @@
 import {logger, NODE_KIND} from "@neuron/shared";
 import {ExecuteWorkflowType, Runtime} from "@neuron/runtime";
+import {createDefaultRuntimeCollaborators} from "../adapters/index.js";
 import {sanitizeWebhookData} from "../schemas/webhook-data";
 
 export type FinalResponseType = {
@@ -27,7 +28,8 @@ export async function executeWorkflow({
         executionId,
         workflowId,
         graph,
-        userId
+        userId,
+        ...createDefaultRuntimeCollaborators(userId, workflowId)
     });
 
     const result = await runtime.execute();
