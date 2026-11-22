@@ -389,12 +389,12 @@ tasks:
     dependencies: [T-103]
     acceptance: ["isolated-vm pinned to exact version", "memory-limit test proves bounded heap", "concurrent isolate creation is bounded", "pnpm test/check-types/lint exit 0"]
     verification: ["pnpm test", "pnpm check-types", "pnpm lint"]
-    status: not_started
+    status: done
     lease: null
-    evidence: ["Security review T-103 medium findings"]
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["isolated-vm exact 5.0.4 pin in manifest and lockfile", "memory-limit regression test passes", "bounded concurrency cap 4 with all work completing", "pnpm test 17 files/96 tests, check-types 0, lint 0", "security approved with accepted native-prebuild and heap-guideline residuals", "99bc6ca"]
+    reports: [".agents/reports/T-103a.md"]
+    open_risks: ["native prebuild binary integrity not verified (pre-existing)", "isolated-vm heap limit is a guideline upstream", "semaphore waiter queue unbounded upstream of API rate limit"]
+    commit: 99bc6ca
 
   - id: T-104
     objective: "Add userId scoping to vault/deployment repositories and controllers."
@@ -473,14 +473,14 @@ tasks:
     owner: coder
     reviewer: architect
     dependencies: [T-107]
-    acceptance: ["zero forbidden imports", "characterization tests pass"]
-    verification: ["boundary grep", "pnpm test"]
-    status: not_started
+    acceptance: ["zero forbidden imports", "characterization tests pass", "runtime behavior unchanged", "three collaborators injected with current defaults"]
+    verification: ["boundary grep", "pnpm test", "pnpm check-types"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["boundary grep zero forbidden imports", "pnpm test 17 files/96 tests, check-types 0, lint 0, forced typecheck 21/21", "architect approved with non-blocking follow-ups", "37c42c9"]
+    reports: [".agents/reports/T-110.md"]
+    open_risks: ["dead userId field in runtime to remove in T-112", "composition still in legacy wrapper until T-112", "collaborators optional until T-112", "wire literals not test-pinned until T-111"]
+    commit: 37c42c9
 
   - id: T-111
     objective: "Realtime event adapter with wire-contract tests."
@@ -513,15 +513,15 @@ tasks:
   - id: T-120
     objective: "AST inventory of workflow editor consumers and dispatch sites."
     owner: explore
-    dependencies: [T-101]
+    dependencies: [T-101, T-107]
     acceptance: ["exact consumer list", "count reconciled", "dispatch sites listed"]
     verification: ["read-only AST/grep report"]
-    status: not_started
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["AST scanned 238 files", "27 consumers/27 calls reconciled", "37 real dispatch sites reconciled against 39 grep lines", "no edits by research agent"]
+    reports: [".agents/reports/T-120.md"]
+    open_risks: ["duplicate ReactFlowProvider and debounced dual graph state are migration-sensitive", "dynamic realtime dispatch must preserve arbitrary string action types"]
+    commit: pending_governance_commit
 
   - id: T-121
     objective: "Create Zustand stores, transitions, selectors, adapters, commands, bootstrap."
