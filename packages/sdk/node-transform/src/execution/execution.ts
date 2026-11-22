@@ -1,9 +1,11 @@
 import { NodeExecutor, NodeExecutorContext, ExecutorOutput } from "@neuron/shared";
 import ivm from "isolated-vm";
 import { TransformNodeConfig } from "../index.js";
+import { Semaphore } from "./semaphore.js";
 
-const TRANSFORM_TIMEOUT_MS = 1000;
-const ISOLATE_MEMORY_LIMIT_MB = 64;
+export const TRANSFORM_TIMEOUT_MS = 1000;
+export const ISOLATE_MEMORY_LIMIT_MB = 64;
+export const DEFAULT_MAX_CONCURRENT_ISOLATES = 4;
 
 function normalizeTransformCode(code: string) {
     const trimmed = code.trim();
@@ -11,14 +13,30 @@ function normalizeTransformCode(code: string) {
     return `return (${trimmed})`;
 }
 
-export const transformNodeExecutor: NodeExecutor = async ({
-                                                  config,
-                                                  input,
-                                              }: NodeExecutorContext): Promise<ExecutorOutput> => { // Explicitly define return type
+/** Creates a fresh, bounded V8 isolate for one transform execution. */
+export function createTransformIsolate(memoryLimitMb: number = ISOLATE_MEMORY_LIMIT_MB): ivm.Isolate {
+    return new ivm.Isolate({ memoryLimit: memoryLimitMb });
+}
 
+export interface TransformExecutorOptions {
+    /** Hard CPU timeout for user code, in milliseconds. */
+    timeoutMs?: number;
+    /** Heap limit for each isolate, in megabytes. */
+    memoryLimitMb?: number;
+    /** Maximum number of isolates allowed to exist at the same time. */
+    maxConcurrentIsolates?: number;
+    /** Execution strategy override; used to test scheduling without real isolates. */
+    executeInIsolate?: NodeExecutor;
+}
+
+async function runInIsolate(
+    { config, input }: NodeExecutorContext,
+    memoryLimitMb: number,
+    timeoutMs: number
+): Promise<ExecutorOutput> {
     // User code runs in a separate V8 isolate: no host globals (require/process),
     // a hard CPU timeout, and a bounded heap. The isolate is released on every path.
-    const isolate = new ivm.Isolate({ memoryLimit: ISOLATE_MEMORY_LIMIT_MB });
+    const isolate = createTransformIsolate(memoryLimitMb);
 
     try {
         const context = await isolate.createContext();
@@ -46,7 +64,7 @@ export const transformNodeExecutor: NodeExecutor = async ({
         `;
 
         const script = await isolate.compileScript(wrappedCode, { filename: "transform.js" });
-        await script.run(context, { timeout: TRANSFORM_TIMEOUT_MS });
+        await script.run(context, { timeout: timeoutMs });
 
         const result = await jail.get("__result", { copy: true });
 
@@ -73,3 +91,29 @@ export const transformNodeExecutor: NodeExecutor = async ({
         isolate.dispose();
     }
 }
+
+/**
+ * Builds a transform executor whose isolate creation is bounded by a semaphore.
+ *
+ * Default limits match the previous executor behaviour; only the concurrency
+ * cap is newly enforced. The returned function keeps the NodeExecutor contract
+ * and output shape.
+ */
+export function createTransformNodeExecutor(options: TransformExecutorOptions = {}): NodeExecutor {
+    const memoryLimitMb = options.memoryLimitMb ?? ISOLATE_MEMORY_LIMIT_MB;
+    const timeoutMs = options.timeoutMs ?? TRANSFORM_TIMEOUT_MS;
+    const maxConcurrentIsolates = options.maxConcurrentIsolates ?? DEFAULT_MAX_CONCURRENT_ISOLATES;
+    const execute = options.executeInIsolate ?? ((ctx: NodeExecutorContext) => runInIsolate(ctx, memoryLimitMb, timeoutMs));
+    const semaphore = new Semaphore(maxConcurrentIsolates);
+
+    return async (ctx: NodeExecutorContext): Promise<ExecutorOutput> => {
+        await semaphore.acquire();
+        try {
+            return await execute(ctx);
+        } finally {
+            semaphore.release();
+        }
+    };
+}
+
+export const transformNodeExecutor: NodeExecutor = createTransformNodeExecutor();

@@ -27,7 +27,7 @@
   "dependencies": {
     "@neuron/shared": "workspace:*",
     "@neuron/nodes-sdk": "workspace:*",
-    "isolated-vm": "^5.0.4"
+    "isolated-vm": "5.0.4"
   },
 
   "devDependencies": {
