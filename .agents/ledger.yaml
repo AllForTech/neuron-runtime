@@ -487,14 +487,14 @@ tasks:
     owner: coder
     reviewer: reviewer
     dependencies: [T-110]
-    acceptance: ["channel/event literals asserted", "visuals unchanged"]
-    verification: ["pnpm test"]
-    status: not_started
+    acceptance: ["literal channel workflow_<id> and event workflow_action asserted", "NODE_EXECUTION_START/SUCCESS/ERROR literals asserted", "payload shape unchanged", "visuals unchanged", "pnpm test/check-types/lint exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["literal wire-contract test exercises real sink and real workflowBroadcast", "reviewer approved with targeted vitest 2 files/8 tests exit 0", "integrated pnpm test 27 files/140 tests, check-types 0, lint 0", "no adapter/wire/visual source changed", "8c6fdcc"]
+    reports: [".agents/reports/T-111.md", ".agents/reports/T-111-review.md"]
+    open_risks: ["separate workflowRuntimeBroadcast channel not explicitly pinned (non-blocking)"]
+    commit: 8c6fdcc
 
   - id: T-112
     objective: "Application use-cases; consolidate orchestration with two projectors."
@@ -521,21 +521,35 @@ tasks:
     evidence: ["AST scanned 238 files", "27 consumers/27 calls reconciled", "37 real dispatch sites reconciled against 39 grep lines", "no edits by research agent"]
     reports: [".agents/reports/T-120.md"]
     open_risks: ["duplicate ReactFlowProvider and debounced dual graph state are migration-sensitive", "dynamic realtime dispatch must preserve arbitrary string action types"]
-    commit: pending_governance_commit
+    commit: bd5b5e1
 
   - id: T-121
     objective: "Create Zustand stores, transitions, selectors, adapters, commands, bootstrap."
     owner: coder
     reviewer: architect
     dependencies: [T-101, T-110, T-120]
-    acceptance: ["store tests pass without DOM", "distinct reset semantics", "retry schedule pinned"]
-    verification: ["pnpm test", "pnpm check-types"]
-    status: not_started
+    acceptance: ["exact zustand@5.0.12", "store/transition tests pass without DOM", "distinct reset semantics for workflow/runtime/UI sessions", "100/200ms graph debounce, 200ms sync delay, 3s autosave and 5-step retry pinned", "no web->db imports added", "pnpm test/check-types exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "boundary grep"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["exact zustand@5.0.12 in manifest/lockfile", "DOM-free store/transition tests", "distinct resets and timing constants pinned", "no web->@neuron/db imports", "pnpm test 27 files/140 tests, check-types 0, lint 0", "reviewer and architect approved", "d8b20d3"]
+    reports: [".agents/reports/T-121.md", ".agents/reports/T-121a-review.md", ".agents/reports/T-121-architecture-review.md"]
+    open_risks: ["sessionStore replaces ADR asyncStore; ADR updated", "timing helpers unwired until T-123", "object selectors need useShallow in T-123", "legacy upsert quirks deferred to T-124"]
+    commit: d8b20d3
+
+  - id: T-121a
+    objective: "Repair the new Zustand store test failure and complete T-121 verification."
+    owner: bugfixer
+    reviewer: reviewer
+    dependencies: [T-121]
+    acceptance: ["runtime transitions test passes without weakening assertions", "targeted store tests pass", "pnpm test/check-types/lint exit 0", "boundary grep confirms no new web->@neuron/db imports", "T-121 report written with exact outcomes"]
+    verification: ["targeted vitest", "pnpm test", "pnpm check-types", "pnpm lint", "git grep", "git status/diff"]
+    status: done
+    lease: null
+    evidence: ["root cause: runtime.ts:103 spread stale logs after patched entry (legacy bug)", "original assertion retained and two regression tests added", "pnpm test 27 files/140 tests, check-types 0, lint 0", "boundary grep no matches", "reviewer approved", "d8b20d3"]
+    reports: [".agents/reports/T-121.md", ".agents/reports/T-121a-review.md"]
+    open_risks: ["two legacy reversed-spread upsert quirks remain deliberately preserved for T-124 decision"]
+    commit: d8b20d3
 
   - id: T-122
     objective: "Install temporary shim; swap editor provider to bootstrap."

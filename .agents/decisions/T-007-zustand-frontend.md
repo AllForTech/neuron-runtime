@@ -1,10 +1,11 @@
 # 0007 — Addendum to 0003: Zustand-based frontend state architecture and direct consumer migration
 
-- Status: proposed
+- Status: accepted (T-121 architect sign-off, 2026-11-23)
 - Date: 2026-11-19
 - Owners: architect
-- Related tasks: T-003 (superseded sections only), T-005, T-007
+- Related tasks: T-003 (superseded sections only), T-005, T-007, T-121
 - Lease: `.agents/decisions/T-007-zustand-frontend.md` only — no source/test/config writes by this agent
+- T-121 implementation note: the ADR's `asyncStore.ts` is implemented as `sessionStore.ts`; it owns the same in-flight/retry flags plus `runId`, `bootstrapStatus`, and `lastError`. T-122/T-123 must import `sessionStore` (or the barrel), not `asyncStore`.
 
 This ADR is an **addendum**, not a replacement for `.agents/decisions/T-003-architecture.md`. It overrides only the frontend-state sections named in "Reconciliation with T-003" below; all other T-003 decisions remain in force.
 
