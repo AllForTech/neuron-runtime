@@ -282,6 +282,9 @@ importers:
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
+      zustand:
+        specifier: 5.0.12
+        version: 5.0.12(@types/react@19.2.2)(immer@11.1.4)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
