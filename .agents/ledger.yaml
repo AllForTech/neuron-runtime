@@ -498,17 +498,17 @@ tasks:
 
   - id: T-112
     objective: "Application use-cases; consolidate orchestration with two projectors."
-    owner: coder
+    owner: bugfixer
     reviewer: architect
     dependencies: [T-110, T-111]
-    acceptance: ["both HTTP behaviors preserved", "one orchestration implementation"]
-    verification: ["pnpm test", "pnpm check-types"]
-    status: not_started
+    acceptance: ["both HTTP behaviors preserved", "one orchestration implementation", "both projectors preserve wire strings", "pnpm test/check-types/lint exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "git diff"]
+    status: done
     lease: null
-    evidence: []
-    reports: []
-    open_risks: []
-    commit: null
+    evidence: ["single orchestration use-case", "one RuntimeCollaborators definition", "HTTP/realtime wire contracts preserved", "pnpm test 29 files/150 tests, check-types 0, lint 0", "architect approved after lease correction", "e15e476"]
+    reports: [".agents/reports/T-112.md", ".agents/reports/T-112-architecture-review.md"]
+    open_risks: ["controllers still import @neuron/db", "Express Response remains in application projector/service", "engine wrapper is T-130 deletion candidate"]
+    commit: e15e476
 
   - id: T-120
     objective: "AST inventory of workflow editor consumers and dispatch sites."
@@ -553,16 +553,16 @@ tasks:
 
   - id: T-122
     objective: "Install temporary shim; swap editor provider to bootstrap."
-    owner: coder
+    owner: bugfixer
     reviewer: reviewer
     dependencies: [T-121]
-    acceptance: ["full characterization suite green", "app renders/executes unchanged"]
-    verification: ["pnpm test", "pnpm build"]
-    status: not_started
-    lease: null
-    evidence: []
-    reports: []
-    open_risks: []
+    acceptance: ["full characterization suite green", "app renders/executes unchanged", "temporary shim isolated and marked for T-124 deletion", "no save on load", "no new visible error toasts", "pnpm test/check-types/lint/build exit 0"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "pnpm build", "git diff"]
+    status: in_progress
+    lease: { owner: bugfixer, paths: ["apps/web/app/(editor)/Provider.tsx", "apps/web/providers/WorkflowEditorProvider.tsx", "apps/web/stores/workflow/**", "apps/web/tests/**", "apps/web/tsconfig.json", "apps/web/package.json", "pnpm-lock.yaml", "vitest.config.mts", ".agents/reports/T-122.md"], task: T-122 }
+    evidence: ["reviewer found save-on-load and visible-toast regressions", "new DOM/composition regression test added", "happy-dom@21.0.4 added", "vitest @ alias added", "pre-fix test blocked by alias and now unblocked"]
+    reports: [".agents/reports/T-122.md"]
+    open_risks: ["source fixes for save-on-load/toasts/saveStatus still pending", "temporary shim must be deleted in T-124", "Next build regenerates tsconfig; restore after build"]
     commit: null
 
   - id: T-123
@@ -648,6 +648,21 @@ tasks:
     reports: []
     open_risks: []
     commit: null
+
+  - id: T-136
+    objective: "Fix backend build by externalizing isolated-vm native addon."
+    owner: foundation
+    reviewer: reviewer
+    signoff: [security]
+    dependencies: [T-103a]
+    acceptance: ["isolated-vm remains exact 5.0.4", "backend declares isolated-vm dependency", "tsup explicitly externalizes isolated-vm", "pnpm build/test/check-types/lint exit 0"]
+    verification: ["pnpm --filter backend build", "pnpm build", "pnpm test", "pnpm check-types", "pnpm lint"]
+    status: done
+    lease: null
+    evidence: ["exact isolated-vm 5.0.4 backend dependency", "tsup externalizes isolated-vm", "pnpm build 21/21, test 29/150, check-types 0, lint 0", "reviewer and security approved", "66499ff"]
+    reports: [".agents/reports/T-136.md", ".agents/reports/T-136-review.md", ".agents/reports/T-136-security-review.md"]
+    open_risks: ["deployment must install external native addon on matching Node ABI", "native prebuild integrity residual accepted from T-103a"]
+    commit: 66499ff
 
   - id: T-134
     objective: "Harden CORS, crash handling, realtime payload validation."
