@@ -1,7 +1,6 @@
-import {logger, NODE_KIND} from "@neuron/shared";
-import {ExecuteWorkflowType, Runtime} from "@neuron/runtime";
 import {createDefaultRuntimeCollaborators} from "../adapters/index.js";
-import {sanitizeWebhookData} from "../schemas/webhook-data";
+import {ExecuteWorkflowUseCase} from "../application/execute-workflow.use-case.js";
+import type {ExecuteWorkflowType} from "@neuron/runtime";
 
 export type FinalResponseType = {
     status: number;
@@ -9,8 +8,10 @@ export type FinalResponseType = {
     body?: Record<string, string>;
 } | null;
 
-
-
+/**
+ * Backward-compatible wrapper. Single orchestration implementation lives in
+ * ExecuteWorkflowUseCase; T-130 may remove this wrapper after import migration.
+ */
 export async function executeWorkflow({
                                           executionId,
                                           workflowId,
@@ -18,26 +19,15 @@ export async function executeWorkflow({
                                           userId
                                       }: ExecuteWorkflowType, req?: any) {
 
-    const triggerNode = graph.nodes.find(n => n.type === NODE_KIND.TRIGGER_WEBHOOK);
+    const useCase = new ExecuteWorkflowUseCase({
+        collaborators: createDefaultRuntimeCollaborators(userId, workflowId)
+    });
 
-    if (triggerNode) {
-        (triggerNode.config as any).webhookData = sanitizeWebhookData(req);
-    }
-
-    const runtime = new Runtime({
+    return useCase.execute({
         executionId,
         workflowId,
         graph,
         userId,
-        ...createDefaultRuntimeCollaborators(userId, workflowId)
+        request: req
     });
-
-    const result = await runtime.execute();
-
-    logger.info("Runtime", `Execution Result for ${executionId}`, {
-        workflowId,
-        status: result
-    });
-
-    return result;
 }

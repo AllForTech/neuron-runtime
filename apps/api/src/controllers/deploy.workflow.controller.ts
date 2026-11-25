@@ -6,11 +6,11 @@ import {
     saveDeployWorkflowData, updateExecutionStatus
 } from "@neuron/db";
 import {supabase} from "@neuron/auth";
-import {NewDeployedWorkflow, WorkflowEdge, WorkflowNode} from "@neuron/db";
-import {executeWorkflow} from "@/engine/execution";
-import {decryptSecret, encryptSecret} from "@neuron/shared/server";
-import {timingSafeEqual} from "node:crypto";
+import {NewDeployedWorkflow} from "@neuron/db";
+import {encryptSecret} from "@neuron/shared/server";
 import {deployPayloadSchema} from "../schemas/deployment";
+import {executeWorkflow} from "@/engine/execution";
+import {DeployedExecutionService} from "../application/index.js";
 
 
 export const deployWorkflowController = async (req: any, res: any) => {
@@ -196,103 +196,16 @@ export const executeDeployedWorkflowController = async (req: any, res: any) => {
     const { deploymentId } = req.params as any;
 
     try {
-        const deployment = await getDeploymentById(deploymentId);
-
-        if (!deployment) {
-            return res.status(404).json({
-                success: false,
-                error: "Target Not Found",
-                message: "No active workflow matches the provided ID."
-            });
-        }
-
-        // --- AUTHENTICATION LAYER ---
-        if (deployment.private) {
-            const providedKey = req.headers['x-neuron-key'];
-
-            if (!providedKey || typeof providedKey !== 'string') {
-                return res.status(401).json({
-                    success: false,
-                    error: "Authentication Required",
-                    message: "Missing 'X-Neuron-Key' header."
-                });
-            }
-
-            try {
-                const decryptedMaster = decryptSecret(deployment.secretKey!);
-
-                // Use Timing Safe Comparison to prevent side-channel attacks
-                const isMatch = timingSafeEqual(
-                    Buffer.from(providedKey),
-                    Buffer.from(decryptedMaster)
-                );
-
-                if (!isMatch) throw new Error("Mismatch");
-            } catch (authError) {
-                return res.status(403).json({
-                    success: false,
-                    error: "Invalid Identity",
-                    message: "The provided secret key is incorrect or tampered with."
-                });
-            }
-        }
-
-        // --- EXECUTION ORCHESTRATION ---
-        const execution = await createExecution({
-            workflowId: deployment.workflowId!,
-            userId: deployment.userId!,
+        // The engine wrapper is the single orchestration entry; collaborators
+        // are composed there per deployment owner/workflow at execution time.
+        const service = new DeployedExecutionService({
+            executeWorkflow: (command) => executeWorkflow(command, command.request),
+            getDeploymentById,
+            createExecution,
+            updateExecutionStatus
         });
 
-        if (!execution) throw new Error("Failed to initialize execution record");
-
-        try {
-            const finalContext = await executeWorkflow({
-                executionId: execution.id,
-                workflowId: deployment.workflowId!,
-                graph: {
-                    nodes: deployment.nodes as WorkflowNode[],
-                    edges: deployment.edges as WorkflowEdge[],
-                },
-                userId: deployment.userId!,
-            }, req);
-
-            // Update status (Success)
-            await updateExecutionStatus({
-                executionId: execution.id,
-                status: "success",
-                userId: deployment.userId!,
-                result: finalContext.response?.body ?? "Executed",
-            }, deployment.workflowId);
-
-            // Professional Response Handling
-            if (finalContext.response) {
-                const { status, body, headers } = finalContext.response;
-                if (headers) res.set(headers);
-                return res.status(status || 200).json(body);
-            }
-
-            return res.status(200).json({
-                success: true,
-                message: "Workflow executed successfully.",
-                data: finalContext.nodesContext
-            });
-
-        } catch (execError: any) {
-            // Update status (Failed)
-            await updateExecutionStatus({
-                executionId: execution.id,
-                status: "failed",
-                userId: deployment.userId!,
-                result: execError.message,
-            }, deployment.workflowId);
-
-            return res.status(500).json({
-                success: false,
-                error: "Internal Workflow Execution Error",
-                message: execError.message
-            });
-        }
-
+        return await service.execute(req, res, deploymentId);
     } catch (error) {
         console.error("[Neuron Kernel Error]:", error);
         return res.status(500).json({

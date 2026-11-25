@@ -1,6 +1,6 @@
 import {workflowBroadcast} from "@neuron/db";
-import {WorkflowEditorActionType} from "@neuron/shared";
 import type {DomainExecutionEvent, WorkflowEventSink} from "@neuron/shared";
+import {RealtimeExecutionProjector} from "../application/projectors/realtime-execution.projector.js";
 
 /**
  * Maps domain execution events onto the frozen realtime wire contract:
@@ -16,24 +16,8 @@ export class WorkflowRealtimeEventSink implements WorkflowEventSink {
     }
 
     async emit(event: DomainExecutionEvent): Promise<void> {
-        switch (event.type) {
-            case "node.started":
-                await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, {
-                    nodeId: event.nodeId
-                });
-                return;
-            case "node.succeeded":
-                await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_SUCCESS, {
-                    nodeId: event.nodeId,
-                    output: event.output
-                });
-                return;
-            case "node.failed":
-                await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
-                    nodeId: event.nodeId,
-                    error: event.error
-                });
-                return;
-        }
+        const payload = RealtimeExecutionProjector.toWirePayload(event);
+        if (!payload) return;
+        await this.dispatch(payload.type, payload);
     }
 }

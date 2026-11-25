@@ -6,10 +6,11 @@ import {
     getWorkflowsByUser, saveWorkflowGraph
     // @ts-ignore
 } from "@neuron/db";
-import {executeWorkflow} from "@/engine/execution";
 import {getGlobalVariables, saveGlobalVariables} from "@neuron/db";
 import {createExecution, getExecutionsByWorkflow, updateExecutionStatus} from "@neuron/db";
 import {AuthRequest} from "./execution.controller";
+import {executeWorkflow} from "@/engine/execution";
+import {InternalExecutionService} from "../application/index.js";
 
 // POST /api/workflows
 export const createWorkflowController = async (req: AuthRequest, res: Response) => {
@@ -329,13 +330,22 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
         userId,
     });
 
-    // Sync to execution table
-    const execution = await createExecution({
+    // Same orchestration entry as deployed execution; the projector below owns
+    // the 202 response while completion is projected by the service.
+    const service = new InternalExecutionService({
+        executeWorkflow: (command) => executeWorkflow(command, command.request),
+        createExecution,
+        updateExecutionStatus
+    });
+
+    const started = await service.start({
         workflowId,
         userId,
-    })
+        graph,
+        request: req
+    });
 
-    if (!execution) {
+    if (!started.ok) {
         return res.status(500).json({
             success: false,
             error: "Execution Error",
@@ -343,27 +353,5 @@ export const executeWorkflowController = async (req: AuthRequest, res: Response)
         });
     }
 
-    executeWorkflow({ executionId: execution.id, workflowId, graph, userId }, req)
-        .then(async finalContext => {
-            // Update status (Success)
-            await updateExecutionStatus({
-                executionId: execution.id,
-                status: "success",
-                userId,
-                result: finalContext,
-            }, workflowId)
-        })
-        .catch(async err => {
-            console.error(`Workflow ${workflowId} failed`, err)
-
-            // Update status (Failed)
-            await updateExecutionStatus({
-                executionId: execution.id,
-                status: "failed",
-                userId,
-                result: err?.message ?? err,
-            }, workflowId)
-        });
-
-    res.status(202).json({ message: "Execution started", workflowId });
+    return service.projectAccepted(res, workflowId);
 }

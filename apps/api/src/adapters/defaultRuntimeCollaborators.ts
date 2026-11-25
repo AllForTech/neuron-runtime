@@ -1,18 +1,11 @@
-import type {IVaultResolver, WorkflowEventSink, WorkflowVariableSource} from "@neuron/shared";
+import type {RuntimeCollaborators} from "../application/execute-workflow.use-case.js";
 import {DbVaultResolver} from "./DbVaultResolver.js";
 import {DbWorkflowVariableSource} from "./DbWorkflowVariableSource.js";
 import {WorkflowRealtimeEventSink} from "./WorkflowRealtimeEventSink.js";
 
-export interface RuntimeCollaborators {
-    vault: IVaultResolver;
-    variables: WorkflowVariableSource;
-    events: WorkflowEventSink;
-}
-
 /**
- * The concrete collaborators used by today's execution wrapper. They are
- * injected into Runtime so the engine stays free of persistence imports;
- * T-112 will move this composition to the application use-case.
+ * Concrete collaborators injected by the engine wrapper into the application
+ * use-case, keeping the engine free of persistence imports.
  */
 export function createDefaultRuntimeCollaborators(
     userId: string,
