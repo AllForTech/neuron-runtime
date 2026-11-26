@@ -25,5 +25,4 @@ boundaries:
   ui_design_tokens:
     paths: ["apps/web/app/globals.css", "apps/web/lib/utils.ts", "apps/web/constants/index.ts"]
     owner: coder
-active_leases:
-  - { owner: bugfixer, paths: ["apps/web/app/(editor)/Provider.tsx", "apps/web/providers/WorkflowEditorProvider.tsx", "apps/web/stores/workflow/**", "apps/web/tests/**", "apps/web/tsconfig.json", "apps/web/package.json", "pnpm-lock.yaml", "vitest.config.mts", ".agents/reports/T-122.md"], task: T-122 }
+active_leases: []

@@ -558,12 +558,12 @@ tasks:
     dependencies: [T-121]
     acceptance: ["full characterization suite green", "app renders/executes unchanged", "temporary shim isolated and marked for T-124 deletion", "no save on load", "no new visible error toasts", "pnpm test/check-types/lint/build exit 0"]
     verification: ["pnpm test", "pnpm check-types", "pnpm lint", "pnpm build", "git diff"]
-    status: in_progress
-    lease: { owner: bugfixer, paths: ["apps/web/app/(editor)/Provider.tsx", "apps/web/providers/WorkflowEditorProvider.tsx", "apps/web/stores/workflow/**", "apps/web/tests/**", "apps/web/tsconfig.json", "apps/web/package.json", "pnpm-lock.yaml", "vitest.config.mts", ".agents/reports/T-122.md"], task: T-122 }
-    evidence: ["reviewer found save-on-load and visible-toast regressions", "new DOM/composition regression test added", "happy-dom@21.0.4 added", "vitest @ alias added", "pre-fix test blocked by alias and now unblocked"]
-    reports: [".agents/reports/T-122.md"]
-    open_risks: ["source fixes for save-on-load/toasts/saveStatus still pending", "temporary shim must be deleted in T-124", "Next build regenerates tsconfig; restore after build"]
-    commit: null
+    status: done
+    lease: null
+    evidence: ["reviewer found save-on-load and visible-toast regressions", "DOM/composition regression tests added", "happy-dom@21.0.4 pinned", "all four reviewer blockers fixed", "pnpm test 30 files/154 tests exit 0", "pnpm check-types exit 0", "pnpm lint 0 errors/217 warnings exit 0", "pnpm build 21/21 exit 0", "reviewer approved", "b90b908"]
+    reports: [".agents/reports/T-122.md", ".agents/reports/T-122-review.md"]
+    open_risks: ["temporary shim must be deleted in T-124", "Next build regenerates tsconfig; restore after build"]
+    commit: b90b908
 
   - id: T-123
     objective: "Migrate all editor consumers to Zustand in per-slice batches."
@@ -663,6 +663,50 @@ tasks:
     reports: [".agents/reports/T-136.md", ".agents/reports/T-136-review.md", ".agents/reports/T-136-security-review.md"]
     open_risks: ["deployment must install external native addon on matching Node ABI", "native prebuild integrity residual accepted from T-103a"]
     commit: 66499ff
+
+  - id: T-137
+    objective: "Scope Vitest aliases per app to restore the full test suite."
+    owner: foundation
+    reviewer: reviewer
+    dependencies: [T-122]
+    acceptance: ["API @ alias resolves to apps/api/src", "web @ alias resolves to apps/web", "all API and DOM tests included", "pnpm test exit 0", "no tests skipped or weakened"]
+    verification: ["pnpm test", "targeted API and web tests", "vitest config inspection"]
+    status: done
+    lease: null
+    evidence: ["global @ alias added for T-122 DOM tests collided with API @/ alias", "four API suites failed collection", "Vitest 5.1.1 requires Node 22+ but current Node 20 exposes Map.groupBy reporter crash only after failed suites", "vitest list --filesOnly exit 0 with 30 files (14 api, 11 web, 5 packages)", "pnpm test exit 0 with 30 files and 154 tests", "independent reviewer approval in .agents/reports/T-137-review.md", "b90b908"]
+    reports: [".agents/reports/T-137.md", ".agents/reports/T-137-review.md"]
+    open_risks: ["Node runtime compatibility with Vitest 5 remains unresolved"]
+    commit: b90b908
+
+  - id: T-138
+    objective: "Restore frontend build by upgrading Next to the upstream font fix."
+    owner: foundation
+    reviewer: reviewer
+    signoff: [security]
+    dependencies: [T-137]
+    acceptance: ["next and eslint-config-next pinned to 16.4.5", "pnpm build exit 0", "pnpm test exit 0", "pnpm check-types exit 0", "pnpm lint exit 0", "apps/web/tsconfig.json restored after build"]
+    verification: ["pnpm build", "pnpm test", "pnpm check-types", "pnpm lint", "git diff -- apps/web/tsconfig.json"]
+    status: done
+    lease: null
+    evidence: ["Turbopack build failed with 12 repeated Module not found errors for @vercel/turbopack-next/internal/font/google/font from extensionless Google font URLs", "security rejected 16.4.3; exact 16.4.5 patches seven advisories", "next and eslint-config-next pinned to 16.4.5", "pnpm build/test/check-types/lint exit 0", "pnpm test 30 files/154 tests", "reviewer and security approved", "b90b908"]
+    reports: [".agents/reports/T-138.md", ".agents/reports/T-138-review.md", ".agents/reports/T-138-security-review.md"]
+    open_risks: ["Next 16.4.5 regenerates next-env.d.ts with root-params import", "Node 20 vs Vitest 5 engine mismatch from T-137", "unrelated pre-existing audit advisories remain"]
+    commit: b90b908
+
+  - id: T-139
+    objective: "Fix real react-hooks lint errors surfaced by the Next lint upgrade."
+    owner: bugfixer
+    reviewer: reviewer
+    signoff: [ui-ux-designer]
+    dependencies: [T-138]
+    acceptance: ["all 8 react-hooks errors fixed without rule suppression", "pnpm lint exit 0", "pnpm test exit 0", "pnpm check-types exit 0", "UI behavior unchanged", "T-122 unused test import removed"]
+    verification: ["pnpm lint", "pnpm test", "pnpm check-types", "targeted UI review", "git diff"]
+    status: done
+    lease: null
+    evidence: ["eslint-config-next 16.4.3 reports 8 errors: 4 set-state-in-effect and 4 preserve-manual-memoization", "baseline under 16.1.6 had 0 errors", "lint config unchanged", "all 8 errors fixed without suppression", "pnpm lint exit 0 with 0 errors/217 warnings", "pnpm test exit 0 with 30 files/154 tests", "pnpm check-types exit 0", "pnpm build exit 0 with 21/21 tasks", "reviewer and UI/UX approved", "b90b908"]
+    reports: [".agents/reports/T-139.md", ".agents/reports/T-139-review.md", ".agents/reports/T-139-ui-review.md"]
+    open_risks: ["highlight value:null first-render behavior intentionally changed", "dashboard initial fetch is deferred by one microtask"]
+    commit: b90b908
 
   - id: T-134
     objective: "Harden CORS, crash handling, realtime payload validation."
