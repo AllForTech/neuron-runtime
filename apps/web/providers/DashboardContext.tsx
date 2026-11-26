@@ -122,7 +122,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }, [getToken, getExecutionLogs]);
 
     useEffect(() => {
-        fetchDashboardData(true);
+        let active = true;
+        queueMicrotask(() => {
+            if (active) void fetchDashboardData(true);
+        });
+
+        return () => {
+            active = false;
+        };
     }, [fetchDashboardData]);
 
     useEffect(() => {

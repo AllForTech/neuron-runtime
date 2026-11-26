@@ -24,11 +24,13 @@ import {
   type WorkflowClientPort,
 } from '../commands/workflowCommands';
 import { createGraphSyncTimers } from '../commands/workflowSync';
+import { WorkflowSessionContext } from './WorkflowSessionContext';
 
 /**
  * Composition-only component. It wires realtime, the Dexie draft observer and
- * the initial cloud load, then renders children. No consumer is migrated here;
- * the existing provider stays mounted until T-122.
+ * the initial cloud load, then renders children. The command instances it
+ * creates are exposed to the temporary context shim through
+ * `WorkflowSessionContext` (TODO T-124: remove with the shim).
  */
 export interface WorkflowSessionBootstrapProps {
   workflowId: string;
@@ -38,6 +40,7 @@ export interface WorkflowSessionBootstrapProps {
   realtimeClient?: RealtimeClientLike;
   draftTable?: DraftTable;
   getAccessToken?: () => Promise<string>;
+  onError?: (error: unknown, context: string) => void;
 }
 
 async function defaultGetAccessToken(): Promise<string> {
@@ -55,6 +58,7 @@ export function WorkflowSessionBootstrap({
   realtimeClient,
   draftTable,
   getAccessToken,
+  onError,
 }: WorkflowSessionBootstrapProps) {
   const setRunId = useStore(sessionStore, (state) => state.setRunId);
   const draftAdapter = useMemo(
@@ -73,9 +77,11 @@ export function WorkflowSessionBootstrap({
           executionsClient ?? (executions as unknown as ExecutionClientPort),
         getAccessToken: getAccessToken ?? defaultGetAccessToken,
         draft: draftAdapter,
+        onError,
       }),
-    [workflowClient, executionsClient, getAccessToken, draftAdapter]
+    [workflowClient, executionsClient, getAccessToken, draftAdapter, onError]
   );
+  const sessionValue = useMemo(() => ({ commands }), [commands]);
   const dispatchers = useMemo(() => createRealtimeStoreDispatchers(), []);
   const realtime = useMemo(
     () => realtimeClient ?? (createClient() as unknown as RealtimeClientLike),
@@ -99,6 +105,7 @@ export function WorkflowSessionBootstrap({
   useEffect(() => {
     const unsubscribe = graphStore.subscribe((state) => {
       if (!workflowId || !state.isDirty) return;
+      if (sessionStore.getState().bootstrapStatus === 'loading') return;
       void draftAdapter.put(workflowId, state.graph, state.globalVariables);
     });
     return unsubscribe;
@@ -106,15 +113,23 @@ export function WorkflowSessionBootstrap({
 
   useEffect(() => {
     if (!workflowId || !localDraft || localDraft.synced) return;
+    // Legacy suppressed autosave for the whole bootstrap, including a draft
+    // that was already unsynced when the cloud load started.
+    if (sessionStore.getState().bootstrapStatus === 'loading') return;
     const timers = createGraphSyncTimers({ setTimeout, clearTimeout });
     const autosave = timers.autosave(() => {
+      if (sessionStore.getState().bootstrapStatus === 'loading') return;
       void commands.saveGraph(workflowId);
     });
     autosave();
     return () => autosave.cancel();
   }, [localDraft, workflowId, commands]);
 
-  return <>{children}</>;
+  return (
+    <WorkflowSessionContext.Provider value={sessionValue}>
+      {children}
+    </WorkflowSessionContext.Provider>
+  );
 }
 
 function runtimeStoreForCommands() {

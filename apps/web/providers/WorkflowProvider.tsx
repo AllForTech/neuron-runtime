@@ -69,6 +69,8 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     const [isWorkflowLoading, setIsWorkflowLoading] = useState(true);
     const [workflowErrors, setWorkflowErrors] = useState<string | null>(null);
 
+    const accessToken = session?.access_token;
+
     function workflowsReducer(
         state: WorkflowType[],
         action: WorkflowAction
@@ -95,11 +97,11 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
 
     /** Syncs all workflows belonging to the authenticated user */
     const fetchWorkflows = useCallback(async () => {
-        if (!session?.access_token) return;
+        if (!accessToken) return;
 
         try {
             setIsWorkflowLoading(true);
-            const [data, error] = await workflowClient.list(session.access_token);
+            const [data, error] = await workflowClient.list(accessToken);
 
             if (error) throw error;
 
@@ -112,7 +114,7 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
         } finally {
             setIsWorkflowLoading(false);
         }
-    }, [session?.access_token]);
+    }, [accessToken, setIsWorkflowLoading, workflowsDispatcher, setWorkflowErrors]);
 
     /** Initializes a new workflow draft in the database */
     const createWorkflow = async () => {

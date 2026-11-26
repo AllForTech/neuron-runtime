@@ -6,6 +6,7 @@ import {
   type DeploymentRow,
   type GraphResponseRow,
 } from '../../../lib/graphMappers';
+import { SAVED_STATUS_RESET_MS } from '../constants';
 import { graphStore } from '../graphStore';
 import { runtimeStore } from '../runtimeStore';
 import { sessionStore } from '../sessionStore';
@@ -92,6 +93,7 @@ export function createWorkflowCommands(deps: WorkflowCommandDeps) {
         graph.updateGlobalVars(mapped.globalVariables);
         deps.runtime.getState().setExecutions(mapped.executions);
         await loadDeployment(workflowId);
+        deps.graph.getState().markClean();
         deps.session.getState().completeBootstrap();
       } catch (error) {
         deps.session.getState().failBootstrap(
@@ -128,6 +130,9 @@ export function createWorkflowCommands(deps: WorkflowCommandDeps) {
         deps.graph.getState().markClean();
         deps.session.getState().setSaveStatus('saved');
         deps.session.getState().setRetryCount(0);
+        setTimeout(() => {
+          deps.session.getState().setSaveStatus('idle');
+        }, SAVED_STATUS_RESET_MS);
         return 'saved';
       });
 

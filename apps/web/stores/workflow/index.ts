@@ -9,3 +9,4 @@ export * from './sessionStore';
 export * from './adapters';
 export * from './commands';
 export * from './bootstrap';
+export * from './shim';
