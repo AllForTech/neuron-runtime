@@ -9,7 +9,20 @@ import { runtimeStore } from '../stores/workflow/runtimeStore';
 import { sessionStore } from '../stores/workflow/sessionStore';
 import { uiStore } from '../stores/workflow/uiStore';
 import { createWorkflowCommands } from '../stores/workflow/commands/workflowCommands';
+import {
+  workflowCommands,
+  loadGraph,
+  saveGraph,
+  runWorkflow,
+  deployWorkflow,
+  deleteDeployment,
+  getExecutionLogs,
+} from '../stores/workflow/commands/workflowCommandApi';
 import { createWorkflowDraftAdapter } from '../stores/workflow/adapters/workflowDraft';
+import {
+  WorkflowSessionContext,
+  type WorkflowCommands,
+} from '../stores/workflow/bootstrap';
 import type { WorkflowEditorContextType } from '../providers/WorkflowEditorProvider';
 
 const mocks = vi.hoisted(() => ({
@@ -307,4 +320,82 @@ describe('T-122 composition regressions', () => {
     await vi.advanceTimersByTimeAsync(1);
     expect(sessionStore.getState().saveStatus).toBe('idle');
   });
+});
+
+describe('D3 module command API', () => {
+  it('publishes the one bound module instance through the temporary context', async () => {
+    expect(loadGraph).toBe(workflowCommands.loadGraph);
+    expect(saveGraph).toBe(workflowCommands.saveGraph);
+    expect(runWorkflow).toBe(workflowCommands.runWorkflow);
+    expect(deployWorkflow).toBe(workflowCommands.deployWorkflow);
+    expect(deleteDeployment).toBe(workflowCommands.deleteDeployment);
+    expect(getExecutionLogs).toBe(workflowCommands.getExecutionLogs);
+
+    let published: WorkflowCommands | null = null;
+    await renderEditor(
+      <WorkflowSessionContext.Consumer>
+        {(value) => {
+          published = value?.commands ?? null;
+          return null;
+        }}
+      </WorkflowSessionContext.Consumer>
+    );
+
+    expect(published).toBe(workflowCommands);
+  });
+
+  it('logs exported loadGraph and getExecutionLogs failures without toasts', async () => {
+    mocks.workflows.getGraph.mockResolvedValueOnce([
+      null,
+      new Error('api load failed'),
+    ]);
+
+    await act(async () => {
+      await loadGraph('wf-1');
+      await flushMicrotasks();
+    });
+
+    expect(sessionStore.getState().bootstrapStatus).toBe('error');
+    expect(mocks.consoleError).toHaveBeenCalledWith('api load failed');
+    expect(mocks.toastError).not.toHaveBeenCalled();
+
+    mocks.consoleError.mockClear();
+    mocks.executions.getLogs.mockResolvedValueOnce([
+      null,
+      new Error('api logs failed'),
+    ]);
+    let result: Record<string, unknown> = {};
+
+    await act(async () => {
+      result = await getExecutionLogs('exec-2');
+      await flushMicrotasks();
+    });
+
+    expect(result).toEqual({});
+    expect(mocks.consoleError).toHaveBeenCalledWith('api logs failed');
+    expect(mocks.toastError).not.toHaveBeenCalled();
+  });
+
+  it('keeps the unchanged generic toast for exported command failures', async () => {
+    mocks.workflows.run.mockResolvedValueOnce([null, new Error('run failed')]);
+
+    await expect(runWorkflow('wf-1')).resolves.toBe(false);
+
+    expect(mocks.toastError).toHaveBeenCalledWith('run failed');
+    expect(mocks.consoleError).not.toHaveBeenCalledWith('run failed');
+  });
+
+  it('keeps the unchanged save toast for the exported save command', async () => {
+    mocks.workflows.saveGraph.mockResolvedValue([null, new Error('save failed')]);
+
+    const pending = saveGraph('wf-1');
+    await flushMicrotasks();
+    await vi.advanceTimersByTimeAsync(57000);
+    await pending;
+
+    expect(mocks.toastError).toHaveBeenCalledWith(
+      'Cloud sync failed after multiple attempts. Working offline.'
+    );
+    expect(mocks.consoleError).not.toHaveBeenCalledWith('save failed');
+  }, 10000);
 });

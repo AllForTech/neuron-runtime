@@ -5,6 +5,7 @@ import {
   selectNodeOutput,
   selectNodeStatus,
   selectRuntimeLogs,
+  selectSelectedNodeView,
   selectSessionFlags,
   selectUiFlags,
 } from '../selectors';
@@ -83,5 +84,55 @@ describe('selectors', () => {
       animated: true,
       style: { stroke: '#ffffff', strokeWidth: 5 },
     });
+  });
+
+  it('derives the selected node as a plain view with the canvas data shape', () => {
+    const graph: WorkflowDefinition = {
+      ...createInitialGraphState().graph,
+      nodes: {
+        n1: {
+          id: 'n1',
+          type: 'Utility.Debug',
+          position: { x: 1, y: 2 },
+          config: { meta: { label: 'D' }, message: 'x' },
+        },
+      },
+    };
+    const config = graph.nodes.n1.config;
+    const canvasNode = deriveReactFlowView(graph, 'n1', {}).nodes[0];
+
+    const view = selectSelectedNodeView(graph, 'n1');
+    expect(view).toEqual({
+      id: 'n1',
+      type: 'Utility.Debug',
+      position: { x: 1, y: 2 },
+      data: { meta: { label: 'D' }, message: 'x', label: 'Utility.Debug' },
+    });
+    expect(view?.data).toEqual(canvasNode.data);
+    expect(Object.keys(view ?? {})).toEqual(['id', 'type', 'position', 'data']);
+    expect(view).not.toHaveProperty('selected');
+    expect(graph.nodes.n1.config).toEqual(config);
+    expect(view?.data).not.toBe(config);
+
+    const editedGraph: WorkflowDefinition = {
+      ...graph,
+      nodes: {
+        n1: {
+          ...graph.nodes.n1,
+          config: { meta: { label: 'D' }, message: 'edited' },
+        },
+      },
+    };
+    expect(selectSelectedNodeView(editedGraph, 'n1')?.data).toMatchObject({
+      message: 'edited',
+      label: 'Utility.Debug',
+    });
+  });
+
+  it('returns null for unset or unknown selection ids', () => {
+    const graph = createInitialGraphState().graph;
+    expect(selectSelectedNodeView(graph, null)).toBeNull();
+    expect(selectSelectedNodeView(graph, '')).toBeNull();
+    expect(selectSelectedNodeView(graph, 'missing')).toBeNull();
   });
 });

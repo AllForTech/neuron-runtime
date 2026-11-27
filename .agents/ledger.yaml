@@ -792,3 +792,122 @@ tasks:
     reports: []
     open_risks: []
     commit: null
+
+  - id: T-144
+    objective: "Decide store ownership, command lifetime, and provider behavior needed before T-123 consumer migration."
+    owner: architect
+    reviewer: null
+    signoff: []
+    dependencies: [T-121, T-141]
+    acceptance: ["recommendation for selectedNode and sheet flags", "permanent command locator defined", "ReactFlowProvider duplication decision recorded", "graph-navigator behavior decision recorded", "ADR written"]
+    verification: ["read-only code inspection", "ADR review"]
+    status: done
+    lease: null
+    evidence: ["ADR written with all six decisions", "user approved D4/D5 via D-07/D-08", "ADR status changed to accepted", "no source edits"]
+    reports: [".agents/decisions/T-144-frontend-migration-decisions.md"]
+    open_risks: ["out-of-repo consumers of deleted sheet flags remain unverified until T-124 gate"]
+    commit: null
+
+  - id: T-145
+    objective: "Confirm the realtime payload-validation enforcement boundary for T-134."
+    owner: explore
+    reviewer: null
+    signoff: []
+    dependencies: [T-142]
+    acceptance: ["source of truth for broadcast validation identified", "test seam documented", "wire-string preservation constraints verified"]
+    verification: ["read-only code inspection"]
+    status: done
+    lease: null
+    evidence: ["validation boundary set to WorkflowRealtimeEventSink.emit", "wire contract strings preserved", "sink-level negative-test seam documented", "no research-agent file edits"]
+    reports: [".agents/reports/T-145.md"]
+    open_risks: []
+    commit: null
+
+  - id: T-146
+    objective: "Remediate production critical/high dependency advisories from T-140 batches A and B."
+    owner: foundation
+    reviewer: reviewer
+    signoff: [security]
+    dependencies: [T-138, T-140]
+    acceptance: ["production critical advisories resolved or explicitly blocked", "production high advisories resolved or explicitly blocked", "no package.json overrides added", "four declared checks pass"]
+    verification: ["pnpm audit --prod --json", "pnpm test", "pnpm check-types", "pnpm lint", "pnpm build"]
+    status: done
+    lease: null
+    evidence: ["lockfile-only in-range updates removed critical advisory and all but one high advisory", "manifests and overrides unchanged", "pnpm test 30 files/154 tests, check-types 21/21, lint 0 errors/217 warnings, build 21/21", "reviewer PASS and security APPROVE WITH CONDITIONS recorded", "remaining ip-address high remediated by T-149"]
+    reports: [".agents/reports/T-146.md", ".agents/reports/T-146-review.md", ".agents/reports/T-146-security-review.md"]
+    open_risks: ["moderate/low advisories remain out of scope"]
+    commit: null
+
+  - id: T-147
+    objective: "Identify the minimal safe remediation path for the remaining production ip-address advisories."
+    owner: explore
+    reviewer: null
+    signoff: []
+    dependencies: [T-146]
+    acceptance: ["parent dependency path identified", "override versus parent-upgrade trade-offs documented", "compatibility risks enumerated", "no edits performed"]
+    verification: ["read-only manifest and lock inspection"]
+    status: done
+    lease: null
+    evidence: ["express-rate-limit 8.3.2 pins ip-address 10.1.0", "in-range parent upgrade to 8.5.2 recommended", "ip-address >=10.7.4 clears high and five moderate advisories", "override rejected as unnecessary"]
+    reports: []
+    open_risks: ["stale pnpm metadata requires fresh registry resolution"]
+    commit: null
+
+  - id: T-148
+    objective: "Enumerate exact T-123 migration batches and file leases from accepted ADR D-07/D-08."
+    owner: explore
+    reviewer: null
+    signoff: []
+    dependencies: [T-141, T-144]
+    acceptance: ["all 27 consumer files assigned exactly once", "batch dependencies and ordering documented", "ADR-required new/moved files identified", "no edits performed"]
+    verification: ["read-only source and governance inspection"]
+    status: done
+    lease: null
+    evidence: ["27 current importers assigned exactly once across five batches", "F1/F2 prerequisites and shared-file conflicts identified", "D4 assigned to batch 5 and D5 to batch 1", "unnamed new file paths identified as coordinator lease decisions"]
+    reports: []
+    open_risks: ["T-123 lease scope must be expanded to cover stores, constants, tests, and page.tsx"]
+    commit: null
+
+  - id: T-149
+    objective: "Resolve the remaining production ip-address advisories with an in-range lockfile-only parent upgrade."
+    owner: foundation
+    reviewer: reviewer
+    signoff: [security]
+    dependencies: [T-147]
+    acceptance: ["express-rate-limit resolves to 8.5.2", "ip-address resolves to >=10.7.4", "production audit has zero high/critical advisories", "manifests and overrides unchanged", "four declared checks pass"]
+    verification: ["pnpm audit --prod --json", "pnpm test", "pnpm check-types", "pnpm lint", "pnpm build"]
+    status: done
+    lease: null
+    evidence: ["express-rate-limit 8.5.2 and ip-address 10.7.6 resolved in lockfile", "production audit 690 deps with 0 critical and 0 high", "manifests/specifiers/overrides unchanged", "coordinator final pnpm test 31 files/165 tests, check-types 21/21, lint 0 errors/217 warnings, build 21/21", "reviewer PASS and security APPROVED"]
+    reports: [".agents/reports/T-149.md", ".agents/reports/T-149-review.md", ".agents/reports/T-149-security-review.md"]
+    open_risks: ["7 moderate and 2 low production advisories remain out of scope"]
+    commit: null
+
+  - id: T-150
+    objective: "Add Zustand selector/view foundations required by T-123 batch consumers."
+    owner: coder
+    reviewer: reviewer
+    dependencies: [T-144, T-148]
+    acceptance: ["selectSelectedNodeView added", "single memoized useReactFlowView hook added", "shallow/memo regression tests added", "shim behavior unchanged", "check-types and targeted tests pass"]
+    verification: ["pnpm check-types", "pnpm test -- apps/web/stores/workflow", "git diff"]
+    status: done
+    lease: null
+    evidence: ["selectSelectedNodeView returns id/type/position/data with config+label", "single memoized useReactFlowView added with stable references", "targeted store suite 9 files/45 tests and reviewer rerun 22/22 passed", "pnpm check-types 21/21", "reviewer PASS"]
+    reports: [".agents/reports/T-150.md", ".agents/reports/T-150-review.md"]
+    open_risks: []
+    commit: null
+
+  - id: T-151
+    objective: "Add stateless workflow command API and relocate exact error policy required by T-123 batches."
+    owner: coder
+    reviewer: reviewer
+    signoff: [ui-ux-designer]
+    dependencies: [T-144, T-148]
+    acceptance: ["workflowCommandApi exports the six required functions", "error policy moved byte-for-byte", "bootstrap publishes the same module instance", "toast contexts/messages unchanged", "check-types and targeted tests pass"]
+    verification: ["pnpm check-types", "pnpm test -- apps/web/stores/workflow apps/web/tests/workflow-session-regressions.test.tsx", "git diff"]
+    status: done
+    lease: null
+    evidence: ["six named command exports and one module-bound instance implemented", "injectable factory retained", "error policy byte-for-byte preserved", "targeted suites 10 files/53 tests plus reviewer rerun 22/22", "pnpm check-types 21/21 and final build 21/21", "reviewer PASS and UI/UX APPROVE"]
+    reports: [".agents/reports/T-151.md", ".agents/reports/T-151-review.md", ".agents/reports/T-151-ui-review.md"]
+    open_risks: []
+    commit: null

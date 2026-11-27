@@ -7,8 +7,11 @@ boundaries:
   contracts_and_docs:
     paths: ["AGENTS.md", "context/**", ".gitignore"]
     owner: documenter
+  dependency_management:
+    paths: ["package.json", "pnpm-lock.yaml", "apps/api/package.json", "apps/web/package.json", "packages/*/package.json"]
+    owner: foundation
   tooling_and_ci:
-    paths: ["package.json", "turbo.json", ".github/**", "packages/eslint-config/**", "apps/web/eslint.config.mjs", "pnpm-lock.yaml"]
+    paths: ["turbo.json", ".github/**", "packages/eslint-config/**", "apps/web/eslint.config.mjs"]
     owner: coder
   api_security:
     paths: ["apps/api/src/controllers/**", "apps/api/src/index.ts", "apps/api/src/engine/**", "packages/db/src/repository/**", "packages/db/src/services/VaultService.ts", "packages/shared/src/utils/**", "apps/web/lib/utils.ts", "packages/sdk/node-http-request/**"]

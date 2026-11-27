@@ -3,11 +3,9 @@
 import React, { useEffect, useMemo, type ReactNode } from 'react';
 import { useStore } from 'zustand';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { workflows, executions } from '@neuron/client';
 import { createClient } from '../../../lib/supabase/client';
 import { db } from '../../../lib/db/workflow.db';
 import { graphStore } from '../graphStore';
-import { runtimeStore } from '../runtimeStore';
 import { sessionStore } from '../sessionStore';
 import {
   createWorkflowDraftAdapter,
@@ -17,71 +15,36 @@ import {
   subscribeToWorkflowRealtime,
   type RealtimeClientLike,
 } from '../adapters/workflowRealtime';
+import { workflowCommands } from '../commands/workflowCommandApi';
 import { createRealtimeStoreDispatchers } from '../commands/realtimeDispatch';
-import {
-  createWorkflowCommands,
-  type ExecutionClientPort,
-  type WorkflowClientPort,
-} from '../commands/workflowCommands';
 import { createGraphSyncTimers } from '../commands/workflowSync';
 import { WorkflowSessionContext } from './WorkflowSessionContext';
 
 /**
  * Composition-only component. It wires realtime, the Dexie draft observer and
- * the initial cloud load, then renders children. The command instances it
- * creates are exposed to the temporary context shim through
+ * the initial cloud load, then renders children. The module-bound command
+ * instance is exposed to the temporary context shim through
  * `WorkflowSessionContext` (TODO T-124: remove with the shim).
  */
 export interface WorkflowSessionBootstrapProps {
   workflowId: string;
   children: ReactNode;
-  workflowClient?: WorkflowClientPort;
-  executionsClient?: ExecutionClientPort;
   realtimeClient?: RealtimeClientLike;
   draftTable?: DraftTable;
-  getAccessToken?: () => Promise<string>;
-  onError?: (error: unknown, context: string) => void;
-}
-
-async function defaultGetAccessToken(): Promise<string> {
-  const supabase = createClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error || !data.session) throw new Error('No active session found');
-  return data.session.access_token;
 }
 
 export function WorkflowSessionBootstrap({
   workflowId,
   children,
-  workflowClient,
-  executionsClient,
   realtimeClient,
   draftTable,
-  getAccessToken,
-  onError,
 }: WorkflowSessionBootstrapProps) {
   const setRunId = useStore(sessionStore, (state) => state.setRunId);
   const draftAdapter = useMemo(
     () => createWorkflowDraftAdapter(draftTable ?? db.drafts),
     [draftTable]
   );
-  const commands = useMemo(
-    () =>
-      createWorkflowCommands({
-        graph: graphStore,
-        runtime: runtimeStoreForCommands(),
-        session: sessionStore,
-        workflowClient:
-          workflowClient ?? (workflows as unknown as WorkflowClientPort),
-        executionsClient:
-          executionsClient ?? (executions as unknown as ExecutionClientPort),
-        getAccessToken: getAccessToken ?? defaultGetAccessToken,
-        draft: draftAdapter,
-        onError,
-      }),
-    [workflowClient, executionsClient, getAccessToken, draftAdapter, onError]
-  );
-  const sessionValue = useMemo(() => ({ commands }), [commands]);
+  const sessionValue = useMemo(() => ({ commands: workflowCommands }), []);
   const dispatchers = useMemo(() => createRealtimeStoreDispatchers(), []);
   const realtime = useMemo(
     () => realtimeClient ?? (createClient() as unknown as RealtimeClientLike),
@@ -94,8 +57,8 @@ export function WorkflowSessionBootstrap({
 
   useEffect(() => {
     setRunId(workflowId);
-    void commands.loadGraph(workflowId);
-  }, [workflowId, setRunId, commands]);
+    void workflowCommands.loadGraph(workflowId);
+  }, [workflowId, setRunId]);
 
   useEffect(() => {
     if (!workflowId) return;
@@ -119,20 +82,15 @@ export function WorkflowSessionBootstrap({
     const timers = createGraphSyncTimers({ setTimeout, clearTimeout });
     const autosave = timers.autosave(() => {
       if (sessionStore.getState().bootstrapStatus === 'loading') return;
-      void commands.saveGraph(workflowId);
+      void workflowCommands.saveGraph(workflowId);
     });
     autosave();
     return () => autosave.cancel();
-  }, [localDraft, workflowId, commands]);
+  }, [localDraft, workflowId]);
 
   return (
     <WorkflowSessionContext.Provider value={sessionValue}>
       {children}
     </WorkflowSessionContext.Provider>
   );
-}
-
-function runtimeStoreForCommands() {
-  // Kept as a function so the import stays explicit at the composition edge.
-  return runtimeStore;
 }

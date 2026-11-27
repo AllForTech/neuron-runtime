@@ -10,6 +10,9 @@ research recommendations where noted.
 | D-03 | Missing runtime spec | Repoint AGENTS.md + track docs | Update AGENTS.md:26 to reference `context/NEURON_ENGINE.md`; force-add the `context/*.md` docs so the mandate is satisfiable and versioned. Fix malformed `.gitignore` negation if needed. |
 | D-04 | Refactor scope | Full phased program | All phases in scope: safety harness, security blockers, runtime/application boundaries, Zustand frontend migration, dedup/dead-code removal, web→DB decoupling, tooling/CI, and design-token cleanup last. |
 | D-05 | Zustand integration | Direct migration of consumers | Replace the editor React context with Zustand stores and migrate all consumers in-phase. HTTP/realtime contracts stay frozen; internal context shape is deleted, not preserved. Overrides T-003 D4, steps 6-7, invariant 13. |
+| D-06 | Completed-task checklist | Ledger only | `.agents/ledger.yaml` is the source of truth for completed work. Do not create or maintain a separate root `TODO.md`. |
+| D-07 | ReactFlowProvider topology | Approve single provider | T-123 may remove the duplicate provider and make fitView/setNodes/template insertion target the visible canvas. This is an approved user-visible bug fix. |
+| D-08 | Library button behavior | Approve panel fix | T-123 may make the currently inert Library button open the registered Graph Navigator panel. |
 
 ## Notes
 

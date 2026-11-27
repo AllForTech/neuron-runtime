@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { toast } from 'sonner';
 import { createGraphCommands, insertTemplateNode } from '../commands/graphCommands';
 import {
   createDebounced,
@@ -7,6 +8,9 @@ import {
   runWithRetry,
 } from '../commands/workflowSync';
 import type { WorkflowNode } from '@neuron/shared';
+import { reportError } from '../commands/workflowErrorReporting';
+
+vi.mock('sonner', () => ({ toast: { error: vi.fn() } }));
 
 function makeNode(id: string): WorkflowNode {
   return {
@@ -115,5 +119,48 @@ describe('command helpers', () => {
     const syncTimers = createGraphSyncTimers(timers);
     expect(syncTimers.localToContext(() => undefined)).toBeTypeOf('function');
     expect(syncTimers.autosave(() => undefined)).toBeTypeOf('function');
+  });
+});
+
+describe('workflow command error policy', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('logs only the three pinned load/log contexts', () => {
+    for (const context of ['loadGraph', 'loadDeployment', 'getExecutionLogs']) {
+      reportError(new Error(`${context} failed`), context);
+    }
+
+    expect(console.error).toHaveBeenCalledTimes(3);
+    expect(console.error).toHaveBeenNthCalledWith(1, 'loadGraph failed');
+    expect(console.error).toHaveBeenNthCalledWith(2, 'loadDeployment failed');
+    expect(console.error).toHaveBeenNthCalledWith(3, 'getExecutionLogs failed');
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('keeps the exact save toast text', () => {
+    reportError(new Error('ignored'), 'saveGraph');
+
+    expect(toast.error).toHaveBeenCalledTimes(1);
+    expect(toast.error).toHaveBeenCalledWith(
+      'Cloud sync failed after multiple attempts. Working offline.'
+    );
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('keeps the generic toast and stringifies non-Error failures', () => {
+    reportError(new Error('run failed'), 'runWorkflow');
+    reportError('deploy failed', 'deployWorkflow');
+
+    expect(toast.error).toHaveBeenCalledTimes(2);
+    expect(toast.error).toHaveBeenNthCalledWith(1, 'run failed');
+    expect(toast.error).toHaveBeenNthCalledWith(2, 'deploy failed');
+    expect(console.error).not.toHaveBeenCalled();
   });
 });

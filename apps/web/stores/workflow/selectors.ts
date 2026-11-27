@@ -3,6 +3,7 @@ import type {
   NodeType,
   WorkflowDefinition,
   WorkflowEdge,
+  WorkflowNode,
 } from '@neuron/shared';
 import type {
   GraphState,
@@ -72,6 +73,42 @@ export const selectSessionFlags = (state: SessionState) => ({
   lastError: state.lastError,
 });
 
+/** Plain selected-node view: identity plus domain fields, no framework type. */
+export interface SelectedNodeView {
+  id: string;
+  type: NodeType;
+  position: { x: number; y: number };
+  data: Record<string, unknown>;
+}
+
+/** One data-shaping path keeps the selected view aligned with the canvas node. */
+function toNodeViewData(node: WorkflowNode): Record<string, unknown> {
+  return {
+    ...(node.config as unknown as Record<string, unknown>),
+    label: node.type,
+  };
+}
+
+/**
+ * Derives the current selection from graphStore plus uiStore's `selectedNodeId`.
+ * Returns null for an unset or unknown id; callers never store a node object.
+ */
+export function selectSelectedNodeView(
+  graph: WorkflowDefinition,
+  selectedNodeId: string | null
+): SelectedNodeView | null {
+  if (!selectedNodeId) return null;
+  const node = graph.nodes[selectedNodeId];
+  if (!node) return null;
+
+  return {
+    id: node.id,
+    type: node.type,
+    position: { x: node.position.x, y: node.position.y },
+    data: toNodeViewData(node),
+  };
+}
+
 export interface ReactFlowNodeView {
   id: string;
   position: { x: number; y: number };
@@ -105,7 +142,7 @@ export function deriveReactFlowView(
     id: node.id,
     position: { x: node.position.x, y: node.position.y },
     type: node.type,
-    data: { ...(node.config as unknown as Record<string, unknown>), label: node.type },
+    data: toNodeViewData(node),
     selected: selectedNodeId === node.id,
   }));
 
