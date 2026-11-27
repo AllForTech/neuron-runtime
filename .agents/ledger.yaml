@@ -708,6 +708,62 @@ tasks:
     open_risks: ["highlight value:null first-render behavior intentionally changed", "dashboard initial fetch is deferred by one microtask"]
     commit: b90b908
 
+  - id: T-141
+    objective: "Map T-123 consumer migration into disjoint implementation batches."
+    owner: explore
+    reviewer: null
+    dependencies: [T-122]
+    acceptance: ["store API and shim boundaries documented", "27 consumers grouped into disjoint batches", "file:line evidence provided", "risks and compatibility constraints enumerated"]
+    verification: ["read-only code inspection", "dependency graph review"]
+    status: done
+    lease: null
+    evidence: ["27 consumers grouped into five disjoint batches (6+8+3+2+8)", "state/shim owners documented", "blocking decisions enumerated", "no research-agent file edits"]
+    reports: [".agents/reports/T-141.md"]
+    open_risks: []
+    commit: null
+
+  - id: T-142
+    objective: "Map exact T-134 security-hardening implementation scope."
+    owner: explore
+    reviewer: null
+    dependencies: [T-107, T-111]
+    acceptance: ["CORS, crash handling, and realtime validation files identified", "current behavior and tests documented with file:line evidence", "minimal implementation batches proposed"]
+    verification: ["read-only code inspection", "test inventory"]
+    status: done
+    lease: null
+    evidence: ["CORS/crash/realtime scope mapped with file:line evidence", "four disjoint implementation batches proposed", "wire-contract preservation risks documented", "no research-agent file edits"]
+    reports: [".agents/reports/T-142.md"]
+    open_risks: ["realtime enforcement point must be confirmed before editing"]
+    commit: null
+
+  - id: T-143
+    objective: "Map T-132 dependency deduplication and start-script repairs."
+    owner: explore
+    reviewer: null
+    dependencies: [T-101]
+    acceptance: ["duplicate animation/flow packages identified", "start scripts and emitted entrypoints documented", "safe removal plan provided with file:line evidence"]
+    verification: ["manifest inspection", "build output inspection"]
+    status: done
+    lease: null
+    evidence: ["motion is a re-export of framer-motion with 7 live imports", "@xyflow/react has zero usages", "root start scripts point to nonexistent emitted path and use bad && chain", "safe repair plan documented"]
+    reports: [".agents/reports/T-143.md"]
+    open_risks: []
+    commit: null
+
+  - id: T-140
+    objective: "Triage pre-existing dependency audit advisories discovered during T-138."
+    owner: explore
+    reviewer: null
+    dependencies: [T-138]
+    acceptance: ["critical/high advisories enumerated", "direct versus transitive status identified", "minimal safe remediation options provided", "breaking-change risks documented"]
+    verification: ["pnpm audit --json", "manifest and lock inspection"]
+    status: done
+    lease: null
+    evidence: ["production audit 703 deps: 1 critical/15 high/16 moderate/5 low", "critical proxy-addr 2.0.7 via express; patched 2.0.8", "batches A/B/C/D proposed", "pnpm 9 audit --fix writes overrides and is not auto-update"]
+    reports: [".agents/reports/T-140.md"]
+    open_risks: []
+    commit: null
+
   - id: T-134
     objective: "Harden CORS, crash handling, realtime payload validation."
     owner: coder
