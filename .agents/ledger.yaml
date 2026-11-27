@@ -556,7 +556,7 @@ tasks:
     owner: bugfixer
     reviewer: reviewer
     dependencies: [T-121]
-    acceptance: ["full characterization suite green", "app renders/executes unchanged", "temporary shim isolated and marked for T-124 deletion", "no save on load", "no new visible error toasts", "pnpm test/check-types/lint/build exit 0"]
+    acceptance: ["full characterization suite green", "app renders/executes unchanged", "temporary shim isolated and marked for T-124 deletion", "no save on load", "no new visible error toasts", "pnpm test/check/types/lint/build exit 0"]
     verification: ["pnpm test", "pnpm check-types", "pnpm lint", "pnpm build", "git diff"]
     status: done
     lease: null
@@ -612,7 +612,7 @@ tasks:
     owner: coder
     reviewer: architect
     dependencies: [T-124, T-110]
-    acceptance: ["zero web→db imports", "CI gate enforces"]
+    acceptance: ["zero web->db imports", "CI gate enforces"]
     verification: ["boundary grep", "pnpm check-types"]
     status: not_started
     lease: null
@@ -911,3 +911,78 @@ tasks:
     reports: [".agents/reports/T-151.md", ".agents/reports/T-151-review.md", ".agents/reports/T-151-ui-review.md"]
     open_risks: []
     commit: d07f151
+
+  - id: T-152
+    objective: "Migrate B1 UI shell/panel navigation consumers to Zustand stores per D1-D6, remove sheet flags, add graph-navigator panel-id."
+    owner: coder
+    reviewer: reviewer
+    signoff: [ui-ux-designer]
+    dependencies: [T-144, T-148, T-150, T-151]
+    acceptance: ["all six B1 consumer files use store hooks", "sheet flags removed per D2", "graph-navigator added to PANEL_IDS per D5", "pnpm test exit 0", "pnpm check-types exit 0"]
+    verification: ["pnpm test -- batch1", "pnpm check-types", "git diff --check"]
+    status: not_started
+    lease: { owner: coder, paths: ["apps/web/components/workflow/editor/layout/EditorLayout.tsx", "apps/web/components/workflow/editor/layout/Sidebar.tsx", "apps/web/components/workflow/editor/layout/panels/PanelContainer.tsx", "apps/web/components/workflow/editor/menu/EditorLeftMenu.tsx", "apps/web/components/workflow/editor/menu/EditorRightMenu.tsx", "apps/web/hooks/workflow/panel/useEditorPanel.tsx", "apps/web/constants/editor-panel.ts", "apps/web/stores/workflow/__tests__/ui.transitions.test.ts"], task: T-152 }
+    evidence: []
+    reports: []
+    open_risks: ["graph-navigator panel-id change is user-visible (D5) and requires UI‑UX approval"]
+    commit: null
+
+  - id: T-153
+    objective: "Migrate B2 read‑only observers consumers to Zustand stores per D1-D6."
+    owner: coder
+    reviewer: reviewer
+    signoff: []
+    dependencies: [T-144, T-148, T-150, T-151]
+    acceptance: ["all eight B2 consumer files use store hooks", "no sheet flag references remain", "pnpm test exit 0", "pnpm check-types exit 0"]
+    verification: ["pnpm test -- batch2", "pnpm check-types", "git diff --check"]
+    status: not_started
+    lease: { owner: coder, paths: ["apps/web/components/workflow/editor/ExecutionTrace.tsx", "apps/web/components/workflow/editor/UpstreamNodePicker.tsx", "apps/web/components/workflow/editor/edge/BaseEdge.tsx", "apps/web/components/workflow/editor/executions/ExecutionHistoryPanel.tsx", "apps/web/components/workflow/editor/executions/ExecutionLogsViewer.tsx", "apps/web/components/workflow/editor/menu/EditorBottomMenu.tsx", "apps/web/nodes/HttpRequestNode.tsx", "apps/web/providers/ValidationContext.tsx"], task: T-153 }
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-154
+    objective: "Migrate B3 config/variables panels consumers to Zustand stores per D1-D6, using derived selectedNode view."
+    owner: coder
+    reviewer: reviewer
+    signoff: []
+    dependencies: [T-144, T-148, T-150, T-151]
+    acceptance: ["all three B3 panel files import selectSelectedNodeView", "no direct selectedNode object reads", "pnpm test exit 0", "pnpm check-types exit 0"]
+    verification: ["pnpm test -- batch3", "pnpm check-types", "git diff --check"]
+    status: not_started
+    lease: { owner: coder, paths: ["apps/web/components/workflow/editor/GlobalVariableSheet.tsx", "apps/web/components/workflow/editor/NodeConfigPanel.tsx", "apps/web/components/workflow/editor/templates/NodeTemplatePanel.tsx", "apps/web/components/workflow/editor/menu/__tests__/EditorLeftMenu.test.tsx"], task: T-154 }
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-155
+    objective: "Migrate B4 command‑backed actions consumers to the stateless workflow command API per D3."
+    owner: coder
+    reviewer: reviewer
+    signoff: []
+    dependencies: [T-144, T-148, T-150, T-151]
+    acceptance: ["all two B4 consumer files import from workflowCommandApi.ts", "no direct dispatch or useContext(WorkflowEditorContext)", "pnpm test exit 0", "pnpm check-types exit 0"]
+    verification: ["pnpm test -- batch4", "pnpm check-types", "git diff --check"]
+    status: not_started
+    lease: { owner: coder, paths: ["apps/web/components/workflow/editor/DeploymentPanel.tsx", "apps/web/components/workflow/editor/menu/EditorTopMenu.tsx"], task: T-155 }
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
+
+  - id: T-156
+    objective: "Migrate B5 canvas/node/selection core, implement D4 (single ReactFlowProvider, remove addNodes/addEdges) and D5 (graph-navigator panel) per ADR, UI‑UX sign‑off."
+    owner: coder
+    reviewer: reviewer
+    signoff: [ui-ux-designer]
+    dependencies: [T-144, T-148, T-150, T-151]
+    acceptance: ["duplicate ReactFlowProvider removed, single provider in Provider.tsx", "handleSelectTemplate uses insertTemplateNode helper, no imperative addNodes/addEdges", "graph-navigator added to PANEL_IDS and EditorLeftMenu migrates to uiStore.openPanel", "no sheet flag setters remain in provider", "pnpm test exit 0", "pnpm check-types exit 0", "pnpm lint exit 0", "pnpm build exit 0", "UI/UX reviewer sign‑off recorded"]
+    verification: ["pnpm test", "pnpm check-types", "pnpm lint", "pnpm build", "git diff --check", "ui‑ux reviewer approval recorded"]
+    status: not_started
+    lease: { owner: coder, paths: ["apps/web/components/workflow/editor/Editor.tsx", "apps/web/components/workflow/editor/Panel/NodesInspector.tsx", "apps/web/components/workflow/editor/config/renderer/fields/KeyValueField.tsx", "apps/web/components/workflow/editor/TemplateField.tsx", "apps/web/components/workflow/editor/nodes/DynamicNode.tsx", "apps/web/components/workflow/editor/nodes/NodeHandle.tsx", "apps/web/components/workflow/editor/nodes/TriggerNode.tsx", "apps/web/components/workflow/editor/nodes/toolbar/DynamicNodeToolbar.tsx", "apps/web/providers/WorkflowEditorProvider.tsx", "apps/web/app/(editor)/editor/[workflowId]/page.tsx", "apps/web/tests/workflow-editor-shim.test.tsx"], task: T-156 }
+    evidence: []
+    reports: []
+    open_risks: []
+    commit: null
