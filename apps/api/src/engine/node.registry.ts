@@ -3,13 +3,11 @@ import type {
     DecisionNode,
     HttpRequestNode, IntegrationNode,
     LLMNode,
-    TransformNode,
     TriggerNode
 } from "@neuron/shared";
 import {validateAgainstSchema} from "@neuron/shared";
 import {decisionNodeExecutor} from "./node-registrys/decision.node";
 import {llmNodeExecutor} from "./node-registrys/llm.node";
-import {transformNodeExecutor} from "./node-registrys/transform.node";
 
 export const nodeRegistry: any = {
     trigger: async ({ node }: { node: TriggerNode }) => ({
@@ -44,8 +42,6 @@ export const nodeRegistry: any = {
             default: return false;
         }
     },
-
-    transform: transformNodeExecutor,
 
     // --- LLM Node Executor
     llmNode: llmNodeExecutor,

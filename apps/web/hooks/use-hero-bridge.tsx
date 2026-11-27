@@ -1,6 +1,6 @@
 'use client';
 
-import type { SectionType } from '@/components/layout/hero/HeroSection';
+export type SectionType = 'intro' | 'features' | 'capabilities' | 'demos';
 
 export function useHeroBridge() {
   const scrollToSection = (section: SectionType) => {

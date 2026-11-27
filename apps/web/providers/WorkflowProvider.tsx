@@ -2,14 +2,16 @@
 
 import {
     createContext,
+    Dispatch,
     ReactNode,
+    SetStateAction,
     useCallback,
-    useEffect,
     useReducer,
     useState,
 } from 'react';
 import type { NewWorkflow as NewWorkflowType, Workflow as WorkflowType } from '@neuron/db';
 import { WorkflowActionType } from '@/constants';
+import type { WorkflowAction } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { toWorkflowTableSchema } from '@/lib/utils';
 import { workflows as workflowClient } from "@neuron/client";
@@ -23,9 +25,9 @@ export const CreateWorkflowTabs = {
 
 type WorkflowContextType = {
     workflows: WorkflowType[];
-    workflowsDispatcher: (action: any) => void;
+    workflowsDispatcher: (action: WorkflowAction) => void;
     newWorkflow: INewWorkflow;
-    setNewWorkflow: (prev: any) => void;
+    setNewWorkflow: Dispatch<SetStateAction<INewWorkflow>>;
     isWorkflowLoading: boolean;
     workflowErrors: string | null;
     refetch: () => Promise<void>;
@@ -35,7 +37,12 @@ type WorkflowContextType = {
 };
 
 interface INewWorkflow {
-    general: any;
+    general: {
+        name: string;
+        description: string;
+        category: string;
+        template: string;
+    };
 }
 
 export const WorkflowContext = createContext<WorkflowContextType | undefined>(
@@ -62,10 +69,11 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     const [isWorkflowLoading, setIsWorkflowLoading] = useState(true);
     const [workflowErrors, setWorkflowErrors] = useState<string | null>(null);
 
-    // TODO: Fix type
+    const accessToken = session?.access_token;
+
     function workflowsReducer(
         state: WorkflowType[],
-        action: any
+        action: WorkflowAction
     ): WorkflowType[] {
         switch (action.type) {
             case WorkflowActionType.SET_WORKFLOWS:
@@ -89,11 +97,11 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
 
     /** Syncs all workflows belonging to the authenticated user */
     const fetchWorkflows = useCallback(async () => {
-        if (!session?.access_token) return;
+        if (!accessToken) return;
 
         try {
             setIsWorkflowLoading(true);
-            const [data, error] = await workflowClient.list(session.access_token);
+            const [data, error] = await workflowClient.list(accessToken);
 
             if (error) throw error;
 
@@ -101,12 +109,12 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
                 type: WorkflowActionType.SET_WORKFLOWS,
                 payload: data as unknown as WorkflowType[],
             });
-        } catch (err: any) {
-            setWorkflowErrors(err.message);
+        } catch (err) {
+            setWorkflowErrors(err instanceof Error ? err.message : String(err));
         } finally {
             setIsWorkflowLoading(false);
         }
-    }, [session?.access_token]);
+    }, [accessToken, setIsWorkflowLoading, workflowsDispatcher, setWorkflowErrors]);
 
     /** Initializes a new workflow draft in the database */
     const createWorkflow = async () => {
@@ -128,8 +136,8 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
             if (error) throw error;
 
             console.log('Workflow created:', res);
-        } catch (err: any) {
-            console.error(err.message);
+        } catch (err) {
+            console.error(err instanceof Error ? err.message : String(err));
         }
     };
 
@@ -146,7 +154,7 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
         if (!session?.access_token) return;
 
         try {
-            const [_, error] = await workflowClient.delete(id, session.access_token);
+            const [, error] = await workflowClient.delete(id, session.access_token);
 
             if (error) throw error;
 
@@ -154,8 +162,8 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
                 type: WorkflowActionType.DELETE_WORKFLOW,
                 id,
             });
-        } catch (err: any) {
-            console.error(err.message);
+        } catch (err) {
+            console.error(err instanceof Error ? err.message : String(err));
         }
     };
 

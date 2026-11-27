@@ -1,7 +1,7 @@
 "use client";
 
 import ExecutionCard from '@/components/workflow/editor/executions/ExecutionCard';
-import { ExecutionLog } from '@neuron/db';
+import { Execution, ExecutionLog } from '@neuron/db';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +12,7 @@ export function ExecutionFeed({
   logs,
   onClick,
 }: {
-  executions: any[];
+  executions: Execution[];
   loading: boolean;
   logs: boolean;
   currentExecId?: string;

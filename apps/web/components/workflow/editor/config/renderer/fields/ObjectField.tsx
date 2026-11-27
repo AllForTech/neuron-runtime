@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 export function ObjectField({ field, values, onChange }: {
     field: ObjectFieldSchema;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void
 }) {
     return (
         <div className="w-full flex flex-col gap-4">

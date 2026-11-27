@@ -11,7 +11,7 @@ import { TextareaField } from "@/components/workflow/editor/config/renderer/fiel
 
 export function TextField({ field, values, onChange }: {
     field: TextFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: string) => void;
 }) {
     const [showSecret, setShowSecret] = useState(false);

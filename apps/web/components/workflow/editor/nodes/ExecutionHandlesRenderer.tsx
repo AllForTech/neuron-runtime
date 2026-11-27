@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Position } from 'reactflow';
+import { Position, NodeProps } from 'reactflow';
 import { NodeHandle } from './NodeHandle';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +13,7 @@ const DEFAULT_OUTPUTS = [
 ];
 
 interface Props {
-    node: any;
+    node: NodeProps;
     enabled?: string[];
 }
 

@@ -10,7 +10,15 @@ import {
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function FieldWrapper({ label, description, required, children, className }: any) {
+interface FieldWrapperProps {
+    label?: React.ReactNode;
+    description?: React.ReactNode;
+    required?: boolean;
+    children?: React.ReactNode;
+    className?: string;
+}
+
+export function FieldWrapper({ label, description, required, children, className }: FieldWrapperProps) {
     return (
         <TooltipProvider delayDuration={200}>
             <div className={cn("flex flex-col gap-2 w-full group", className)}>

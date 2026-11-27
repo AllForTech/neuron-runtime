@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { WorkflowType } from '../../../shared/src/types/workflow.types';
+import type { Workflow as WorkflowType } from '@neuron/db';
 
 export const useWorkflow = ({
   workflow,

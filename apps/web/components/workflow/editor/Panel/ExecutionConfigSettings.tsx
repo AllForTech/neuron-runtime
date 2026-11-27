@@ -14,17 +14,17 @@ export function ExecutionConfigSettings({
   config?: NodeExecutionConfig;
   onUpdate?: (config: NodeExecutionConfig) => void;
 }) {
-  const update = (path: string, value: any) => {
-    const newConfig = { ...config };
+  const update = (path: string, value: unknown) => {
+    const newConfig = { ...config } as unknown as Record<string, unknown>;
     // Simple nested update logic
     const keys = path.split('.');
-    let current = newConfig as any;
+    let current = newConfig;
     for (let i = 0; i < keys.length - 1; i++) {
       if (!current[keys[i]]) current[keys[i]] = {};
-      current = current[keys[i]];
+      current = current[keys[i]] as Record<string, unknown>;
     }
     current[keys[keys.length - 1]] = value;
-    onUpdate?.(newConfig);
+    onUpdate?.(newConfig as unknown as NodeExecutionConfig);
   };
 
   return (

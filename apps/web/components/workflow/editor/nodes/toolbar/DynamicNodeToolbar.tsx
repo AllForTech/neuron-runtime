@@ -13,13 +13,14 @@ import {
 import { cn } from '@/lib/utils';
 import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { WorkflowEditorActionType } from '@/constants';
-import { NodePreview } from '@/components/workflow/editor/nodes/NodePreview';
+import { NodePreview, type OutputPreviewConfig } from '@/components/workflow/editor/nodes/NodePreview';
+import type { NodeExecutionStatus } from '@neuron/shared';
 
 interface JaguarNodeToolbarProps {
   nodeId: string;
   nodeType?: string;
   isVisible?: boolean;
-  config: any;
+  config: OutputPreviewConfig;
   onSettingsClick?: () => void;
 }
 
@@ -101,7 +102,7 @@ export function DynamicNodeToolbar({
             nodeType={nodeType}
             config={config}
             nodeData={output}
-            status={status as any}
+            status={status as NodeExecutionStatus}
             className={cn('transition-200 hidden', isVisible && 'block')}
           />
 

@@ -52,9 +52,13 @@ export const createSecret = async (req: AuthRequest, res: Response) => {
 export const deleteSecret = async (req: AuthRequest, res: Response) => {
     try {
         const { id } = req.params as any;
+        const userId = req.user.id;
         console.log(`Deleting secret ${id}...`);
 
-        await deleteVaultSecretById(id);
+        const deleted = await deleteVaultSecretById(id, userId);
+
+        if (!deleted.length) return res.status(404).json({ error: 'No Secret found' });
+
         res.json({ message: 'Secret deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete secret' });
@@ -64,7 +68,8 @@ export const deleteSecret = async (req: AuthRequest, res: Response) => {
 export const getDecryptedSecret = async (req: AuthRequest, res: Response) => {
     try {
         const { id } = req.params as any;
-        const secret = await findSecretById(id);
+        const userId = req.user.id;
+        const secret = await findSecretById(id, userId);
 
         if (!secret) return res.status(404).json({ error: 'No Secret found' });
 

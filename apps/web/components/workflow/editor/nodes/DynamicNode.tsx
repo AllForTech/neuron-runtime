@@ -1,7 +1,7 @@
 'use client';
 
 import { NodeProps, Position } from 'reactflow';
-import { useMemo } from 'react';
+import { useMemo, type ElementType } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ContextMenuItem } from '@/components/ui/context-menu';
 import { NodeHandle } from './NodeHandle';
@@ -21,7 +21,7 @@ import { DecisionNodeHandlesRenderer } from '@/components/workflow/editor/nodes/
 import { DynamicNodeToolbar } from '@/components/workflow/editor/nodes/toolbar/DynamicNodeToolbar';
 import { useValidation } from '@/hooks/useValidation';
 import { nodeRegistry } from '@/registry/nodeRegistry';
-import {NODE_KIND, NodeType} from "@neuron/shared";
+import {NODE_KIND, NodeType, NodeExecutionStatus} from "@neuron/shared";
 import {ExecutionHandlesRenderer} from "@/components/workflow/editor/nodes/ExecutionHandlesRenderer";
 
 export default function DynamicNode(node: NodeProps) {
@@ -35,7 +35,7 @@ export default function DynamicNode(node: NodeProps) {
         !['Logic.Condition', 'Logic.Decision'].includes(node.type);
 
     const nodeDef = nodeRegistry[type as keyof typeof nodeRegistry];
-    const Icon: any = nodeDef?.icon || Cpu;
+    const Icon: ElementType = nodeDef?.icon || Cpu;
 
     const nodeError = useMemo(() => getNodeErrors(id), [getNodeErrors, id]);
 
@@ -49,7 +49,7 @@ export default function DynamicNode(node: NodeProps) {
         editorState.runtime?.nodeStatus?.[id] ??
         editorState.runtime?.nodeErrors?.[id] ??
         'idle';
-    const statusClass = getNodeStatusStyles(status as any);
+    const statusClass = getNodeStatusStyles(status as NodeExecutionStatus);
 
     const handleMenuClick = (action: string) => {
         switch (action) {
@@ -145,7 +145,7 @@ export default function DynamicNode(node: NodeProps) {
                   <span className={'text-neutral-500 text-[10px] uppercase font-mono opacity-70'}>
                     {status}
                   </span>
-                                    <NodeStatusIndicator status={status as any} />
+                                    <NodeStatusIndicator status={status as NodeExecutionStatus} />
                                 </div>
                             </div>
                         </CardContent>

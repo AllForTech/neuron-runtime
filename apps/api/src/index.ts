@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
+import {publicExecutionRateLimit} from "./schemas/execution-rate-limit.js";
 
 import testRoute from "./routes/test/test.route";
 import workflowRoutes from "./routes/workflow.routes.js";
@@ -30,12 +31,15 @@ const saveLimiter = rateLimit({
 
 app.use('/api/v1/workflows/:id/graph', saveLimiter);
 
+const publicExecutionLimiter = rateLimit(publicExecutionRateLimit);
+
 // Mount your routes under paths
 app.use("/test", testRoute);
 app.use("/api/v1/workflows", workflowRoutes);
 app.use('/api/v1/workspaces',workspaceRoute);
 app.use("/api/v1/auth", authRoutes);
 app.use('/api/v1/secrets', secretRoutes);
+app.use('/api/v1/execute/workflow', publicExecutionLimiter);
 app.use('/api/v1/execute/workflow', deploymentRoutes);
 app.use('/api/v1/executions', executionRoute);
 // app.use('/auth/slack', slackRoutes);

@@ -13,14 +13,19 @@ import { cn } from '@/lib/utils';
 import { OutputResultDialog } from '@/components/workflow/editor/dialog/OutputResultDialog';
 import {NODE_KIND} from "@neuron/shared";
 
+export interface OutputPreviewConfig {
+  format: { type: 'json' | 'markdown' | 'text' | 'html' };
+  delivery: { statusCode: number; mode: string };
+}
+
 interface NodePreviewProps {
   nodeId: string;
-  output: any;
+  output: unknown;
   className?: string;
   status: 'idle' | 'running' | 'success' | 'error';
   nodeType?: string;
-  nodeData?: any;
-  config: any;
+  nodeData?: unknown;
+  config: OutputPreviewConfig;
 }
 
 export function NodePreview({
@@ -67,7 +72,7 @@ export function NodePreview({
             </div>
             <div className="no-scrollbar w-full! p-2">
               <JsonRenderer
-                data={output}
+                data={output as Record<string, unknown>}
                 maxHeight="max-h-[320px]"
                 className="w-full! border-none bg-transparent"
               />
@@ -90,9 +95,9 @@ export function NodePreview({
             <OutputResultDialog
               isOpen={isFullViewOpen}
               onOpenChange={setIsFullViewOpen}
-              nodeName={nodeData?.label || 'Final Data Output'}
+              nodeName={(nodeData as { label?: string } | undefined)?.label || 'Final Data Output'}
               result={
-                typeof output === 'object' ? JSON.stringify(output) : output
+                typeof output === 'object' ? JSON.stringify(output) : (output as string)
               }
               config={config}
             />

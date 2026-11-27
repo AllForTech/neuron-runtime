@@ -13,7 +13,7 @@ import { Execution, ExecutionLog } from "@neuron/db";
 import { executions as executionsClient } from "@neuron/client";
 
 interface DashboardContextType {
-    metrics: any;
+    metrics: unknown;
     executions: Execution[];
     loading: boolean;
     isLogsLoading: boolean;
@@ -30,7 +30,7 @@ export const DashboardContext = createContext<DashboardContextType | undefined>(
 );
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
-    const [metrics, setMetrics] = useState<any>(null);
+    const [metrics, setMetrics] = useState<unknown>(null);
     const [executions, setExecutions] = useState<Execution[]>([]);
     const [currentExecId, setCurrentExecId] = useState('');
     const [logs, setLogs] = useState<Record<string, ExecutionLog>>({});
@@ -122,7 +122,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }, [getToken, getExecutionLogs]);
 
     useEffect(() => {
-        fetchDashboardData(true);
+        let active = true;
+        queueMicrotask(() => {
+            if (active) void fetchDashboardData(true);
+        });
+
+        return () => {
+            active = false;
+        };
     }, [fetchDashboardData]);
 
     useEffect(() => {

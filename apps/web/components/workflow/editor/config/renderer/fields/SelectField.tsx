@@ -21,7 +21,7 @@ export function SelectField({
                                 onChange,
                             }: {
     field: SelectFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: string) => void;
 }) {
     const value = getValueAtPath(values, field.path, field.defaultValue);

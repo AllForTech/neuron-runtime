@@ -1,6 +1,7 @@
 
 export const generateId = () => {
-    return typeof window !== 'undefined'
-        ? window.crypto.randomUUID()
+    const cryptoProvider = globalThis.crypto;
+    return typeof cryptoProvider?.randomUUID === 'function'
+        ? cryptoProvider.randomUUID()
         : Math.random().toString(36).substring(2, 9);
 };

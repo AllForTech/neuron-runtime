@@ -1,0 +1,31 @@
+version: 1
+notes: "Boundary ownership for the refactor program. No mutating leases are active yet. Coordinator assigns an exclusive lease in .agents/ledger.yaml before each task dispatch; overlapping leases are never run concurrently."
+boundaries:
+  governance:
+    paths: [".agents/**"]
+    owner: coordinator
+  contracts_and_docs:
+    paths: ["AGENTS.md", "context/**", ".gitignore"]
+    owner: documenter
+  dependency_management:
+    paths: ["package.json", "pnpm-lock.yaml", "apps/api/package.json", "apps/web/package.json", "packages/*/package.json"]
+    owner: foundation
+  tooling_and_ci:
+    paths: ["turbo.json", ".github/**", "packages/eslint-config/**", "apps/web/eslint.config.mjs"]
+    owner: coder
+  api_security:
+    paths: ["apps/api/src/controllers/**", "apps/api/src/index.ts", "apps/api/src/engine/**", "packages/db/src/repository/**", "packages/db/src/services/VaultService.ts", "packages/shared/src/utils/**", "apps/web/lib/utils.ts", "packages/sdk/node-http-request/**"]
+    owner: bugfixer
+  backend_architecture:
+    paths: ["packages/runtime/**", "packages/shared/src/ports/**", "apps/api/src/application/**", "apps/api/src/adapters/**"]
+    owner: coder
+  frontend_state:
+    paths: ["apps/web/stores/**", "apps/web/hooks/workflow/**", "apps/web/providers/WorkflowEditorProvider.tsx", "apps/web/app/(editor)/Provider.tsx", "apps/web/components/workflow/editor/**"]
+    owner: coder
+  web_decoupling_and_cleanup:
+    paths: ["apps/web/**", "apps/web/package.json", "apps/web/registry/**", "packages/nodes/**"]
+    owner: coder
+  ui_design_tokens:
+    paths: ["apps/web/app/globals.css", "apps/web/lib/utils.ts", "apps/web/constants/index.ts"]
+    owner: coder
+active_leases: []

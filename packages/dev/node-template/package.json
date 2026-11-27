@@ -5,7 +5,8 @@
   "types": "src/index.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "check-types": "tsc --noEmit --incremental false"
   },
   "exports": {
     ".": "./src/index.ts"

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export function TextareaField({ field, values, onChange }: {
     field: TextFieldSchema;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
     onChange: (path: string, value: string) => void;
 }) {
     const value = getValueAtPath(values, field.path, field.defaultValue) ?? '';

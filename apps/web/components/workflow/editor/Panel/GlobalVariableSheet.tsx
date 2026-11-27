@@ -39,7 +39,7 @@ function GlobalVariables() {
 
     const debouncedDispatch = useMemo(
         () =>
-            debounce((newVars: any) => {
+            debounce((newVars: Record<string, GlobalVariable>) => {
                 workflowEditorDispatch({
                     type: WorkflowEditorActionType.UPDATE_GLOBAL_VARS,
                     payload: newVars,

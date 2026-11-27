@@ -139,6 +139,10 @@ function Highlight<T extends React.ElementType = 'div'>({
     mode = 'children',
   } = props;
 
+  const { itemsClassName } = props as
+    | UncontrolledParentModeHighlightProps<T>
+    | UncontrolledChildrenModeHighlightProps<T>;
+
   const localRef = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
@@ -171,7 +175,7 @@ function Highlight<T extends React.ElementType = 'div'>({
   ]);
 
   const [activeValue, setActiveValue] = React.useState<string | null>(
-    value ?? defaultValue ?? null
+    value !== undefined ? value : (defaultValue ?? null)
   );
   const [boundsState, setBoundsState] = React.useState<Bounds | null>(null);
   const [activeClassNameState, setActiveClassNameState] =
@@ -227,10 +231,18 @@ function Highlight<T extends React.ElementType = 'div'>({
     setBoundsState((prev) => (prev === null ? prev : null));
   }, []);
 
-  React.useEffect(() => {
+  const [syncedHighlightProps, setSyncedHighlightProps] = React.useState({
+    value,
+    defaultValue,
+  });
+  if (
+    value !== syncedHighlightProps.value ||
+    defaultValue !== syncedHighlightProps.defaultValue
+  ) {
+    setSyncedHighlightProps({ value, defaultValue });
     if (value !== undefined) setActiveValue(value);
     else if (defaultValue !== undefined) setActiveValue(defaultValue);
-  }, [value, defaultValue]);
+  }
 
   const id = React.useId();
 
@@ -328,7 +340,7 @@ function Highlight<T extends React.ElementType = 'div'>({
           ? render(children)
           : render(
               React.Children.map(children, (child, index) => (
-                <HighlightItem key={index} className={props?.itemsClassName}>
+                <HighlightItem key={index} className={itemsClassName}>
                   {child}
                 </HighlightItem>
               ))

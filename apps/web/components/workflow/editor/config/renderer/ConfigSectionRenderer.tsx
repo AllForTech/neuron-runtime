@@ -7,20 +7,24 @@ import { cn } from "@/lib/utils";
 import { getLayoutClass } from "./Layout";
 import { ConfigFieldRenderer } from "./ConfigFieldRenderer";
 import { DialogSectionRenderer } from "./sections/DialogSectionRenderer";
+import { NodeConfigSection } from "@neuron/shared";
 
-export function ConfigSectionRenderer({ section, values, onChange }: any) {
+interface ConfigSectionProps {
+    section: NodeConfigSection;
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void;
+}
+
+export function ConfigSectionRenderer({ section, values, onChange }: ConfigSectionProps) {
     const [isCollapsed, setIsCollapsed] = useState(section.defaultCollapsed ?? false);
     const isCollapsible = section.collapsible !== false;
 
-    // Icon based on section type
-    const getSectionIcon = () => {
-        const id = section.id?.toLowerCase() || '';
-        if (id.includes('meta') || id.includes('general')) return Settings;
-        if (id.includes('execution') || id.includes('performance')) return Zap;
-        return Settings;
-    };
-    
-    const Icon = getSectionIcon();
+    // Icon selection stays as data so the imported icon components remain
+    // stable references instead of being created during render.
+    const sectionId = section.id?.toLowerCase() || '';
+    const usesExecutionIcon =
+        !(sectionId.includes('meta') || sectionId.includes('general')) &&
+        (sectionId.includes('execution') || sectionId.includes('performance'));
 
     return (
        <>
@@ -53,7 +57,9 @@ export function ConfigSectionRenderer({ section, values, onChange }: any) {
                                "flex items-center justify-center w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] transition-all duration-300",
                                isCollapsed ? "text-neutral-500" : "text-white shadow-[0_0_12px_-4px_rgba(255,255,255,0.15)]"
                            )}>
-                               <Icon size={13} strokeWidth={1.5} />
+                                {usesExecutionIcon
+                                    ? <Zap size={13} strokeWidth={1.5} />
+                                    : <Settings size={13} strokeWidth={1.5} />}
                            </div>
 
                            {/* Title and description */}
@@ -62,7 +68,7 @@ export function ConfigSectionRenderer({ section, values, onChange }: any) {
                                    <h3 className="text-[11px] font-semibold tracking-wide text-neutral-300">
                                        {section.title}
                                    </h3>
-                                   {section.required && (
+                                    {section.fields?.some((field) => field.required) && (
                                        <span className="text-[8px] font-bold text-red-400/60">REQUIRED</span>
                                    )}
                                </div>
@@ -102,7 +108,7 @@ export function ConfigSectionRenderer({ section, values, onChange }: any) {
                                        section.layout === "row" && "flex flex-row flex-wrap gap-3",
                                        section.layout === "column" || !section.layout && "flex flex-col gap-4"
                                    )}>
-                                       {section.fields.map((field: any, idx: number) => (
+                                        {section.fields.map((field, idx) => (
                                            <motion.div
                                                key={`${field.id}-${idx}-${field.path || idx}`}
                                                initial={{ opacity: 0, x: -4 }}

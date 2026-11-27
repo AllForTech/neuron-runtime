@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Globe, Database, Mail, Terminal } from 'lucide-react'
+import { Zap, Globe, Database, Mail, Terminal, type LucideIcon } from 'lucide-react'
 
 const NODES = [
     { id: 'n1', x: 10, y: 50, icon: Zap },      // Trigger
@@ -75,7 +75,7 @@ export function LogicFlowVisual() {
                 })}
 
                 {/* Nodes scaled to 8x8 units for a sharper look */}
-                {NODES.map((node) => (
+                {NODES.map((node, i) => (
                     <foreignObject
                         key={node.id}
                         x={node.x - 7} // Centering 8x8 node on coordinate
@@ -84,7 +84,7 @@ export function LogicFlowVisual() {
                         height="14"
                         className="overflow-visible"
                     >
-                        <NodeIcon icon={node.icon} delay={Math.random() * 2} />
+                        <NodeIcon icon={node.icon} delay={i * 0.4} />
                     </foreignObject>
                 ))}
             </svg>
@@ -92,7 +92,7 @@ export function LogicFlowVisual() {
     )
 }
 
-function NodeIcon({ icon: Icon, delay }: { icon: any; delay: number }) {
+function NodeIcon({ icon: Icon, delay }: { icon: LucideIcon; delay: number }) {
     return (
         <motion.div
             whileHover={{ scale: 1.1, borderColor: "rgba(255,255,255,0.4)" }}

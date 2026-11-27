@@ -8,15 +8,22 @@ interface UseNodeConfigStateProps<T> {
     onChange?: (values: T) => void;
 }
 
-export function useNodeConfigState<T extends Record<string, any>>({
+export function useNodeConfigState<T extends Record<string, unknown>>({
                                                                       initialValues,
                                                                       onChange,
                                                                   }: UseNodeConfigStateProps<T>) {
     const [values, setLocalValues] = useState<T>(initialValues);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [prevInitialValues, setPrevInitialValues] = useState<T>(initialValues);
+
+    // Reset local state when a different node's config is loaded. Adjusting
+    // during render avoids an extra render that briefly shows stale values.
+    if (initialValues !== prevInitialValues) {
+        setPrevInitialValues(initialValues);
+        setLocalValues(initialValues);
+    }
 
     useEffect(() => {
-        setLocalValues(initialValues);
         // Clear any pending debounced updates from the previous node
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -32,7 +39,7 @@ export function useNodeConfigState<T extends Record<string, any>>({
         setLocalValues(newValues);
     }, []);
 
-    const updateValue = useCallback((path: string, value: any) => {
+    const updateValue = useCallback((path: string, value: unknown) => {
         setLocalValues((prev) => {
             const next = setValueAtPath({ ...prev }, path, value);
 
@@ -55,7 +62,7 @@ export function useNodeConfigState<T extends Record<string, any>>({
         });
     }, []);
 
-    const getValue = useCallback(<TValue = any>(path: string): TValue | undefined => {
+    const getValue = useCallback(<TValue = unknown>(path: string): TValue | undefined => {
         return getValueAtPath<TValue>(values, path);
     }, [values]);
 

@@ -48,9 +48,9 @@ function DialogBackdrop<TTag extends React.ElementType = typeof motion.div>({
   ...props
 }: DialogBackdropProps<TTag>) {
   return (
-    <DialogBackdropPrimitive
+    <DialogBackdropPrimitive<TTag>
       className={cn('fixed inset-0 z-50 bg-black/50', className)}
-      {...props}
+      {...(props as DialogBackdropPrimitiveProps<TTag>)}
     />
   );
 }
@@ -69,12 +69,12 @@ function DialogPanel<TTag extends React.ElementType = typeof motion.div>({
   return (
     <>
       <DialogBackdrop />
-      <DialogPanelPrimitive
+      <DialogPanelPrimitive<TTag>
         className={cn(
           'bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg sm:max-w-lg',
           className
         )}
-        {...props}
+        {...(props as DialogPanelPrimitiveProps<TTag>)}
       >
         {(bag) => (
           <>
@@ -135,9 +135,9 @@ function DialogTitle<TTag extends React.ElementType = 'h2'>({
   ...props
 }: DialogTitleProps<TTag>) {
   return (
-    <DialogTitlePrimitive
+    <DialogTitlePrimitive<TTag>
       className={cn('text-lg leading-none font-semibold', className)}
-      {...props}
+      {...(props as DialogTitlePrimitiveProps<TTag>)}
     />
   );
 }
@@ -150,9 +150,9 @@ function DialogDescription<TTag extends React.ElementType = 'div'>({
   ...props
 }: DialogDescriptionProps<TTag>) {
   return (
-    <DialogDescriptionPrimitive
+    <DialogDescriptionPrimitive<TTag>
       className={cn('text-muted-foreground text-sm', className)}
-      {...props}
+      {...(props as DialogDescriptionPrimitiveProps<TTag>)}
     />
   );
 }

@@ -13,5 +13,8 @@ export default defineConfig({
     },
     clean: true,
     shims: true,
+    // isolated-vm ships a native .node addon that esbuild cannot bundle;
+    // keep it as a runtime require resolved from the installed dependency.
+    external: ['isolated-vm'],
     noExternal: ['@neuron/shared', '@neuron/db', '@neuron/auth', '@neuron/runtime'],
 });

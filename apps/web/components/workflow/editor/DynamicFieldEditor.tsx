@@ -39,7 +39,11 @@ export const DynamicFieldEditor = ({
     };
   }, [fields, nodeId, setNodeOutput]);
 
-  const handleFieldChange = (id: string, key: keyof FieldInput, value: any) => {
+  const handleFieldChange = (
+    id: string,
+    key: keyof FieldInput,
+    value: FieldInput[keyof FieldInput]
+  ) => {
     setFields((prev) =>
       prev.map((f) => (f.id === id ? { ...f, [key]: value } : f))
     );

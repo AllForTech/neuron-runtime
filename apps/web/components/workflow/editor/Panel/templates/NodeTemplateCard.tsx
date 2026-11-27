@@ -5,10 +5,15 @@ import { Info, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DraggableItem } from "@neuron/ui";
 import * as Icons from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { NodeDefinition } from "@neuron/shared";
 
-export function NodeTemplateCard({ template, onSelect }: { template: any; onSelect: () => void }) {
-    const IconComponent = (Icons as any)[template.icon] || Icons.Layers2;
+const iconMap = Icons as unknown as Record<string, LucideIcon>;
+
+export function NodeTemplateCard({ node, onSelect }: { node: NodeDefinition; onSelect: () => void }) {
+    const { template } = node;
+    const IconComponent = iconMap[template.icon] || Icons.Layers2;
 
     return (
         <DraggableItem className="w-full" id={template.key} data={{ template }}>
@@ -70,7 +75,7 @@ export function NodeTemplateCard({ template, onSelect }: { template: any; onSele
                                 {template.category}
                             </span>
                             <span className="text-[8px] font-mono text-neutral-700 ml-auto truncate opacity-0 group-hover:opacity-100 transition-opacity">
-                                {template.type}
+                                {node.type}
                             </span>
                         </div>
                     </div>

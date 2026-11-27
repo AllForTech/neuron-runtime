@@ -9,7 +9,7 @@ interface GenericDroppableProps {
     children: React.ReactNode;
     className?: string;
     overClassName?: string;
-    data?: Record<string, any>;
+    data?: Record<string, unknown>;
 }
 
 export const DroppableZone = ({

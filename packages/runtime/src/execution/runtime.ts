@@ -3,21 +3,20 @@ import {
     createContextEntry,
     ExecutionSignal,
     logger,
-    NodeType,
-    WorkflowEditorActionType
+    NodeType
 } from "@neuron/shared";
+import type {IVaultResolver, WorkflowEventSink, WorkflowVariableSource} from "@neuron/shared";
 import {NodeRunner} from "./nodeRunner";
 import {resolveConfig} from "../utils";
-import {getGlobalVariables, VaultService, workflowBroadcast, WorkflowEdge, WorkflowNode} from "@neuron/db";
-import {ExecuteWorkflowType} from "../types";
+import type {ExecuteWorkflowType, RuntimeGraphEdge, RuntimeGraphNode} from "../types";
 import {getEdgeTargets} from "../utils/branching";
 
 export class Runtime {
     private readonly workflowId: string;
     private readonly userId: string;
     private readonly executorId: string;
-    private readonly nodes: WorkflowNode[];
-    private readonly edges: WorkflowEdge[];
+    private readonly nodes: RuntimeGraphNode[];
+    private readonly edges: RuntimeGraphEdge[];
 
     private executed = new Set<string>();
     private success = new Set<string>();
@@ -26,7 +25,7 @@ export class Runtime {
 
     private incoming: Record<string, string[]> = {};
     private outgoing: Record<string, string[]> = {};
-    private nodeMap: Record<string, WorkflowNode> = {};
+    private nodeMap: Record<string, RuntimeGraphNode> = {};
 
     private contextNode: Record<string, any> = { isPresent: false };
     private nodesContext: Record<string, any> = {};
@@ -34,8 +33,9 @@ export class Runtime {
 
     public finalResponse: any = null;
 
-    private readonly vault: VaultService;
-    private readonly dispatch: any;
+    private readonly vault?: IVaultResolver;
+    private readonly variables?: WorkflowVariableSource;
+    private readonly events?: WorkflowEventSink;
 
     constructor(params: ExecuteWorkflowType) {
         this.workflowId = params.workflowId;
@@ -43,20 +43,17 @@ export class Runtime {
         this.executorId = params.executionId;
         this.nodes = params.graph.nodes;
         this.edges = params.graph.edges;
-        this.vault = new VaultService(params.userId);
-
-        const { dispatch } = workflowBroadcast(params.workflowId);
-        this.dispatch = dispatch;
+        this.vault = params.vault;
+        this.variables = params.variables;
+        this.events = params.events;
     }
 
     public async initialize(): Promise<void> {
         try {
-            const dbVariables = await getGlobalVariables(this.workflowId);
+            const variables = (await this.variables?.getForWorkflow(this.workflowId)) ?? {};
 
-            if (dbVariables) {
-                for (const v of dbVariables) {
-                    this.globalVariables[v.key] = v.value as string;
-                }
+            for (const [key, value] of Object.entries(variables)) {
+                this.globalVariables[key] = value;
             }
 
             for (const node of this.nodes) {
@@ -112,7 +109,7 @@ export class Runtime {
         if (!node) throw new Error(`Unknown Node Error: ${nodeId}`);
 
         this.running.add(nodeId);
-        await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_START, { nodeId });
+        await this.events?.emit({ type: "node.started", nodeId });
 
         try {
             const resolvedConfig = await resolveConfig(
@@ -141,7 +138,8 @@ export class Runtime {
 
 
             if (signal !== "success") {
-                await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
+                await this.events?.emit({
+                    type: "node.failed",
                     nodeId,
                     error: result.error?.message
                 });
@@ -165,11 +163,10 @@ export class Runtime {
             this.nodesContext[nodeId] = output;
             this.executed.add(nodeId);
 
-            await this.dispatch(
+            await this.events?.emit(
                 signal === "success"
-                    ? WorkflowEditorActionType.NODE_EXECUTION_SUCCESS
-                    : WorkflowEditorActionType.NODE_EXECUTION_ERROR,
-                { nodeId, [signal === 'success' ? "output" : "error"]: output }
+                    ? { type: "node.succeeded", nodeId, output }
+                    : { type: "node.failed", nodeId, error: output }
             );
 
             // Allow Error/Timeout routes to trigger even if continueOnError is false
@@ -186,7 +183,8 @@ export class Runtime {
             });
 
             this.failed.add(nodeId);
-            await this.dispatch(WorkflowEditorActionType.NODE_EXECUTION_ERROR, {
+            await this.events?.emit({
+                type: "node.failed",
                 nodeId,
                 error: e.message
             });

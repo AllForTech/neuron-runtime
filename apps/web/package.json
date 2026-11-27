@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint .",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit --incremental false",
     "format": "prettier --write .",
     "clean": "rm -rf dist"
   },
@@ -64,7 +65,7 @@
     "lucide-react": "^0.563.0",
     "motion": "^12.34.3",
     "nanoid": "^5.1.6",
-    "next": "16.1.6",
+    "next": "16.4.5",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
@@ -77,7 +78,8 @@
     "tailwind-merge": "^3.4.0",
     "textarea-caret": "^3.1.0",
     "three": "^0.183.2",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "zustand": "5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -88,7 +90,8 @@
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "16.4.5",
+    "happy-dom": "21.0.4",
     "lint-staged": "^16.4.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "shadcn": "^3.8.4",

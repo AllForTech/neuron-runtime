@@ -117,9 +117,9 @@ const TraceList = ({
   type,
   nodeNames,
 }: {
-  dataMap: Record<string, any>;
+  dataMap: Record<string, unknown>;
   openStates: Record<string, boolean>;
-  setOpenStates: (state: any) => void;
+  setOpenStates: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   emptyMessage: string;
   type: 'output' | 'error';
   nodeNames: Record<string, string>;
@@ -171,7 +171,7 @@ const TraceList = ({
                     <AlertCircle className="h-3.5 w-3.5" />
                   ) : typeof data === 'boolean' ? (
                     <Terminal className="h-3.5 w-3.5" />
-                  ) : data?.content ? (
+                  ) : (data as { content?: unknown })?.content ? (
                     <Cpu className="h-3.5 w-3.5" />
                   ) : (
                     <Box className="h-3.5 w-3.5" />
@@ -200,7 +200,7 @@ const TraceList = ({
             <CollapsibleContent className="border-t border-neutral-800/50">
               <div className="bg-black/20 p-2">
                 <JsonRenderer
-                  data={data}
+                  data={data as Record<string, unknown>}
                   title={isError ? 'Error Details' : 'Raw Output'}
                   maxHeight="max-h-[300px]"
                   className="border-none shadow-none"

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import type { SchemaField } from '@neuron/shared';
 import { useNodeOutputs } from '@/hooks/useNodeOutputs';
 import {
   DropdownMenu,
@@ -19,7 +20,7 @@ export const NodeOutputAutocomplete = ({
 }: NodeOutputAutocompleteProps) => {
   const { nodeOutputs } = useNodeOutputs();
 
-  const renderFields = (fields: Record<string, any>, prefix = ''): string[] => {
+  const renderFields = (fields: Record<string, SchemaField>, prefix = ''): string[] => {
     let results: string[] = [];
     for (const key in fields) {
       const path = prefix ? `${prefix}.${key}` : key;

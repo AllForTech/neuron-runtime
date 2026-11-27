@@ -8,30 +8,30 @@ import has from 'lodash/has';
 import cloneDeep from 'lodash/cloneDeep';
 import unset from 'lodash/unset';
 
-export function getValueAtPath<T = any>(obj: any, path: string, defaultValue?: T): T {
+export function getValueAtPath<T = unknown>(obj: unknown, path: string, defaultValue?: T): T {
     return get(obj, path, defaultValue);
 }
 
-export function setValueAtPath<T extends Record<string, any>>(obj: T, path: string, value: any): T {
+export function setValueAtPath<T extends Record<string, unknown>>(obj: T, path: string, value: unknown): T {
     if (!path) return obj;
     const result = cloneDeep(obj);
     set(result, path, value);
     return result;
 }
 
-export function removeValueByPath<T extends Record<string, any>>(obj: T, path: string): T {
+export function removeValueByPath<T extends Record<string, unknown>>(obj: T, path: string): T {
     if (!path) return obj;
     const result = cloneDeep(obj);
     unset(result, path);
     return result;
 }
 
-export function hasPath(obj: any, path: string): boolean {
+export function hasPath(obj: unknown, path: string): boolean {
     return has(obj, path);
 }
 
-export function buildDefaultValues(fields: ConfigField[]): Record<string, any> {
-    const result: Record<string, any> = {};
+export function buildDefaultValues(fields: ConfigField[]): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
 
     for (const field of fields) {
         if (field.defaultValue !== undefined) {
@@ -52,8 +52,8 @@ export function buildDefaultValues(fields: ConfigField[]): Record<string, any> {
 }
 
 export function isFieldHidden(
-    hidden: boolean | ((values: Record<string, any>) => boolean) | undefined,
-    values: Record<string, any>
+    hidden: boolean | ((values: Record<string, unknown>) => boolean) | undefined,
+    values: Record<string, unknown>
 ): boolean {
     if (typeof hidden === "function") {
         return hidden(values);

@@ -3,8 +3,15 @@
 import React from 'react';
 import { ConfigSectionRenderer } from "./ConfigSectionRenderer";
 import { Layers2 } from 'lucide-react';
+import { NodeConfigSchema } from "@neuron/shared";
 
-export function NodeConfigRenderer({ schema, values, onChange }: any) {
+interface NodeConfigRendererProps {
+    schema: NodeConfigSchema;
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void;
+}
+
+export function NodeConfigRenderer({ schema, values, onChange }: NodeConfigRendererProps) {
     return (
         <div className="relative flex flex-col w-full min-h-full">
             {/* Background gradient mesh - Maintained Obsidian Aesthetic */}
@@ -29,7 +36,7 @@ export function NodeConfigRenderer({ schema, values, onChange }: any) {
 
             {/* Main content area */}
             <div className="relative flex flex-col gap-3 px-2 pb-8">
-                {schema.sections.map((section: any, index: number) => (
+                {schema.sections.map((section, index) => (
                     <div
                         key={`${section.id}-${index}`}
                         className="relative w-full group"

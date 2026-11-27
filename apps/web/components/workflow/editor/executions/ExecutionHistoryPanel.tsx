@@ -5,6 +5,7 @@ import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { ExecutionLogsViewer } from './ExecutionLogsViewer';
 import { Activity, History } from 'lucide-react';
 import ExecutionCard from '@/components/workflow/editor/executions/ExecutionCard';
+import type { Execution as DbExecution } from '@neuron/db';
 
 export default function ExecutionHistoryPanel() {
   const {
@@ -19,7 +20,7 @@ export default function ExecutionHistoryPanel() {
   const sortedExecutions = useMemo(() => {
     const record = runtimeState.executions || {};
     return Object.values(record).sort(
-      (a: any, b: any) =>
+      (a, b) =>
         new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
     );
   }, [runtimeState.executions]);
@@ -61,7 +62,7 @@ export default function ExecutionHistoryPanel() {
               {sortedExecutions.map((execution) => (
                 <ExecutionCard
                   key={execution.id}
-                  execution={execution as any}
+                  execution={execution as unknown as DbExecution}
                   onClick={() => handleExecutionClick(execution.id)}
                 />
               ))}

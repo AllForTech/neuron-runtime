@@ -1,8 +1,8 @@
-import { WorkflowNode } from "@neuron/db";
 import { nodeExecutors } from "@neuron/nodes/server";
 import {BaseNodeConfig, logger, NodeExecutor, NodeType} from "@neuron/shared";
 import { createExecutionResult, normalizeExecutionPolicy,  delay, runWithTimeout  } from "../utils";
 import { ExecutionSignal } from "@neuron/shared";
+import type { RuntimeGraphNode } from "../types";
 
 export class NodeRunner {
     private readonly registry: Record<NodeType, NodeExecutor>;
@@ -12,7 +12,7 @@ export class NodeRunner {
     }
 
     public async run(
-        node: WorkflowNode,
+        node: RuntimeGraphNode,
         resolvedConfig: Record<string, any>
     ) {
         const startTime = performance.now();

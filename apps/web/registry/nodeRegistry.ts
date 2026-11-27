@@ -31,19 +31,31 @@ interface NodeRegistryEntry {
     };
 }
 
+const validateTrigger = (node: TriggerNode) => {
+    const errors: ValidationError[] = [];
+    if (!node.config.triggerType) {
+        errors.push({ nodeId: node.id, field: 'triggerType', message: 'Trigger type is required', level: 'error' });
+    }
+    return errors;
+};
+
 export const nodeRegistry: Record<NodeType, NodeRegistryEntry> = {
-    trigger: {
+    "Trigger.Webhook": {
         icon: Zap,
         styles: { iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10 border-emerald-500/20" },
-        validate: (node: TriggerNode) => {
-            const errors: ValidationError[] = [];
-            if (!node.config.triggerType) {
-                errors.push({ nodeId: node.id, field: 'triggerType', message: 'Trigger type is required', level: 'error' });
-            }
-            return errors;
-        },
+        validate: validateTrigger,
     },
-    httpNode: {
+    "Trigger.Schedule": {
+        icon: Zap,
+        styles: { iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10 border-emerald-500/20" },
+        validate: validateTrigger,
+    },
+    "Trigger.Manual": {
+        icon: Zap,
+        styles: { iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10 border-emerald-500/20" },
+        validate: validateTrigger,
+    },
+    "Network.Http": {
         icon: Globe,
         styles: { iconClass: "text-blue-400", bgClass: "bg-blue-500/10 border-blue-500/20" },
         validate: (node: HttpRequestNode) => {
@@ -55,7 +67,7 @@ export const nodeRegistry: Record<NodeType, NodeRegistryEntry> = {
             return errors;
         },
     },
-    llmNode: {
+    "AI.Llm": {
         icon: Sparkles,
         styles: { iconClass: "text-indigo-400", bgClass: "bg-indigo-500/10 border-indigo-500/20" },
         validate: (node: LLMNode) => {
@@ -73,47 +85,47 @@ export const nodeRegistry: Record<NodeType, NodeRegistryEntry> = {
             return errors;
         },
     },
-    debug: {
+    "Utility.Debug": {
         icon: Bug,
         styles: { iconClass: "text-rose-400", bgClass: "bg-rose-500/10 border-rose-500/20" },
         validate: () => []
     },
-    delay: {
+    "Logic.Delay": {
         icon: Clock,
         styles: { iconClass: "text-neutral-400", bgClass: "bg-neutral-500/10 border-neutral-500/20" },
         validate: () => []
     },
-    condition: {
+    "Logic.Condition": {
         icon: GitBranch,
         styles: { iconClass: "text-amber-400", bgClass: "bg-amber-500/10 border-amber-500/20" },
         validate: () => []
     },
-    transform: {
+    "Utility.Transform": {
         icon: Binary,
         styles: { iconClass: "text-cyan-400", bgClass: "bg-cyan-500/10 border-cyan-500/20" },
         validate: () => []
     },
-    decisionNode: {
+    "Logic.Decision": {
         icon: GitBranch,
         styles: { iconClass: "text-orange-400", bgClass: "bg-orange-500/10 border-orange-500/20" },
         validate: () => []
     },
-    outputNode: {
+    "Utility.Output": {
         icon: Database,
         styles: { iconClass: "text-purple-400", bgClass: "bg-purple-500/10 border-purple-500/20" },
         validate: () => []
     },
-    respondNode: {
+    "Network.Respond": {
         icon: ArrowRightCircle,
         styles: { iconClass: "text-emerald-500", bgClass: "bg-emerald-500/10 border-emerald-500/20" },
         validate: () => []
     },
-    contextNode: {
+    "Utility.Context": {
         icon: Layers,
         styles: { iconClass: "text-slate-400", bgClass: "bg-slate-500/10 border-slate-500/20" },
         validate: () => []
     },
-    integrationNode: {
+    "Integration.Service": {
         icon: Terminal,
         styles: { iconClass: "text-blue-300", bgClass: "bg-blue-400/10 border-blue-400/20" },
         validate: () => []

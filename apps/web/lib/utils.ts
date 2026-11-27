@@ -230,9 +230,7 @@ const algorithm = 'aes-256-gcm';
 
 // Helper to get key safely at runtime, not at module evaluation
 function getVaultKey(): Buffer {
-  const secret =
-    process.env.VAULT_SECRET ??
-    '9e6cc1953e576e2d687083223d49fba1b1e11dbfb1d1629f8d4f7c7800859ef9';
+  const secret = process.env.VAULT_SECRET;
   if (!secret) {
     throw new Error('CRITICAL: VAULT_SECRET environment variable is missing.');
   }

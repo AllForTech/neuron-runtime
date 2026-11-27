@@ -23,7 +23,7 @@ export default function NodeTemplatePanel() {
     const filteredNodes = useMemo(() => {
         if (!nodeCatalog) return [];
         return nodeCatalog.filter((node) => {
-            const isSingleton = SINGLETON_NODE_TYPES.includes(node.type as any);
+            const isSingleton = SINGLETON_NODE_TYPES.includes(node.type);
             if (isSingleton && activeNodeTypes.includes(node.type as NodeType)) return false;
 
             const matchesSearch = node?.template.label?.toLowerCase()?.includes(search?.toLowerCase());
@@ -71,7 +71,7 @@ export default function NodeTemplatePanel() {
                         {filteredNodes.map((node) => (
                             <NodeTemplateCard
                                 key={node?.template?.key}
-                                template={node?.template}
+                                node={node}
                                 onSelect={() => handleSelectTemplate(node, selectedNode)}
                             />
                         ))}

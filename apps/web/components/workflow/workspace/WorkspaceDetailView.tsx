@@ -24,7 +24,7 @@ export const WorkspaceDetailView = ({
 
     const handleClick = useCallback(async (id: string) => {
         router.push(`/editor/${id}`)
-    }, [workspaceId]);
+    }, [router]);
 
     if (isLoading) {
         return <div className="p-8 text-neutral-500 animate-pulse">Loading workspace...</div>;

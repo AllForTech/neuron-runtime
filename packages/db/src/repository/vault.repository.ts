@@ -12,8 +12,16 @@ export async function getAllVaultSecrets(userId: string) {
 
 }
 
-export const findSecretById = async (id: string) => {
-    const [result] = await db.select().from(vaultSecrets).where(eq(vaultSecrets.id, id));
+export const findSecretById = async (id: string, userId: string) => {
+    const [result] = await db
+        .select()
+        .from(vaultSecrets)
+        .where(
+            and(
+                eq(vaultSecrets.id, id),
+                eq(vaultSecrets.userId, userId),
+            )
+        );
     return result || null;
 };
 
@@ -44,6 +52,14 @@ export const insertVaultSecret = async (data: {
     return newSecret;
 };
 
-export const deleteVaultSecretById = async (id: string) => {
-    return db.delete(vaultSecrets).where(eq(vaultSecrets.id, id));
+export const deleteVaultSecretById = async (id: string, userId: string) => {
+    return db
+        .delete(vaultSecrets)
+        .where(
+            and(
+                eq(vaultSecrets.id, id),
+                eq(vaultSecrets.userId, userId),
+            )
+        )
+        .returning({ id: vaultSecrets.id });
 };

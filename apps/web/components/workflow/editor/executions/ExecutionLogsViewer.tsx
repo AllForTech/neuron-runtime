@@ -7,6 +7,7 @@ import { useWorkflowEditor } from '@/hooks/workflow/useWorkflowEditor';
 import { LogTimeline } from '@/components/workflow/editor/executions/LogsTimeline';
 import { ExecutionLoadingSkeleton } from '@/components/workflow/editor/executions/ExecutionLoadingSkeleton';
 import { cn } from '@/lib/utils';
+import type { ExecutionLog as DbExecutionLog } from '@neuron/db';
 import { format } from 'date-fns';
 
 function ExecutionLogs({
@@ -92,7 +93,7 @@ function ExecutionLogs({
           <div className="flex items-center gap-2">
             <Timer className="h-3 w-3 text-neutral-600" />
             <span className="text-[10px] text-neutral-500">
-              {(execution as any)?.durationMs || 0}ms
+              {(execution as typeof execution & { durationMs?: number })?.durationMs || 0}ms
             </span>
           </div>
         </div>
@@ -102,7 +103,7 @@ function ExecutionLogs({
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <div className="pb-4">
-            <LogTimeline logs={runtimeState.logs as any} />
+            <LogTimeline logs={runtimeState.logs as unknown as Record<string, DbExecutionLog>} />
           </div>
         </ScrollArea>
       </div>

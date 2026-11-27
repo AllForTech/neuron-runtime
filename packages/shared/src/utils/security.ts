@@ -2,8 +2,8 @@ import {SECRET_PREFIX} from "../constants";
 
 
 export const generateSecureKey = (prefix: string = SECRET_PREFIX, bytes: number = 32): string => {
-    // Use globalThis to ensure compatibility across Browser and Node.js environments
-    const cryptoProvider = typeof window !== 'undefined' ? window.crypto : (globalThis.crypto as any);
+    // globalThis.crypto is the same Web Crypto provider in browsers and Node.js
+    const cryptoProvider = globalThis.crypto;
 
     if (!cryptoProvider || !cryptoProvider.getRandomValues) {
         throw new Error('Cryptographic API not available in this environment.');

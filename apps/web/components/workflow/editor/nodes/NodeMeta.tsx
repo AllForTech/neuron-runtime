@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 interface NodeMetaCollapsibleProps {
   label: string;
   description?: string;
-  onUpdate: (key: string, data: any) => void;
+  onUpdate: (key: string, data: unknown) => void;
 }
 
 export function NodeMeta({

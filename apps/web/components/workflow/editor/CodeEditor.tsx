@@ -29,7 +29,7 @@ const CodeEditor = ({
   const viewRef = useRef<EditorView | null>(null);
 
   // Helper to ensure we always have a string for CodeMirror
-  const getSafeValue = (val: any): string => {
+  const getSafeValue = (val: unknown): string => {
     if (typeof val === 'string') return val;
     return ''; // Fallback for null, undefined, or {}
   };

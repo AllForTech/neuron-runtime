@@ -1,11 +1,22 @@
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownRight, Activity, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export function MetricGrid({ metrics }: { metrics: any }) {
+interface MetricData {
+    total?: number;
+    success?: number;
+    failed?: number;
+}
+
+function isMetricData(value: unknown): value is MetricData {
+    return typeof value === 'object' && value !== null;
+}
+
+export function MetricGrid({ metrics }: { metrics: unknown }) {
+    const data = isMetricData(metrics) ? metrics : undefined;
     const items = [
-        { label: "Throughput", value: metrics?.total ?? 0, icon: Activity, trend: "+12%", color: "text-white" },
-        { label: "Success Rate", value: `${((metrics?.success / metrics?.total) * 100 || 0).toFixed(1)}%`, icon: CheckCircle2, trend: "+0.2%", color: "text-emerald-500" },
-        { label: "Exceptions", value: metrics?.failed ?? 0, icon: AlertCircle, trend: "-4%", color: "text-red-500" }
+        { label: "Throughput", value: data?.total ?? 0, icon: Activity, trend: "+12%", color: "text-white" },
+        { label: "Success Rate", value: `${(((data?.success ?? 0) / (data?.total ?? 0)) * 100 || 0).toFixed(1)}%`, icon: CheckCircle2, trend: "+0.2%", color: "text-emerald-500" },
+        { label: "Exceptions", value: data?.failed ?? 0, icon: AlertCircle, trend: "-4%", color: "text-red-500" }
     ];
 
     return (

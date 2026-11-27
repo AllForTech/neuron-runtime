@@ -12,14 +12,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Settings, Sparkles, ChevronRight, RotateCcw, PanelLeftClose } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { ConfigFieldRenderer } from "../ConfigFieldRenderer";
-import { NodeConfigSection } from "@neuron/shared";
+import { ConfigField, NodeConfigSection } from "@neuron/shared";
+
+// Config fields may carry an optional icon at runtime even though the shared
+// schema does not declare it.
+type IconField = ConfigField & { icon?: LucideIcon };
 
 interface DialogSectionProps {
     section: NodeConfigSection;
-    values: Record<string, any>;
-    onChange: (path: string, value: any) => void;
-    defaultValues?: Record<string, any>;
+    values: Record<string, unknown>;
+    onChange: (path: string, value: unknown) => void;
+    defaultValues?: Record<string, unknown>;
 }
 
 export function DialogSectionRenderer({ section, values, onChange, defaultValues }: DialogSectionProps) {
@@ -28,15 +33,18 @@ export function DialogSectionRenderer({ section, values, onChange, defaultValues
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
     const categories = useMemo(() => {
-        return section.fields.map((f: any) => ({
-            id: f.id || f.path,
-            label: f.label || 'General',
-            icon: f.icon || Settings
-        }));
+        return section.fields.map((field) => {
+            const f = field as IconField;
+            return {
+                id: f.id || f.path,
+                label: f.label || 'General',
+                icon: f.icon || Settings
+            };
+        });
     }, [section.fields]);
 
     const activeField = useMemo(() => {
-        return section.fields.find((f: any) => (f.id || f.path) === activeTab);
+        return section.fields.find((f) => (f.id || f.path) === activeTab);
     }, [section.fields, activeTab]);
 
     const isDirty = useMemo(() => {
