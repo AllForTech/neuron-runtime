@@ -50,10 +50,22 @@ export function WorkflowSessionBootstrap({
     () => realtimeClient ?? (createClient() as unknown as RealtimeClientLike),
     [realtimeClient]
   );
-  const localDraft = useLiveQuery(
-    () => draftAdapter.get(workflowId),
-    [workflowId, draftAdapter]
-  );
+    const localDraft = useLiveQuery(
+        () => draftAdapter.get(workflowId),
+        [workflowId, draftAdapter]
+    );
+
+    const timers = useMemo(
+        () =>
+            createGraphSyncTimers({
+                setTimeout: (cb, ms) => setTimeout(cb, ms),
+                clearTimeout: (handle) =>
+                    clearTimeout(handle as ReturnType<typeof setTimeout>),
+            }),
+        []
+    );
+
+    const hasUnsyncedDraft = Boolean(localDraft && !localDraft.synced);
 
   useEffect(() => {
     setRunId(workflowId);
@@ -74,19 +86,20 @@ export function WorkflowSessionBootstrap({
     return unsubscribe;
   }, [workflowId, draftAdapter]);
 
-  useEffect(() => {
-    if (!workflowId || !localDraft || localDraft.synced) return;
-    // Legacy suppressed autosave for the whole bootstrap, including a draft
-    // that was already unsynced when the cloud load started.
-    if (sessionStore.getState().bootstrapStatus === 'loading') return;
-    const timers = createGraphSyncTimers({ setTimeout, clearTimeout });
-    const autosave = timers.autosave(() => {
-      if (sessionStore.getState().bootstrapStatus === 'loading') return;
-      void workflowCommands.saveGraph(workflowId);
-    });
-    autosave();
-    return () => autosave.cancel();
-  }, [localDraft, workflowId]);
+    useEffect(() => {
+        if (!workflowId || !hasUnsyncedDraft) return;
+        // Legacy suppressed autosave for the whole bootstrap, including a draft
+        // that was already unsynced when the cloud load started.
+        if (sessionStore.getState().bootstrapStatus === 'loading') return;
+
+        const autosave = timers.autosave(() => {
+            if (sessionStore.getState().bootstrapStatus === 'loading') return;
+            void workflowCommands.saveGraph(workflowId);
+        });
+
+        autosave();
+        return () => autosave.cancel();
+    }, [workflowId, hasUnsyncedDraft, timers]);
 
   return (
     <WorkflowSessionContext.Provider value={sessionValue}>

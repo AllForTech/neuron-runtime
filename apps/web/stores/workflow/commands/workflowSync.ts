@@ -91,7 +91,7 @@ export async function runWithRetry<T>(
 
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxAttempts; attempt += 1) {
-    try {
+    try {	
       const value = await operation(attempt);
       return { ok: true, attempts: attempt + 1, value };
     } catch (error) {
